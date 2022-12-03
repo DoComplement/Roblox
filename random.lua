@@ -2,9 +2,9 @@
 local rand = {}
 
 rand.createLinearTable = function(Length)
-		local Table = table.create(Length, 0)
-		for i = 1, Length do Table[i] = i end
-		return Table
+	local Table = table.create(Length, 0)
+	for i = 1, Length do Table[i] = i end
+	return Table
 end
 
 rand.randSequence = function(Length)
@@ -30,8 +30,8 @@ rand.tableAlphaBET = rand.AlphaBET:split('')
 rand.lengthAlphaBET = #rand.AlphaBET
 
 rand.randString = function(Length)
-    local String = table.concat(table.create(Length, ''))
-    return String:gsub('.', function() return rand.tableAlphaBET[math.random(1, rand.lengthAlphaBET)] end)
+	local String = table.concat(table.create(Length, ''))
+	return String:gsub('.', function() return rand.tableAlphaBET[math.random(1, rand.lengthAlphaBET)] end)
 end
 
 rand.updateAlphabet = function()
