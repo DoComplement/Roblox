@@ -36,4 +36,14 @@ rand.updateAlphabet = function()
 	rand.AlphaBET = rand.randomizeString(table.concat(rand.AlphaBET)):split('')
 end
 
+rand.getMethods = function()
+	print("<return type> directory (<argument type> argument)")
+	print("<table> rand.createLinearTable(<unsigned integer> Length) --> returns linear array of \"Length\" where each the value at index i is equal to i")
+	print("<table> rand.randSequence(<unsigned integer> Length) --> returns a one-dimensional array with the indexes linear and the values random")
+	print("<string> rand.randomizeString(<string> String) --> returns the input \"String\" with characters randomized")
+	print("<string> rand.randString = function(<unsigned integer> Length) --> returns a random string of \"Length\"")
+	print("<void> rand.updateAlphabet = function(<void>) --> randomizes the internal alphanumerical Alphabet which is used to generate random strings")
+	print("<void> rand.getMethods = function(<void>) --> returns each module and their calling method")
+end
+
 return rand
