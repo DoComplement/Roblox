@@ -17,7 +17,7 @@ rand.randSequence = function(Length)
 end
 
 rand.randomizeString = function(String)
-	local strTable = table.create(#String, '')
+	local strTable = table.create(#String, ' ')
 	String = String:split('')
 	for idx,randIdx in next, rand.randSequence(#String) do
 		strTable[idx] = String[randIdx]
@@ -27,11 +27,10 @@ end
 
 rand.AlphaBET = rand.randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ")
 rand.tableAlphaBET = rand.AlphaBET:split('')
-rand.lengthAlphaBET = #rand.AlphaBET
 
 rand.randString = function(Length)
-	local String = table.concat(table.create(Length, ''))
-	return String:gsub('.', function() return rand.tableAlphaBET[math.random(1, rand.lengthAlphaBET)] end)
+	local String = table.concat(table.create(Length, ' '))
+	return String:gsub('.', function() return rand.tableAlphaBET[math.random(1, 64)] end)
 end
 
 rand.updateAlphabet = function()
