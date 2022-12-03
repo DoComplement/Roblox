@@ -186,17 +186,16 @@ queryServerSearch.fetchAverage = function(Method, QueryType, Quantity)
 end
 
 queryServerSearch.testTeleport = function(Method, Query, Quantity)
-    local accessTick = tick()
-	
-    queryServerSearch.updateStatus["custom"]("Executing Server Query...", "Fetching server data...")
-    local Success, Server_List = queryServerSearch.fetchServerList(Method, Query)
-	getgenv().output_table.read(Server_List["data"][1], "Server_List[\"data\"][1]")
-    
-    if not Success then 
-        queryServerSearch.updateStatus["custom"](Server_List, "Error fetching servers, going idle...")
-		queryServerSearch.updateStatus["Idle"]()
-        return
-    end
+	local accessTick = tick()
+
+	queryServerSearch.updateStatus["custom"]("Executing Server Query...", "Fetching server data...")
+	local Success, Server_List = queryServerSearch.fetchServerList(Method, Query)
+
+	if not Success then 
+		queryServerSearch.updateStatus["custom"](Server_List, "Error fetching servers, going idle...")
+			queryServerSearch.updateStatus["Idle"]()
+		return
+	end
 	
 	local currentServer = queryServerSearch.fetchServer(Server_List, "Equal", "id", game.JobId)
 	local desiredServer,desiredServerID
