@@ -38,3 +38,5 @@ rand.updateAlphabet = function()
 	rand.AlphaBET = rand.randomizeString(AlphaBET)
 	rand.tableAlphaBET = AlphaBET:split('')
 end
+
+return rand
