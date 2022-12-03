@@ -25,17 +25,15 @@ rand.randomizeString = function(String)
 	return table.concat(strTable)
 end
 
-rand.AlphaBET = rand.randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ")
-rand.tableAlphaBET = rand.AlphaBET:split('')
+rand.AlphaBET = rand.randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
 
 rand.randString = function(Length)
 	local String = table.concat(table.create(Length, ' '))
-	return String:gsub('.', function() return rand.tableAlphaBET[math.random(1, 64)] end)
+	return String:gsub('.', function() return rand.AlphaBET[math.random(1, 64)] end)
 end
 
 rand.updateAlphabet = function()
-	rand.AlphaBET = rand.randomizeString(AlphaBET)
-	rand.tableAlphaBET = AlphaBET:split('')
+	rand.AlphaBET = rand.randomizeString(table.concat(rand.AlphaBET)):split('')
 end
 
 return rand
