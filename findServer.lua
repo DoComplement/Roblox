@@ -220,7 +220,7 @@ queryServerSearch.testTeleport = function(Method, Query, Quantity)
 	else
 		desiredServer = queryServerSearch.fetchServer(Server_List, Method, Query)
 		if deepFetch then 
-			desiredServer = queryServerSearch.deepFetchServer(Server_List, Method, Query, desiredServer) 
+			desiredServer = queryServerSearch.deepFetchServer(Server_List, Method, Query, nil, desiredServer) 
 		end
 	end
 	
