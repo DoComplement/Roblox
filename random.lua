@@ -38,6 +38,7 @@ end
 
 rand.getMethods = function()
 	print("<return type> directory (<argument type> argument)")
+	print("<table> rand.AlphaBET --> return table (tuple) of characters corresponding to the system's alphabet
 	print("<table> rand.createLinearTable(<unsigned integer> Length) --> returns linear array of \"Length\" where each the value at index i is equal to i")
 	print("<table> rand.randSequence(<unsigned integer> Length) --> returns a one-dimensional array with the indexes linear and the values random")
 	print("<string> rand.randomizeString(<string> String) --> returns the input \"String\" with characters randomized")
