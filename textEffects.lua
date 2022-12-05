@@ -5,36 +5,36 @@ local stringToEffect = "This is a random String! WOW!"
 local textEffectLib = {}
 
 textEffectsLib.specialConcat = function(Table)
-    local Concatenation = table.create(#Table)
-    for _,v in pairs(Table) do
-        table.insert(Concatenation, v)
-    end
-    return table.concat(Concatenation)
+	local Concatenation = table.create(#Table)
+	for _,v in pairs(Table) do
+		table.insert(Concatenation, v)
+	end
+	return table.concat(Concatenation)
 end
 
 --[[ popEffect and sumEffect can be consolidated ]]
 textEffectsLib.popEffect = function(Instance, String, Delay)
-    Instance.Text = ''
-    local spaceString = table.create(#String, ' ')
-    String = String:split('')
-    
-    for _,randIndex in ipairs(rand.randSequence(#String)) do
-        spaceString[randIndex] = String[randIndex]
-        Instance.Text = table.concat(spaceString) 
-        if Delay then task.wait(Delay) end
-    end
+	Instance.Text = ''
+	local spaceString = table.create(#String, ' ')
+	String = String:split('')
+
+	for _,randIndex in ipairs(rand.randSequence(#String)) do
+		spaceString[randIndex] = String[randIndex]
+		Instance.Text = table.concat(spaceString) 
+		if Delay then task.wait(Delay) end
+	end
 end
 
 textEffectsLib.sumEffect = function(Instance, String, Delay)
-    Instance.Text = ''
-    local spaceString = {}
-    String = String:split('')
-    
-    for _,randIndex in ipairs(rand.randSequence(#String)) do
-        spaceString[randIndex] = String[randIndex]
-        Instance.Text = specialConcat(spaceString) 
-        if Delay then task.wait(Delay) end
-    end
+	Instance.Text = ''
+	local spaceString = {}
+	String = String:split('')
+
+	for _,randIndex in ipairs(rand.randSequence(#String)) do
+		spaceString[randIndex] = String[randIndex]
+		Instance.Text = textEffectsLib.specialConcat(spaceString) 
+		if Delay then task.wait(Delay) end
+	end
 end
 
 textEffectsLib.sweepEffect = function(Instance, String, inOut, Delay)
@@ -49,13 +49,14 @@ end
 
 ]]
 textEffectsLib.decryptionEffect = function(Instance, String, Method)
-    local Size = #String
-    Instance.Text = rand.randString(Size)
-    local randString, refereceIndex = Instance.Text:split('')
-    String = String:split('')
+	local Size = #String
+	Instance.Text = rand.randString(Size)
+	local randString, refereceIndex = Instance.Text:split('')
+	String = String:split('')
     
+	--[[ Type = Random ]]
 	local referenceTable = rand.randSequence(Size)
-    for Index = 1, Size do -- Type = Random
+	for Index = 1, Size do 
 		for count = 1,math.random(10, 50) do
 			randString[referenceTable[math.random(1, #referenceTable)]] = rand.AlphaBET[math.random(1, 64)]
 			Instance.Text = table.concat(randString)
@@ -63,8 +64,8 @@ textEffectsLib.decryptionEffect = function(Instance, String, Method)
 		referenceIndex = table.remove(referenceTable, math.random(1, #referenceTable))
 		randString[referenceIndex] = String[referenceIndex]
 		Instance.Text = table.concat(randString)
-        task.wait(0.05 + math.exp(Index - Size - 1))
-    end 
+		task.wait(0.05 + math.exp(Index - Size - 1))
+	end 
 end
 
 
