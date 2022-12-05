@@ -48,20 +48,20 @@ end
     2) make the encrypted characters rotate other random characters until they are fixed (could be a separate mode or toggle)
 
 ]]
-textEffectsLib.decryptionEffect = function(Instance, String, Delay)
+textEffectsLib.decryptionEffect = function(Instance, String, Method)
     local Size = #String
     Instance.Text = rand.randString(Size)
     local randString, refereceIndex = Instance.Text:split('')
-    local referenceTable = rand.randSequence(Size)
     String = String:split('')
     
+	local referenceTable = rand.randSequence(Size)
     for Index = 1, Size do -- Type = Random
 		for count = 1,math.random(10, 50) do
 			randString[referenceTable[math.random(1, #referenceTable)]] = rand.AlphaBET[math.random(1, 64)]
 			Instance.Text = table.concat(randString)
 		end
-		referenceIndex = math.random(1, #referenceTable)
-		randString[referenceTable[referenceIndex]] = String[table.remove(referenceTable, referenceIndex)]
+		referenceIndex = table.remove(referenceTable, math.random(1, #referenceTable))
+		randString[referenceIndex] = String[referenceIndex]
 		Instance.Text = table.concat(randString)
         task.wait(0.05 + math.exp(Index - Size - 1))
     end 
@@ -95,6 +95,7 @@ end
     TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
     TextLabel.TextSize = 14.000
 
-    textEffectsLib.decryptionEffect(TextLabel, stringToEffect)
+	
+    textEffectsLib.decryptionEffect(game:GetService("Players").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel, stringToEffect)
 
 ]]
