@@ -21,8 +21,10 @@ if (not LP.PlayerGui.ScreenGui:FindFirstChild("BrewingFrame")) then
 end
 
 closeFrames(false); wait(0.5)
+
+-- bad way to check if the user has the gamepass
 if LP.PlayerGui.ScreenGui:FindFirstChild("BrewingFrame").Brewing.Brew3.Gamepass.Visible then 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/BGS/main/UI_Upd/Two.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Games/BubbleGumSimulator/AutoLab/UI_Upd/Two.lua"))()
 else
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/BGS/main/UI_Upd/Three.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Games/BubbleGumSimulator/AutoLab/UI_Upd/Three.lua"))()
 end 
