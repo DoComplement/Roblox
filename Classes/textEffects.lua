@@ -16,75 +16,66 @@ textEffectsLib.specialConcat = function(Table)
 end
 
 --[[ popEffect and sumEffect can be consolidated ]]
-textEffectsLib.popEffect = function(Instance, String)
-	Instance.Text = ''
-	local spaceString = table.create(#String, ' ')
-	String = String:split('')
+textEffectsLib.Methods = {
+	["Pop"] = function(Instance, String)
+		local spaceString = table.create(#String, ' ')
+		String = String:split('')
 
-	for _,randIndex in ipairs(rand.randSequence(#String)) do
-		spaceString[randIndex] = String[randIndex]
-		Instance.Text = table.concat(spaceString) 
-		task.wait(0.05)
-	end
-end
-
-textEffectsLib.sumEffect = function(Instance, String, Delay)
-	Instance.Text = ''
-	local spaceString = {}
-	String = String:split('')
-
-	for _,randIndex in ipairs(rand.randSequence(#String)) do
-		spaceString[randIndex] = String[randIndex]
-		Instance.Text = textEffectsLib.specialConcat(spaceString) 
-		if Delay then task.wait(Delay) end
-	end
-end
-
-textEffectsLib.sweepEffect = function(Instance, String, inOut, Delay)
-	
-end
-
---[[ Types: Base, , Random, Sweep (in, out, left, right) ]]
---[[
-    The current module is rather pleasing, but there are a few things i would like to add:
-    1) add extra characters to the randString and delete them accordingly to the end of the sequence
-    2) make the encrypted characters rotate other random characters until they are fixed (could be a separate mode or toggle)
-
-]]
-textEffectsLib.decryptionEffect = function(Instance, String, Method)
-	local Size = #String
-	Instance.Text = rand.randString(Size)
-	local randString, refereceIndex = Instance.Text:split('')
-	String = String:split('')
-    
-	--[[ current procedure is so-so ]]
-	local referenceTable = rand.randSequence(Size)
-	for Index = 1, Size do 
-		for count = 1,math.random(10, 50) do
-			randString[referenceTable[math.random(1, #referenceTable)]] = rand.AlphaBET[math.random(1, 64)]
-			Instance.Text = table.concat(randString)
+		for _,randIndex in ipairs(rand.randSequence(#String)) do
+			spaceString[randIndex] = String[randIndex]
+			Instance.Text = table.concat(spaceString) 
+			task.wait(0.05)
 		end
-		referenceIndex = table.remove(referenceTable, math.random(1, #referenceTable))
-		randString[referenceIndex] = String[referenceIndex]
-		Instance.Text = table.concat(randString)
-		task.wait(0.05 + math.exp(Index - Size - 1))
-	end 
-end
+	end,
+	["Sum"] = function(Instance, String, Delay)
+		local spaceString = {}
+		String = String:split('')
 
-textEffectsLib.testMethod(Instance, String, Method)
-	print("Not Currently Defined")
+		for _,randIndex in ipairs(rand.randSequence(#String)) do
+			spaceString[randIndex] = String[randIndex]
+			Instance.Text = textEffectsLib.specialConcat(spaceString) 
+			if Delay then task.wait(Delay) end
+		end
+	end,
+	["Sweep"] = function(Instance, String, Type) --[[ doStuff ]] end,
+	
+	--[[ Types: Base, , Random, Sweep (in, out, left, right) ]]
 	--[[
+	    The current module is rather pleasing, but there are a few things i would like to add:
+	    1) add extra characters to the randString and delete them accordingly to the end of the sequence
+	    2) make the encrypted characters rotate other random characters until they are fixed (could be a separate mode or toggle)
+	]]
+	["Decrypt"] = function(Instance, String, Type)
+		local Size = #String
+		local randString, refereceIndex = rand.randString(Size):split('')
+		String = String:split('')
+
+		--[[ current procedure is so-so ]]
+		local referenceTable = rand.randSequence(Size)
+		for Index = 1, Size do 
+			for count = 1,math.random(10, 50) do
+				randString[referenceTable[math.random(1, #referenceTable)]] = rand.AlphaBET[math.random(1, 64)]
+				Instance.Text = table.concat(randString)
+			end
+			referenceIndex = table.remove(referenceTable, math.random(1, #referenceTable))
+			randString[referenceIndex] = String[referenceIndex]
+			Instance.Text = table.concat(randString)
+			task.wait(0.05 + math.exp(Index - Size - 1))
+		end 
+	end
+}
+
+textEffectsLib.testMethod = function(Instance, String, Method)
+	print("Not Currently Defined")
 	Method = textEffectsLib.Methods[Method]
 	if Method then Method(Instance, String) end
-	]]
 end
-textEffectLibs.spawnTestFrame(Copy)
+
+textEffectLibs.spawnTestFrame = function(CopyDirectoryToClipboard)
 	if not game:GetService("Players").LocalPlayer.PlayerGui.TestGui then
 		local ScreenGui = Instance.new("ScreenGui")
 		local Frame = Instance.new("Frame")
 		local TextLabel = Instance.new("TextLabel")
-
-		--Properties:
 
 		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -104,18 +95,20 @@ textEffectLibs.spawnTestFrame(Copy)
 		TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 		TextLabel.TextSize = 14.000
 	end
-	print("Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
-	if Copy then
+	if CopyDirectoryToClipboard then
 		setclipboard("game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+		print("Directory Copied: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+	else
+		print("Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
 	end
 end
 
 textEffectsLib.getMethods = function()
 	print("Test each method on a random Text Instance (TextBox, TextLabel, TextButton) to see how they look")
 	print("<void> textEffectsLib.spawnTestFrame(<bool> CopyDirectoryToClipboard) -- spawns a TextLabel on the screen for the user to test methods on.")
-	print("<void> textEffectsLib.popEffect(<Instance> Instance, <string> String)")
-	print("<void> textEffectsLib.sumEffect(<Instance> Instance, <string> String)")
-	print("<void> textEffectsLib.decryptionEffect(<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.Methods["Pop"](<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.Methods["Sum"](<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.Methods["Decrypt"](<Instance> Instance, <string> String)")
 	print("<void> textEffectsLib.testMethod(<Instance> Instance, <string> String, <string> Method)")
 end
 
