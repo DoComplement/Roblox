@@ -25,7 +25,7 @@
 ]]
 
 if not getgenv().table2String then
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/random.lua"))()	
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/table2String.lua"))()	
 end
 
 local ignoreFull,deepFetch,waitOnFull,averageFetch,showStatus = true,false,true,false -- these values will reflect toggles
