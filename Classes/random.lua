@@ -1,4 +1,4 @@
-print("print rand.getMethods() for all methods and their usage")
+print("execute rand.getMethods() for all methods and their usage")
 local rand = {}
 
 rand.createLinearTable = function(Length)
