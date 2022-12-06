@@ -1,54 +1,72 @@
 
--- each button will send a method to the function queryServerSearch.teleportTest(mathod, type)
+
+-- format options for a url search of a roblox game's server information
 --[[
-	local QUERY_FORMAT = {
-		["serverType"] = {
-			["Public"] = 0,     -- others will throw an error
-			["Private Active"] = 1,
-			["Private Available"] = 2
-		},
-		["sortOrder"] = {   -- orders by number or players per server
-			[1] = 1,    -- Ascending
-			[2] = 2     -- Descending
-		},
-		["excludeFullGames"] = {
-			[1] = true,
-			[2] = false
-		},
-		["limit"]= {
-			[1] = 10,
-			[2] = 25,
-			[3] = 50,
-			[4] = 100
-		}
-	}
+local QUERY_FORMAT = {
+	["serverType"] = {
+		["Public"] = 0,     -- others will throw an error
+		["Private Active"] = 1,
+		["Private Available"] = 2
+	},
+	["sortOrder"] = {   -- orders by number or players per server
+		[1] = 1,    -- Ascending
+		[2] = 2     -- Descending
+	},
+	["excludeFullGames"] = {
+		[1] = true,
+		[2] = false
+	},
+	["limit"]= {
+		[1] = 10,
+		[2] = 25,
+		[3] = 50,
+		[4] = 100
+	},
+	["cursor"] = "..." --> string corresponding to the next page of the search (max quantity of servers per page is defined by limit, max 100)
+}
+-- serverType=0, sortOrder=1, excludeFullGames=true, limit=100 --> ...
+local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure search method
 ]]
+
+print("Execute queryServerSearch.getUsage() with this for usage.")
 
 if not getgenv().table2String then
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/table2String.lua"))()	
 end
 
-local ignoreFull,deepFetch,waitOnFull,averageFetch,showStatus = true,false,true,false -- these values will reflect toggles
+-- not really any significance in making the table a child of the game environment because the user will be removed regardless
 local queryServerSearch = {}
+
+--[[ have these values reflect toggles (I do not like to define too many unique local values) ]]
+queryServerSearch.Locals = {
+	ignoreFull = true,
+	deepFetch = false,
+	waitOnFull = false,
+	averageFetch = false
+}
 
 -- can be consolidated somehow
 queryServerSearch.optimizeQuery = {
-    ["playing"] = {
-        ["Lowest"] =  1,
-        ["Highest"] = 2
-    },
-    ["fps"] = {
-        ["Lowest"] = 2,
-        ["Highest"] = 1
-    },
-    ["ping"] = {
-        ["Lowest"] = 1,
-        ["Highest"] = 2
-    },
+	["playing"] = {
+		["Lowest"] =  1,
+		["Highest"] = 2,
+		["Equal"] = 1
+	},
+	["fps"] = {
+		["Lowest"] = 2,
+		["Highest"] = 1,
+		["Equal"] = 1
+	},
+	["ping"] = {
+		["Lowest"] = 1,
+		["Highest"] = 2,
+		["Equal"] = 1
+	},
 	["id"] = { 
-        ["Lowest"] = 1,
-        ["Highest"] = 2
-    }
+		["Lowest"] = 1,
+		["Highest"] = 2,
+		["Equal"] = 1
+	}
 }
 
 queryServerSearch.Operation = {
@@ -58,55 +76,55 @@ queryServerSearch.Operation = {
 }
 
 queryServerSearch.Floormats = {
-    [1] = function(Cursor)
-        return {
-            ["(sortOrder)"] = '',
-            ["(excludeFullGames)"] = '',
-            ["(limit)"] = '',
-            ["(cursor)"] = "cursor="..Cursor
-        }
-    end,
-    [2] = function(Method, Query)
-        return {
-            ["(sortOrder)"] = "sortOrder="..queryServerSearch.optimizeQuery[Query][Method],
-            ["(excludeFullGames)"] = "&excludeFullGames="..tostring(ignoreFull),
-            ["(limit)"] = "&limit=100",
-            ["(cursor)"] = ''
-        }
-    end
+	[1] = function(Cursor)
+		return {
+		    ["(sortOrder)"] = '',
+		    ["(excludeFullGames)"] = '',
+		    ["(limit)"] = '',
+		    ["(cursor)"] = "cursor="..Cursor
+		}
+	end,
+	[2] = function(Query, Type)
+		return {
+		    ["(sortOrder)"] = "sortOrder="..queryServerSearch.optimizeQuery[Type][Query],
+		    ["(excludeFullGames)"] = "&excludeFullGames="..tostring(queryServerSearch.Locals.ignoreFull),
+		    ["(limit)"] = "&limit=100",
+		    ["(cursor)"] = ''
+		}
+	end
 }
 
-queryServerSearch.fetchServerList = function(Method, Query, Cursor)
-    local tempURL,Format = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrderexcludeFullGameslimitcursor"
-    if Cursor then Format = queryServerSearch.Floormats[1](Cursor) else Format = queryServerSearch.Floormats[2](Method, Query) end
-    for Type,Value in next, Format do tempURL = tempURL:gsub(Type, Value) end
-    return pcall(function() return game:GetService("HttpService"):JSONDecode(game:HttpGet(tempURL)) end)
+queryServerSearch.fetchServerList = function(Query, Type, Cursor)
+	local tempURL,Format = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrderexcludeFullGameslimitcursor"
+	if Cursor then Format = queryServerSearch.Floormats[1](Cursor) else Format = queryServerSearch.Floormats[2](Query, Type) end
+	for Type,Value in next, Format do tempURL = tempURL:gsub(Type, Value) end
+	return pcall(function() return game:GetService("HttpService"):JSONDecode(game:HttpGet(tempURL)) end)
 end
 
 queryServerSearch.Status = ''
 queryServerSearch.subStatus = ''
 queryServerSearch.updateStatus = {
-    ["Idle"] = function() delay(5, function() queryServerSearch.Status, queryServerSearch.subStatus = "Idle...",'' end) end,
-    ["countdown"] = function() queryServerSearch.Status = "Waiting until new fetch..." for count = 10,1,-1 do queryServerSearch.subStatus = count .. " seconds left..." end end,
+	["Idle"] = function() delay(5, function() queryServerSearch.Status, queryServerSearch.subStatus = "Idle...",'' end) end,
+	["countdown"] = function() queryServerSearch.Status = "Waiting until new fetch..." for count = 10,1,-1 do queryServerSearch.subStatus = count .. " seconds left..." end end,
 	["custom"] = function(Status, subStatus) queryServerSearch.Status, queryServerSearch.subStatus = Status or queryServerSearch.Status, subStatus or queryServerSearch.subStatus end
 }
 
-queryServerSearch.fetchServer = function(Server_List, Method, QueryType, tempValue, tempServer)
-	if not (tempServer and tempServer[QueryType]) then -- sometimes the querytype is not received
-        local count = 1
-        tempServer = Server_List["data"][1]
-        while not tempServer[QueryType] and count < 101 do 
-	        tempServer = Server_List["data"][count]
-            count = count + 1
-	    end
+queryServerSearch.fetchServer = function(Server_List, Query, Type, tempValue, tempServer)
+	if not (tempServer and tempServer[Type]) then -- sometimes the querytype is not received
+		local count = 1
+		tempServer = Server_List["data"][1]
+		while not tempServer[Type] and count < 101 do 
+			tempServer = Server_List["data"][count]
+		    count = count + 1
+		end
 	end
 	
 	local IdentificationTag
 	for ID,Server in pairs(Server_List["data"]) do -- ipairs doesnt allow tables from fetchAverage
-		if Server[QueryType] and queryServerSearch.Operation[Method](Server[QueryType],tempValue or tempServer[QueryType]) then
+		if Server[Type] and queryServerSearch.Operation[Query](Server[Type],tempValue or tempServer[Type]) then
 			IdentificationTag,tempServer = ID,Server
-			if Method == "Equal" or (Method == "Highest" and QueryType == "playing" and 
-			   (tempServer.playing == tempServer.maxPlayers - 1 or (not ignoreFull and tempServer.playing == tempServer.maxPlayers))) then 
+			if Query == "Equal" or (Query == "Highest" and Type == "playing" and 
+			   (tempServer.playing == tempServer.maxPlayers - 1 or (not queryServerSearch.Locals.ignoreFull and tempServer.playing == tempServer.maxPlayers))) then 
 			   break 
 			end
 		end
@@ -115,12 +133,12 @@ queryServerSearch.fetchServer = function(Server_List, Method, QueryType, tempVal
 	return tempServer,IdentificationTag
 end
 
-queryServerSearch.deepFetchServer = function(Server_List, Method, QueryType, tempValue, tempServer)
+queryServerSearch.deepFetchServer = function(Server_List, Query, Type, tempValue, tempServer)
 	local tempSuccess = true
 	while tempSuccess and Server_List["nextPageCursor"] do
-		tempSuccess,Server_List = queryServerSearch.fetchServerList(Method, QueryType, Server_List["nextPageCursor"])
+		tempSuccess,Server_List = queryServerSearch.fetchServerList(Query, Type, Server_List["nextPageCursor"])
 		if tempSuccess then 
-			tempServer = queryServerSearch.fetchServer(Server_List, Method, QueryType, tempValue, tempServer)
+			tempServer = queryServerSearch.fetchServer(Server_List, Query, Type, tempValue, tempServer)
 		else
 			queryServerSearch.updateStatus["custom"](Server_List, "Error fetching servers, going idle...")
 			queryServerSearch.updateStatus["Idle"]()
@@ -131,34 +149,34 @@ queryServerSearch.deepFetchServer = function(Server_List, Method, QueryType, tem
 	return tempServer
 end
 
-queryServerSearch.fetchAverage = function(Method, QueryType, Quantity)
+queryServerSearch.fetchAverage = function(Query, Type, Quantity)
 	if Quantity < 2 or Quantity > 100 then
 		queryServerSearch.updateStatus["custom"]("Input Quantity, "..Quantity..", out of range: [2, 100]!", "Error fetching servers, going idle...")
 		return false
 	end
 	
-	local serverValues,Success,Server_List = {["data"] = {}},queryServerSearch.fetchServerList(Method, QueryType) 
-	queryServerSearch.updateStatus["custom"]("Fetching Average "..QueryType, "Servers fetched: 0")
+	local serverValues,Success,Server_List = {["data"] = {}},queryServerSearch.fetchServerList(Query, Type) 
+	queryServerSearch.updateStatus["custom"]("Fetching Average "..Type, "Servers fetched: 0")
 	local function getServerValues(serverList, Count)
 		if Count ~= 1 then
 			for _,Server in ipairs(serverList["data"]) do
-			    if Server[QueryType] and serverValues["data"][Server.id] then
-				    serverValues["data"][Server.id][QueryType] = serverValues["data"][Server.id][QueryType] + Server[QueryType]
+			    if Server[Type] and serverValues["data"][Server.id] then
+				    serverValues["data"][Server.id][Type] = serverValues["data"][Server.id][Type] + Server[Type]
 				end
 			end
 		else
 			for _,Server in ipairs(serverList["data"]) do
-			    if Server[QueryType] then
-				    serverValues["data"][Server.id] = {[QueryType] = Server[QueryType]}
+			    if Server[Type] then
+				    serverValues["data"][Server.id] = {[Type] = Server[Type]}
 				end
 			end
 		end
 	end
 
 	for Count = 1, Quantity do
-	    print(Count)
+		print(Count)
 		queryServerSearch.updateStatus["custom"](nil, "Servers fetched: "..Count)
-		Success, Server_List = queryServerSearch.fetchServerList(Method, QueryType) 
+		Success, Server_List = queryServerSearch.fetchServerList(Query, Type) 
 		if Success then
 			getServerValues(Server_List, Count)
 		else
@@ -166,9 +184,9 @@ queryServerSearch.fetchAverage = function(Method, QueryType, Quantity)
 			return false
 		end
 		
-		if deepFetch then
+		if queryServerSearch.Locals.deepFetch then
 			while Server_List["nextPageCursor"] do
-				Success,Server_List = queryServerSearch.fetchServerList(Method, QueryType, Server_List["nextPageCursor"])
+				Success,Server_List = queryServerSearch.fetchServerList(Query, Type, Server_List["nextPageCursor"])
 				if Success then
 					getServerValues(Server_List, Count)
 				else
@@ -181,19 +199,19 @@ queryServerSearch.fetchAverage = function(Method, QueryType, Quantity)
 	
 	-- the index to the first table is not known, so a for loop must be used 
 	for ID,Table in next, serverValues["data"] do -- will only iterate once
-		return queryServerSearch.fetchServer(serverValues, Method, QueryType, nil, Table)
+		return queryServerSearch.fetchServer(serverValues, Query, Type, nil, Table)
 	end
 end
 
-queryServerSearch.testTeleport = function(Method, Query, Quantity)
+queryServerSearch.testTeleport = function(Query, Type, Quantity)
 	local accessTick = tick()
 
 	queryServerSearch.updateStatus["custom"]("Executing Server Query...", "Fetching server data...")
-	local Success, Server_List = queryServerSearch.fetchServerList(Method, Query)
+	local Success, Server_List = queryServerSearch.fetchServerList(Query, Type)
 
 	if not Success then 
 		queryServerSearch.updateStatus["custom"](Server_List, "Error fetching servers, going idle...")
-			queryServerSearch.updateStatus["Idle"]()
+		queryServerSearch.updateStatus["Idle"]()
 		return
 	end
 	
@@ -204,44 +222,44 @@ queryServerSearch.testTeleport = function(Method, Query, Quantity)
 		currentServer = queryServerSearch.deepFetchServer(Server_List, "Equal", "id", game.JobId, currentServer)
 	end
 
-	if averageFetch then
+	if queryServerSearch.Locals.averageFetch then
 		if not Quantity then
 			queryServerSearch.updateStatus["custom"]("ERROR! Quantity for Average fetch has not been defined!", "going idle...")
 			return
 		end
-		-- deepFetch is not called after fetchAverage because all servers are inserted into one table
+		-- deepFetchServers is not called after fetchAverage because all servers are inserted into one table
 		-- (Max 100 servers can be called per iteration, so multiple iterations are needed, otherwise, if deepFetch is indicated)
-		_,desiredServerID = queryServerSearch.fetchAverage(Method, Query, Quantity)
+		_,desiredServerID = queryServerSearch.fetchAverage(Query, Type, Quantity)
     		desiredServer = queryServerSearch.fetchServer(Server_List, "Equal", "id", desiredServerID)
     	
     		if desiredServer.id ~= desiredServerID then 
     			desiredServer = queryServerSearch.deepFetchServer(Server_List, "Equal", "id", desiredServerID, desiredServer)
     		end
 	else
-		desiredServer = queryServerSearch.fetchServer(Server_List, Method, Query)
-		if deepFetch then 
-			desiredServer = queryServerSearch.deepFetchServer(Server_List, Method, Query, nil, desiredServer) 
+		desiredServer = queryServerSearch.fetchServer(Server_List, Query, Type)
+		if queryServerSearch.Locals.deepFetch then 
+			desiredServer = queryServerSearch.deepFetchServer(Server_List, Query, Type, nil, desiredServer) 
 		end
 	end
 	
-	if desiredServer[Query] ~= currentServer[Query] --[[and not rejoining]] then
-		if waitOnFull and desiredServer.playing == desiredServer.maxPlayers then
+	if desiredServer[Type] ~= currentServer[Type] --[[and not rejoining]] then
+		if queryServerSearch.Locals.waitOnFull and desiredServer.playing == desiredServer.maxPlayers then
 			queryServerSearch.updateStatus["custom"]("Waiting for slot to open in desired server...", "Fetching new server data...") 
-			local newServer
-			while waitOnFull do
-				Success,Server_List = queryServerSearch.fetchServerList(Method, Query) -- update server list
+			local localWaitOnFull, newServer = true
+			while localWaitOnFull and queryServerSearch.Locals.waitOnFull do -- will break if either value is false
+				Success,Server_List = queryServerSearch.fetchServerList(Query, Type) -- update server list
 				if Success then
 					newServer = queryServerSearch.fetchServer(Server_List, "Equal", "id", desiredServer.id)
 					queryServerSearch.updateStatus["found"]()
 					if newServer.playing ~= newServer.maxPlayers then
-						waitOnFull = false -- will break the loop and not update the cache
+						localWaitOnFull = false -- will break the loop and not update the cache
 					end
 				else
 					queryServerSearch.updateStatus["custom"](Server_List, "Error fetching servers, going idle...")
 					queryServerSearch.updateStatus["Idle"]()
 					return
 				end
-				if waitOnFull then 
+				if queryServerSearch.Locals.waitOnFull then 
 				    queryServerSearch.updateStatus["countdown"]() 
 				else
 					if newServer.playing == newServer.maxPlayers then
@@ -254,8 +272,8 @@ queryServerSearch.testTeleport = function(Method, Query, Quantity)
 		end
 		queryServerSearch.updateStatus["custom"]("Teleporting to desired server...", "Desired server has an open slot!")
 		local TEMP
-		if Query == "playing" then TEMP = "player count" end
-		print("The server with the", string.lower(Method), TEMP or Query, "has been found in", tick() - accessTick, "seconds!")
+		if Type == "playing" then TEMP = "player count" end
+		print("The server with the", string.lower(Type), TEMP or Type, "has been found in", tick() - accessTick, "seconds!")
 		print(getgenv().table2String(currentServer, "Current Server Stats"))
 		print(getgenv().table2String(desiredServer, "New Server Stats"))
 		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, desiredServer.id)
@@ -263,17 +281,79 @@ queryServerSearch.testTeleport = function(Method, Query, Quantity)
 		queryServerSearch.updateStatus["custom"]("Current server already matches query...", "Error fetching servers, going idle...")
 		queryServerSearch.updateStatus["Idle"]()
 	end
+	return queryServerSearch.Status, queryServerSearch.subStatus
 end
 
---[[
-	Methods: 
-	
-		Function call: queryServerSearch.testTeleport("Lowest", "ping")
-	
-		1st Argument: "Lowest" or "Highest"
-		2nd Argument: "ping", "playing", "fps"
-		3rd Argument: Integer in range: [2, 100] --> finds best server over multiple iterations by best average query value
-		(Any other input argument will fail)
-]]
+--[[ {...} -> {ignoreFull, deepFetch, waitOnFull, averageFetch} ]]
+queryServerSearch.setSearchSettings = function(...)
+	for Index,Value in ipairs({...}) do
+		if Value ~= nil then
+			queryServerSearch.Locals[Index] = Value
+		end
+	end
+end
 
-pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25) --> queryServerSearch.testTeleport("Lowest", "ping", 25)
+queryServerSearch.copyExecutionFormat = function(Query, Type, Quantity)
+    local Header
+    if getgenv()["queryServerSearch"] then
+        Header = "getgenv().queryServerSearch.testTeleport, "
+    else
+        Header = "queryServerSearch.testTeleport, " 
+    end
+    Header = "print(pcall("..Header
+    
+    if not queryServerSearch.Operation[Query] then
+        Query = "\"Query\""
+        print("Query is invalid, setting to normalized value: \"Query\"")
+    else
+        Query = '\"'..Query..'\"'
+    end Query = Query..", "
+    
+    if not queryServerSearch.optimizeQuery[Type] then
+        Type = "\"Type\""
+        print("Type is invalid, setting to normalized value: \"Type\"")
+    else
+        Type = '\"'..Type..'\"'
+    end Type = Type..", "
+    
+    if type(Quantity) ~= "number" or math.round(Quantity) - Quantity ~= 0 or Quantity < 2 or Quantity > 100 then
+        Quantity = "\"Quantity\""
+        print("Quantity is invalid, setting to normalized value: \"Quantity\"")
+    end Quantity = Quantity.."))"
+    
+    setclipboard(Header..Query..Type..Quantity)
+    print(Header..Query..Type..Quantity, "\t\thas been set on the clipboard")
+end
+
+queryServerSearch.getUsage = function()
+	local CallFormats = {
+		["Query"] = {	
+			"Lowest", 	--> searches for the lowest of chosen \"Type\"
+			"Highest",	
+			"Equal" 	--> Haven\'t tested, but I don\'t see why it wouldn\'t work
+		},
+		["Type"] = {
+			"ping",
+			"playing",
+			"fps"
+		},
+		["Quantity"] = {
+			[1] = 2,
+			[2] = 3,
+			[3] = "integers between 3 and 99",
+			[4] = 99,
+			[5] = 100
+		}
+	}
+	
+	print("\nThis module was created for Gui application -> human input can cause error,boof >:`-()")
+	print("Any incorrect input will return an error, printed to the output via the pcall\n")
+	print(getgenv().table2String(queryServerSearch, "queryServerSearch"))
+	print(getgenv().table2String(CallFormats, "CallFormats"))
+	print("execute: print(pcall(queryServerSearch.testTeleport, Query, Type, Quantity))")
+	print("to get call format, execute: copyExecutionFormat(Query, Type, Quantity) ")
+end
+
+-- queryServerSearch.getUsage()    -- script has direct access
+-- getgenv().queryServerSearch.copyExecutionFormat("Lowest", "ping", 25)
+-- print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) --> print(queryServerSearch.testTeleport("Lowest", "ping", 25))
