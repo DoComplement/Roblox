@@ -16,7 +16,7 @@ This repository is the access point to the Sword Simulator kitty script created 
 
 ## Game Link and Loadstring
 - ```https://www.roblox.com/games/7026949294```
-- ```loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/SwordSim/main/Kitty.lua"))()```
+- ```loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Games/SwordSimulator/Kitty.lua"))()```
 
 ## How To Whitelist
 1) The faster whitelist method is the one-time purchase of the specified group t-shirt. Users are whitelisted upon purchase.
