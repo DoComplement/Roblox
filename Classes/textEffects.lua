@@ -1,3 +1,4 @@
+--[[ not nearly completed ]]
 
 local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Classes/main/random.lua"))()
 local stringToEffect = "This is a random String! WOW!"
