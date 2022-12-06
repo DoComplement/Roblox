@@ -294,35 +294,34 @@ queryServerSearch.setSearchSettings = function(...)
 end
 
 queryServerSearch.copyExecutionFormat = function(Query, Type, Quantity)
-    local Header
-    if getgenv()["queryServerSearch"] then
-        Header = "getgenv().queryServerSearch.testTeleport, "
-    else
-        Header = "queryServerSearch.testTeleport, " 
-    end
-    Header = "print(pcall("..Header
+    	local Header
+	if getgenv()["queryServerSearch"] then
+		Header = "print(pcall(getgenv().queryServerSearch.testTeleport, "
+	else
+		Header = "print(pcall(queryServerSearch.testTeleport, " 
+	end
     
-    if not queryServerSearch.Operation[Query] then
-        Query = "\"Query\""
-        print("Query is invalid, setting to normalized value: \"Query\"")
-    else
-        Query = '\"'..Query..'\"'
-    end Query = Query..", "
+	if queryServerSearch.Operation[Query] then
+		Query = '\"'..Query.."\", "
+	else
+		Query = "\"Query\", "
+		print("Query is invalid, setting to normalized value: \"Query\"")
+	end
     
-    if not queryServerSearch.optimizeQuery[Type] then
-        Type = "\"Type\""
-        print("Type is invalid, setting to normalized value: \"Type\"")
-    else
-        Type = '\"'..Type..'\"'
-    end Type = Type..", "
+    	if queryServerSearch.optimizeQuery[Type] then
+		Type = '\"'..Type.."\", "
+	else
+        	Type = "\"Type\", "
+        	print("Type is invalid, setting to normalized value: \"Type\"")
+    	end
     
-    if type(Quantity) ~= "number" or math.round(Quantity) - Quantity ~= 0 or Quantity < 2 or Quantity > 100 then
-        Quantity = "\"Quantity\""
-        print("Quantity is invalid, setting to normalized value: \"Quantity\"")
-    end Quantity = Quantity.."))"
+	if type(Quantity) ~= "number" or math.round(Quantity) - Quantity ~= 0 or Quantity < 2 or Quantity > 100 then
+		Quantity = "\"Quantity\""
+		print("Quantity is invalid, setting to normalized value: \"Quantity\"")
+	end 	Quantity = Quantity.."))"
     
-    setclipboard(Header..Query..Type..Quantity)
-    print(Header..Query..Type..Quantity, "\t\thas been set on the clipboard")
+	setclipboard(Header..Query..Type..Quantity)
+	print(Header..Query..Type..Quantity, "\t\thas been set on the clipboard")
 end
 
 queryServerSearch.getUsage = function()
