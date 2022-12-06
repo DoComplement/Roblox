@@ -1,0 +1,282 @@
+
+local chars = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
+
+local name = ""
+for i = 1, math.random(5, 16) do name = name .. chars[math.random(1, #chars)] end
+
+local function createInstance(class, props)
+	local inst = Instance.new(class)
+	for i, v in pairs(props) do
+		inst[i] = v
+	end
+
+	return inst
+end
+
+local LP = game:GetService("Players").LocalPlayer
+local BFrame = LP.PlayerGui.ScreenGui:FindFirstChild("BrewingFrame")
+local g_Constraint = false
+local g_UIVis = true
+local b_Constraint = false
+local images = {}
+local P_list = {"Empty Potion Slot", "Empty Potion Slot", "Empty Potion Slot"}
+local g_P = {}
+
+local MainUi_3 = createInstance("ScreenGui", {Name = nameMainUi_3.Parent = game:GetService("CoreGui"), ZIndexBehavior = Enum.ZIndexBehavior.Global})
+local MainFrame = createInstance("Frame", {Name = "MainFrame", Parent = MainUi_3, Active = true, Draggable = true, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderColor3 = Color3.fromRGB(27, 42, 53), BorderSizePixel = 0, Position = UDim2.new(0, 0, 0, 0), Selectable = true, Size = UDim2.new(0, 255, 0, 24), Visible = true})
+local UIGradient = createInstance("UIGradient", {Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(172, 32, 182)), ColorSequenceKeypoint.new(0.42, Color3.fromRGB(211, 124, 127)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(211, 225, 7))}, Parent = MainFrame})
+local UICorner = createInstance("UICorner", {CornerRadius = UDim.new(0, 5), Parent = MainFrame})
+local Title = createInstance("TextLabel", {Name = "Title", Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, Position = UDim2.new(0.100000001, 0, 0.100000001, 0), Size = UDim2.new(0, 107, 0, 18), Font = Enum.Font.SourceSans, Text = "AutoBrew", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextStrokeTransparency = 0.750, TextXAlignment = Enum.TextXAlignment.Left})
+local Body = createInstance("Frame", {Name = "Body", Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, Position = UDim2.new(0, 0, 0.899999976, 0), Size = UDim2.new(0, 255, 0, 189)})
+local UICorner_2 = createInstance("UICorner", {CornerRadius = UDim.new(0, 2), Parent = Body})
+local UIGradient_2 = createInstance("UIGradient", {Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(56, 56, 56)), ColorSequenceKeypoint.new(0.62, Color3.fromRGB(107, 107, 107)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(134, 134, 134))}, Parent = Body})
+local Potions_B = createInstance("Frame", {Name = "Potions_B", Parent = Body, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.500, BorderSizePixel = 0, Position = UDim2.new(0.0370370895, 0, 0.162235066, 0), Size = UDim2.new(0, 188, 0, 126)})
+local P_Image1 = createInstance("ImageLabel", {Name = "P_Image1", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, BorderSizePixel = 0, Position = UDim2.new(0.00680850819, 0, 0.0710000023, 0), Size = UDim2.new(0, 34, 0, 34), Image = "rbxasset://textures/ui/GuiImagePlaceholder.png", ImageTransparency = 1.000})
+local UICorner_3 = createInstance("UICorner", {Parent = Potions_B})
+local P_Label1 = createInstance("TextLabel", {Name = "P_Label1", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(236, 87, 77), Position = UDim2.new(0.200000003, 0, 0.0900000036, 0), Size = UDim2.new(0, 123, 0, 29), Font = Enum.Font.SourceSans, Text = "Empty Potion Slot", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14.000})
+local UICorner_4 = createInstance("UICorner", {Parent = P_Label1})
+local P_Bool1 = createInstance("BoolValue", {Parent = Potions_B, Name = "P_Bool1", Value = false})
+local P_Bool2 = createInstance("BoolValue", {Parent = Potions_B, Name = "P_Bool2", Value = false})
+local P_Bool3 = createInstance("BoolValue", {Parent = Potions_B, Name = "P_Bool3", Value = false})
+local P_Reset1 = createInstance("ImageButton", {Name = "P_Reset1", Parent = Potions_B, BackgroundTransparency = 1.000, Position = UDim2.new(0.860000014, 0, 0.100000001, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://6764432408", ImageRectOffset = Vector2.new(200, 600), ImageRectSize = Vector2.new(50, 50), ImageTransparency = 0.5})
+local P_Reset2 = createInstance("ImageButton", {Name = "P_Reset2", Parent = Potions_B, BackgroundTransparency = 1.000, Position = UDim2.new(0.860000014, 0, 0.3936508, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://6764432408", ImageRectOffset = Vector2.new(200, 600), ImageRectSize = Vector2.new(50, 50), ImageTransparency = 0.5})
+local P_Image2 = createInstance("ImageLabel", {Name = "P_Image2", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, BorderSizePixel = 0, Position = UDim2.new(0.00680850819, 0, 0.364650816, 0), Size = UDim2.new(0, 34, 0, 34), Image = "rbxasset://textures/ui/GuiImagePlaceholder.png", ImageTransparency = 1.000})
+local P_Label2 = createInstance("TextLabel", {Name = "P_Label2", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(236, 87, 77), Position = UDim2.new(0.200000003, 0, 0.38365081, 0), Size = UDim2.new(0, 123, 0, 29), Font = Enum.Font.SourceSans, Text = "Empty Potion Slot", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14.000})
+local UICorner_5 = createInstance("UICorner", {Parent = P_Label2})
+local P_Label3 = createInstance("TextLabel", {Name = "P_Label3", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(236, 87, 77), Position = UDim2.new(0.200000003, 0, 0.677999973, 0), Size = UDim2.new(0, 123, 0, 29), Font = Enum.Font.SourceSans, Text = "Empty Potion Slot", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14.000})
+local UICorner_6 = createInstance("UICorner", {Parent = P_Label3})
+local P_Image3 = createInstance("ImageLabel", {Name = "P_Image3", Parent = Potions_B, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, BorderSizePixel = 0, Position = UDim2.new(0.00700000022, 0, 0.658999979, 0), Size = UDim2.new(0, 34, 0, 34), Image = "rbxasset://textures/ui/GuiImagePlaceholder.png", ImageTransparency = 1.000})
+local P_Reset3 = createInstance("ImageButton", {Name = "P_Reset3", Parent = Potions_B, BackgroundTransparency = 1.000, Position = UDim2.new(0.860000014, 0, 0.688000023, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://6764432408", ImageRectOffset = Vector2.new(200, 600), ImageRectSize = Vector2.new(50, 50), ImageTransparency = 0.5})
+local Buttons = createInstance("Frame", {Name = "Buttons", Parent = Body, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, BorderSizePixel = 0, Position = UDim2.new(0.810000002, 0, 0.112999998, 0), Size = UDim2.new(0, 46, 0, 155)})
+local Event_TP = createInstance("TextButton", {Name = "Event_TP", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.0299999993, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "Event", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000})
+local UICorner_7 = createInstance("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Event_TP})
+local Inv_GameUi = createInstance("TextButton", {Name = "Inv_GameUi", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.430000007, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "Inv.", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, Name = "Inv_GameUi", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.430000007, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "Inv.", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000})
+local UICorner_8 = createInstance("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Inv_GameUi})
+local Lab_TP = createInstance("TextButton", {Name = "Lab_TP", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.230000004, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "Lab", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000})
+local UICorner_9 = createInstance("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Lab_TP})
+local Inv_Ui = createInstance("TextButton", {Name = "Inv_Ui", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.620000005, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "UI", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000})
+local UICorner_10 = createInstance("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Inv_Ui})
+local Pot_Upd = createInstance("TextButton", {Name = "Pot_Upd", Parent = Buttons, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.660, BorderSizePixel = 0, Position = UDim2.new(0.805999994, 0, 0.810000002, 0), Size = UDim2.new(0, 40, 0, 24), Font = Enum.Font.SourceSans, Text = "Upd.", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000})
+local UICorner_12 = createInstance("UICorner", {CornerRadius = UDim.new(0, 4), Parent = Pot_Upd})
+local UIListLayout = createInstance("UIListLayout", {Parent = Buttons, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0.0399999991, 0)})
+local C_Indicator = createInstance("ImageButton", {Name = "C_Indicator", Parent = Body, BackgroundTransparency = 1.000, Position = UDim2.new(0.0390000008, 0, 0.0149999997, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://3926309567", ImageRectOffset = Vector2.new(628, 420), ImageRectSize = Vector2.new(48, 48)})
+local UIPadding = createInstance("UIPadding", {Parent = C_Indicator})
+local C_Color = createInstance("TextLabel", {Name = "C_Color", Parent = C_Indicator, BackgroundColor3 = Color3.fromRGB(214, 0, 0), Position = UDim2.new(0.22, 0, 0.20, 0), Size = UDim2.new(0, 15, 0, 15), Font = Enum.Font.SourceSans, Text = "", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14.000})
+local UICorner_13 = createInstance("UICorner", {CornerRadius = UDim.new(0, 100), Parent = C_Color})
+local B_Indicator = createInstance("ImageButton", {Name = "B_Indicator", Parent = Body, BackgroundTransparency = 1.000, Position = UDim2.new(0.670372546, 0, 0.0149999997, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://3926309567", ImageRectOffset = Vector2.new(628, 420), ImageRectSize = Vector2.new(48, 48)})
+local B_Color = createInstance("TextLabel", {Name = "B_Color", Parent = B_Indicator, BackgroundColor3 = Color3.fromRGB(214, 0, 0), Position = UDim2.new(0.22, 0, 0.20, 0), Size = UDim2.new(0, 15, 0, 15), Font = Enum.Font.SourceSans, Text = "", TextColor3 = Color3.fromRGB(0, 0, 0), TextSize = 14.000})
+local UICorner_14 = createInstance("UICorner", {CornerRadius = UDim.new(0, 100), Parent = B_Color})
+local C_Label = createInstance("TextLabel", {Name = "C_Label", Parent = Body, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, Position = UDim2.new(0.149019614, 0, 0.0211640205, 0), Size = UDim2.new(0, 76, 0, 21), Font = Enum.Font.SourceSans, Text = "Currently:  Idle", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextXAlignment = Enum.TextXAlignment.Left})
+local Potions_N = createInstance("Frame", {Name = "Potions_N", Parent = Body, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.600, Position = UDim2.new(0.0352941193, 0, 0.862433851, 0), Size = UDim2.new(0, 188, 0, 19)})
+local UICorner_11 = createInstance("UICorner", {CornerRadius = UDim.new(0, 3), Parent = Potions_N})
+local Potions_C = createInstance("ImageButton", {Name = "Potions_C", Parent = Potions_N, BackgroundTransparency = 1.000, Position = UDim2.new(0.879999995, 0, -0.25, 0), Rotation = 90.000, Selectable = false, Size = UDim2.new(0, 25, 0, 28), ZIndex = 2, Image = "rbxassetid://3926305904", ImageRectOffset = Vector2.new(564, 284), ImageRectSize = Vector2.new(36, 36)})
+local P_List = createInstance("Frame", {Name = "P_List", Parent = Potions_N, BackgroundColor3 = Color3.fromRGB(53, 53, 53), BackgroundTransparency = 0.020, BorderSizePixel = 0, ClipsDescendants = true, Position = UDim2.new(0.00200000009, 0, 0.970000029, 0), Size = UDim2.new(0, 188, 0, 0), Visible = true})
+local UIGradient_3 = createInstance("UIGradient", {Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(0.83, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}, Parent = Potions_N})
+local P_Label = createInstance("TextLabel", {Name = "P_Label", Parent = Body, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, Position = UDim2.new(0.175999999, 0, 0.870000005, 0), Size = UDim2.new(0, 63, 0, 15), Font = Enum.Font.SourceSans, Text = "Choose Potion(s)", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextStrokeTransparency = 0.750, TextXAlignment = Enum.TextXAlignment.Left})
+local Main_C = createInstance("ImageButton", {Name = "Main_C", Parent = MainFrame, BackgroundTransparency = 1.000, Position = UDim2.new(0.889999986, 0, -0.075000003, 0), Selectable = false, Size = UDim2.new(0, 25, 0, 28), ZIndex = 2, Image = "rbxassetid://3926305904", ImageColor3 = Color3.fromRGB(0, 0, 0), ImageRectOffset = Vector2.new(564, 284), ImageRectSize = Vector2.new(36, 36)})
+local Warning_Label = createInstance("TextLabel", {Name = "Warning_Label", Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, Position = UDim2.new(0.101960786, 0, -0.96825397, 0), Size = UDim2.new(0, 200, 0, 18), Font = Enum.Font.SourceSans, Text = "Warning! BrewingFrame Unloaded!", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextStrokeTransparency = 0.750, TextTransparency = 0, Visible = false})
+local Warning_Icon = createInstance("ImageButton", {Name = "Warning_Icon", Parent = MainFrame, BackgroundColor3 = Color3.fromRGB(165, 0, 0), BackgroundTransparency = 1.000, BorderSizePixel = 0, Position = UDim2.new(0.0350000001, 0, -1.06666672, 0), Size = UDim2.new(0, 25, 0, 25), ZIndex = 2, Image = "rbxassetid://3926305904", ImageColor3 = Color3.fromRGB(255, 0, 0), ImageRectOffset = Vector2.new(364, 324), ImageRectSize = Vector2.new(36, 36), ImageTransparency = 0, Visible = false})
+
+P_Reset1.MouseButton1Down:Connect(function()
+	if P_Reset1.ImageTransparency ~= 0.5 then
+		for i = 1, 2 do
+			Potions_B["P_Label"..i].Text = Potions_B["P_Label"..(i + 1)].Text
+			Potions_B["P_Reset"..i].ImageTransparency = Potions_B["P_Reset"..(i + 1)].ImageTransparency
+			Potions_B["P_Image"..i].Image = Potions_B["P_Image"..(i + 1)].Image
+			Potions_B["P_Image"..i].ImageTransparency = Potions_B["P_Image"..(i + 1)].ImageTransparency
+			Potions_B["P_Bool"..i].Value = Potions_B["P_Bool"..(i + 1)].Value
+			P_list[i] = Potions_B["P_Label"..i].Text
+		end
+		if P_Label3.Text ~= "Empty Potion Slot" then
+			P_Label3.Text = "Empty Potion Slot"
+			P_Reset3.ImageTransparency = 0.5
+			P_Image3.ImageTransparency = 1
+			P_Bool3.Value = false
+			P_list[3] = P_Label3.Text
+		end
+		if g_Constraint and P_Label1.Text == "Empty Potion Slot" then
+			g_Constraint = false
+			C_Color.BackgroundColor3 = Color3.fromRGB(214, 0, 0)
+			C_Label.Text = "Currently:  Idle"
+		end
+	end
+end)
+
+P_Reset2.MouseButton1Down:Connect(function()
+	if P_Reset2.ImageTransparency ~= 0.5 then
+		P_Label2.Text = P_Label3.Text
+		P_Image2.Image = P_Image3.Image
+		P_Image2.ImageTransparency = P_Image3.ImageTransparency
+		P_Reset2.ImageTransparency = P_Reset3.ImageTransparency
+		P_Bool2.Value = P_Bool3.Value
+		P_list[2] = P_Label2.Text
+		if P_Label3.Text ~= "Empty Potion Slot" then
+			P_Label3.Text = "Empty Potion Slot"
+			P_Image3.ImageTransparency = 1
+			P_Reset3.ImageTransparency = 0.5
+			P_Bool3.Value = false
+			P_list[3] = P_Label3.Text
+		end
+	end
+end)
+
+P_Reset3.MouseButton1Down:Connect(function()
+	if P_Reset3.ImageTransparency ~= 0.5 then
+		P_Label3.Text = "Empty Potion Slot"
+		P_Reset3.ImageTransparency = 0.5
+		P_Image3.ImageTransparency = 1
+		P_Bool3.Value = false
+		P_list[3] = P_Label3.Text
+	end
+end)
+
+Event_TP.MouseButton1Down:Connect(function()
+	-- write condition to check if user is already at event aready, (then don't teleport)
+	game:GetService("ReplicatedStorage").NetworkRemoteEvent:FireServer("Teleport", "EventSpawn")
+end)
+
+Inv_GameUi.MouseButton1Down:Connect(function()
+	local d = LP.PlayerGui.ScreenGui
+	local s = {"Codes", "Index", "Boosts", "Prizes"}
+	g_UIVis = not g_UIVis
+
+	for i = 1, #s do d.StatsFrame:FindFirstChild(s[i]).Visible = g_UIVis end
+
+	d.StatsFrame.Coins.More.Visible = g_UIVis
+	d.StatsFrame.Gems.More.Visible = g_UIVis
+	d.MainButtons.Visible = g_UIVis
+	d.Settings.Visible = g_UIVis
+end)
+
+Lab_TP.MouseButton1Down:Connect(function()
+	-- check if the user is already there
+	game:GetService("ReplicatedStorage").NetworkRemoteEvent:FireServer("Teleport", "LabSpawn")
+end)
+
+Inv_Ui.MouseButton1Down:Connect(function()
+	if BFrame then BFrame.Visible = not BFrame.visible end
+end)   
+
+C_Indicator.MouseButton1Down:Connect(function()
+	if Potions_B.P_Label1.Text == "Empty Potion Slot" then
+		C_Label.Text = "No potions to brew!"
+		wait(4)
+		if not g_Constraint then C_Label.Text = "Currently:  Idle" end
+	else
+		if g_Constraint then C_Color.BackgroundColor3 = Color3.fromRGB(214, 0, 0); C_Label.Text = "Currently:  Idle"
+		else C_Color.BackgroundColor3 = Color3.fromRGB(0, 214, 0); C_Label.Text = "Currently:  Brewing" end
+		g_Constraint = not g_Constraint
+	end
+end)
+
+B_Indicator.MouseButton1Down:Connect(function()
+	if b_Constraint then B_Color.BackgroundColor3 = Color3.fromRGB(214, 0, 0)
+	else B_Color.BackgroundColor3 = Color3.fromRGB(0, 214, 0) end
+	b_Constraint = not b_Constraint
+end)
+
+local C_Moving = false
+Potions_C.MouseButton1Down:Connect(function()
+	if Potions_C.Rotation == 0 and not C_Moving then
+		C_Moving = true
+		P_List:TweenSize(UDim2.new(0, 188, 0, 0), "Out", "Sine", 0.5, true)
+		repeat Potions_C.Rotation = Potions_C.Rotation + 10 wait(0.01) until Potions_C.Rotation == 90 
+		C_Moving = false
+	elseif not C_Moving then
+		C_Moving = true
+		P_List:TweenSize(UDim2.new(0, 188, 0, 23 + 19*#BFrame.Recipes:GetChildren()), "Out", "Sine", 0.5, true)
+		repeat Potions_C.Rotation = Potions_C.Rotation - 10 wait(0.01) until Potions_C.Rotation == 0 
+		C_Moving = false
+	end 
+end)
+
+local Main_Moving = false
+Main_C.MouseButton1Down:Connect(function()
+	if Main_C.Rotation == 0 and not Main_Moving then
+		Main_Moving = true
+		if Potions_C.Rotation == 0 then 
+			P_List:TweenSize(UDim2.new(0, 188, 0, 0), "Out", "Sine", 0.5, true) 
+			repeat Potions_C.Rotation = Potions_C.Rotation + 10 wait(0.01) until Potions_C.Rotation == 90 
+		end
+		Potions_C.Visible = false
+		Body:TweenSize(UDim2.new(0, 255, 0, 0), "Out", "Sine", 0.5, true)
+		Body.ClipsDescendants = true
+		repeat Main_C.Rotation = Main_C.Rotation + 10 wait(0.01) until Main_C.Rotation == 90 
+		Main_Moving = false
+	elseif not Main_Moving then
+		Main_Moving = true
+		Body:TweenSize(UDim2.new(0, 255, 0, 189), "Out", "Sine", 0.5, true)
+		repeat Main_C.Rotation = Main_C.Rotation - 10 wait(0.01) until Main_C.Rotation == 0 
+		Body.ClipsDescendants = false
+		Potions_C.Visible = true
+		Main_Moving = false
+	end 
+end)
+
+spawn(function()
+	while wait(1) do
+		pcall(function()
+			if not LP.PlayerGui.ScreenGui:FindFirstChild("BrewingFrame") then
+				Warning_Label.Visible = true
+				repeat Warning_Icon.Visible = not Warning_Icon.Visible; wait(1) until LP.PlayerGui.ScreenGui:FindFirstChild("BrewingFrame")
+				Warning_Label.Visible = false
+				Warning_Icon.Visible = false
+			elseif not ((g_Constraint and C_Color.BackgroundColor3 == Color3.fromRGB(0, 214, 0) and C_Label.Text == "Currently:  Brewing")
+				or ((not g_Constraint) and C_Color.BackgroundColor3 == Color3.fromRGB(214, 0, 0) and (C_Label.Text == "Currently:  Idle" or C_Label.Text == "No potions to brew!"))) then
+				C_Color.BackgroundColor3 = Color3.fromRGB(214, 0, 0); C_Label.Text = "Currently:  Idle"; g_Constraint = false
+			end
+		end)
+	end
+end)
+
+spawn(function()
+	while wait(0.8) do if b_Constraint then game:GetService("ReplicatedStorage").NetworkRemoteEvent:FireServer("BlowBubble") end end
+end)
+
+spawn(function()
+	while wait(1) do
+		pcall(function()
+			for i = 1, 3 do
+				if Potions_B["P_Label"..i].Text ~= P_list[i] then Potions_B["P_Label"..i].Text = P_list[i] end
+			end
+			for i = 1, #g_P do
+				if P_List["Recipe"..i].Text ~= g_P[i] then P_List["Recipe"..i].Text = g_P[i] end
+			end
+		end)
+	end
+end)
+
+pcall(function()
+	for i = 1, #BFrame.Recipes:GetChildren() - 1 do
+		local temp = BFrame.Recipes:FindFirstChild("Recipe"..i)
+
+		local Temp = createInstance("TextButton", {Name = temp.Name, Parent = P_List, BackgroundColor3 = Color3.fromRGB(180, 180, 180), BackgroundTransparency = 0.250, Position = UDim2.new(0.035, 0, 0.035 + 0.105*(i - 1), 0), Size = UDim2.new(0, 149, 0, 19), Font = Enum.Font.SourceSans, Text = temp.ItemName.Text, TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextStrokeTransparency = 0.750})
+		local TextLabel = createInstance("TextLabel", {Name = "q"..temp.Name, Parent = P_List, BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1.000, Position = UDim2.new(0.84, 0, 0.035 + 0.105*(i - 1), 0), Size = UDim2.new(0, 35, 0, 19), Font = Enum.Font.SourceSans, Text = ":  ", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 14.000, TextStrokeTransparency = 0.750, TextXAlignment = "Left"})
+		local t_UIC = createInstance("UICorner", {CornerRadius = UDim.new(0, 8), Parent = Temp})
+
+		table.insert(images, tostring(temp.ItemImage.Image))
+		table.insert(g_P, temp.ItemName.Text)
+	end
+end)
+
+pcall(function()
+	for i = 1, #P_List:GetChildren() do 
+		local v = P_List:FindFirstChild("Recipe"..i)
+
+		v.MouseButton1Down:Connect(function()
+			for x = 1, 3 do
+				if Potions_B["P_Label"..x].Text == "Empty Potion Slot" then
+					Potions_B["P_Label"..x].Text = v.Text
+					Potions_B["P_Reset"..x].ImageTransparency = 0
+					Potions_B["P_Image"..x].Image = images[i]
+					Potions_B["P_Image"..x].ImageTransparency = 0
+					Potions_B["P_Bool"..x].Value = true
+					P_list[x] = v.Text
+					break
+				end 
+			end
+		end)
+	end
+end)
+
