@@ -1,4 +1,4 @@
-print("Not nearly completed")
+print("Not nearly complete. execute textEffectsLib.getMethods() to see textEffect methods")
 
 --[[ see to storing all methods in a table for simpler accessing ]]
 
