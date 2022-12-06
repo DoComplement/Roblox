@@ -1,6 +1,8 @@
---[[ not nearly completed ]]
+print("Not nearly completed")
 
-local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Classes/main/random.lua"))()
+--[[ see to storing all methods in a table for simpler accessing ]]
+
+local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/random.lua"))()
 local stringToEffect = "This is a random String! WOW!"
 
 local textEffectLib = {}
@@ -14,7 +16,7 @@ textEffectsLib.specialConcat = function(Table)
 end
 
 --[[ popEffect and sumEffect can be consolidated ]]
-textEffectsLib.popEffect = function(Instance, String, Delay)
+textEffectsLib.popEffect = function(Instance, String)
 	Instance.Text = ''
 	local spaceString = table.create(#String, ' ')
 	String = String:split('')
@@ -22,7 +24,7 @@ textEffectsLib.popEffect = function(Instance, String, Delay)
 	for _,randIndex in ipairs(rand.randSequence(#String)) do
 		spaceString[randIndex] = String[randIndex]
 		Instance.Text = table.concat(spaceString) 
-		if Delay then task.wait(Delay) end
+		task.wait(0.05)
 	end
 end
 
@@ -55,7 +57,7 @@ textEffectsLib.decryptionEffect = function(Instance, String, Method)
 	local randString, refereceIndex = Instance.Text:split('')
 	String = String:split('')
     
-	--[[ Type = Random ]]
+	--[[ current procedure is so-so ]]
 	local referenceTable = rand.randSequence(Size)
 	for Index = 1, Size do 
 		for count = 1,math.random(10, 50) do
@@ -69,35 +71,53 @@ textEffectsLib.decryptionEffect = function(Instance, String, Method)
 	end 
 end
 
+textEffectsLib.testMethod(Instance, String, Method)
+	print("Not Currently Defined")
+	--[[
+	Method = textEffectsLib.Methods[Method]
+	if Method then Method(Instance, String) end
+	]]
+end
+textEffectLibs.spawnTestFrame(Copy)
+	if not game:GetService("Players").LocalPlayer.PlayerGui.TestGui then
+		local ScreenGui = Instance.new("ScreenGui")
+		local Frame = Instance.new("Frame")
+		local TextLabel = Instance.new("TextLabel")
 
+		--Properties:
 
---[[
+		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		ScreenGui.Name = "TestGui"
 
-    local ScreenGui = Instance.new("ScreenGui")
-    local Frame = Instance.new("Frame")
-    local TextLabel = Instance.new("TextLabel")
-    
-    --Properties:
-    
-    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Name = "TestGui"
-    
-    Frame.Parent = ScreenGui
-    Frame.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
-    Frame.BackgroundTransparency = 0.500
-    Frame.Position = UDim2.new(0.61585784, 0, 0.107231915, 0)
-    Frame.Size = UDim2.new(0, 403, 0, 73)
-    
-    TextLabel.Parent = Frame
-    TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel.Position = UDim2.new(0.024813896, 0, 0.150684938, 0)
-    TextLabel.Size = UDim2.new(0, 382, 0, 50)
-    TextLabel.Font = Enum.Font.SourceSans
-    TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-    TextLabel.TextSize = 14.000
+		Frame.Parent = ScreenGui
+		Frame.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
+		Frame.BackgroundTransparency = 0.500
+		Frame.Position = UDim2.new(0.61585784, 0, 0.107231915, 0)
+		Frame.Size = UDim2.new(0, 403, 0, 73)
 
-	
-    textEffectsLib.decryptionEffect(game:GetService("Players").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel, stringToEffect)
+		TextLabel.Parent = Frame
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.Position = UDim2.new(0.024813896, 0, 0.150684938, 0)
+		TextLabel.Size = UDim2.new(0, 382, 0, 50)
+		TextLabel.Font = Enum.Font.SourceSans
+		TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+		TextLabel.TextSize = 14.000
+	end
+	print("Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+	if Copy then
+		setclipboard("game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+	end
+end
 
-]]
+textEffectsLib.getMethods = function()
+	print("Test each method on a random Text Instance (TextBox, TextLabel, TextButton) to see how they look")
+	print("<void> textEffectsLib.spawnTestFrame(<bool> CopyDirectoryToClipboard) -- spawns a TextLabel on the screen for the user to test methods on.")
+	print("<void> textEffectsLib.popEffect(<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.sumEffect(<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.decryptionEffect(<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.testMethod(<Instance> Instance, <string> String, <string> Method)")
+end
+
+return textEffectsLib
+
