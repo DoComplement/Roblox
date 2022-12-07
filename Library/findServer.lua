@@ -28,8 +28,9 @@ local QUERY_FORMAT = {
 local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure search method
 ]]
 
-warn("Search speed is limited by your internet speed.")
+warn("Search speed is somewhat dependant on your internet speed.")
 print("Execute queryServerSearch.getUsage() with to see usage.")
+print("It is recommended to use AverageSearch and DeepFetch methods with fps and ping because the results will best represent the actual values.")
 
 if not getgenv().table2String then
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/table2String.lua"))()	
@@ -40,6 +41,7 @@ local queryServerSearch = {}
 
 --[[ have these values reflect toggles (I do not like to define too many unique local values) ]]
 queryServerSearch.Locals = {
+	ignoreThisServer = true, --[[ will not fetch the current server data (true -> much faster execution for games with many active servers) ]]
 	ignoreFull = true,
 	deepFetch = false,
 	waitOnFull = false,
@@ -216,13 +218,15 @@ queryServerSearch.testTeleport = function(Query, Type, Quantity)
 		return
 	end
 	
-	local currentServer = queryServerSearch.fetchServer(Server_List, "Equal", "id", game.JobId)
-	local desiredServer,desiredServerID
-
-	if currentServer.id ~= game.JobId then 
-		currentServer = queryServerSearch.deepFetchServer(Server_List, "Equal", "id", game.JobId, currentServer)
+	local currentServer 
+	if not queryServerSearch.Locals.ignoreThisServer then 
+		currentServer = queryServerSearch.fetchServer(Server_List, "Equal", "id", game.JobId)
+		if currentServer.id ~= game.JobId then 
+			currentServer = queryServerSearch.deepFetchServer(Server_List, "Equal", "id", game.JobId, currentServer)
+		end
 	end
 
+	local desiredServer,desiredServerID
 	if queryServerSearch.Locals.averageFetch then
 		if not Quantity then
 			queryServerSearch.updateStatus["custom"]("ERROR! Quantity for Average fetch has not been defined!", "going idle...")
