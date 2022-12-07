@@ -4,15 +4,11 @@ local PrimaryPart = game:GetService("Players").LocalPlayer.Character.PrimaryPart
 local Connections = {}
 
 for _,Orb in ipairs(Orbs:GetChildren()) do
-	while Orb.Parent and wait() do
-		Orb.CFrame = PrimaryPart.CFrame
-	end
+	Orb.CFrame = PrimaryPart.CFrame
 end
 
 for _,Lootbag in ipairs(Lootbags:GetChildren()) do
-	while Lootbag.Parent and wait() do
-		Lootbag.CFrame = PrimaryPart.CFrame
-	end
+	Lootbag.CFrame = PrimaryPart.CFrame
 end
 
 Connections["OrbConnection"] = Orbs.ChildAdded:Connect(function(Orb)
