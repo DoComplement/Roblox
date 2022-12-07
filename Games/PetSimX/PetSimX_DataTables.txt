@@ -1,0 +1,1037 @@
+Players.5bz.PlayerScripts.Scripts.Core.Product Notifications
+local Product Notifications = {
+	["script"] = Product Notifications
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Advanced Interface Scaling
+local Advanced Interface Scaling = {
+	["ScaleAll"] = function: 0x00000000e7d043a6,
+	["script"] = Advanced Interface Scaling,
+	["Init"] = function: 0x00000000dceebb66,
+	["GarbageCleanup"] = function: 0x000000009f3f7f16,
+	["InitScreen"] = function: 0x000000005b15757e,
+	["AddUIElement"] = function: 0x000000005185bc7e,
+	["ScaleElement"] = function: 0x000000006bbc120e
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Platform
+local Platform = {
+	["script"] = Platform,
+	["Update"] = function: 0x00000000543a6c1e
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Portrait Support
+local Portrait Support = {
+	["script"] = Portrait Support,
+	["Check"] = function: 0x00000000f4c0bf1e
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Screen Resolution
+local Screen Resolution = {
+	["script"] = Screen Resolution,
+	["UpdateResolution"] = function: 0x00000000226d5e1e
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Purchase Pending GUI
+local Purchase Pending GUI = {
+	["Close"] = function: 0x00000000c2727db6,
+	["script"] = Purchase Pending GUI,
+	["PurchasePending"] = function: 0x00000000a288cd7e
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Textbox
+local Textbox = {
+	["script"] = Textbox
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Server UI Activation
+local Server UI Activation = {
+	["script"] = Server UI Activation,
+	["Check"] = function: 0x000000002ab7b976
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Server Closing
+local Server Closing = {
+	["script"] = Server Closing,
+	["UpdateServerClosing"] = function: 0x000000000dbfbb36
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Booth Pending GUI
+local Booth Pending GUI = {
+	["Close"] = function: 0x00000000d3064466,
+	["script"] = Booth Pending GUI,
+	["PurchasePending"] = function: 0x000000000fbf47fe
+}
+
+Players.5bz.PlayerScripts.Scripts.Core.Console Support
+local Console Support = {
+	["hideHud"] = function: 0x00000000b06637d6,
+	["setupGui"] = function: 0x00000000047cf2ce,
+	["script"] = Console Support
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Currency
+local Currency = {
+	["BloatCurrencyFrame"] = function: 0x0000000057966c16,
+	["Update"] = function: 0x000000005c2dd87e,
+	["script"] = Currency
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Starter
+local Starter = {
+	["script"] = Starter,
+	["Setup"] = function: 0x00000000b29920be
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Golden Machine
+local Golden Machine = {
+	["Clear"] = function: 0x00000000afe7700e,
+	["Setup"] = function: 0x00000000730e769e,
+	["script"] = Golden Machine,
+	["Deselect"] = function: 0x000000001f0cd69e,
+	["Select"] = function: 0x000000007bea9d16,
+	["Scaling"] = function: 0x000000006f1bffe6,
+	["Update"] = function: 0x000000004a9d0ac6,
+	["Convert"] = function: 0x00000000cb2ed53e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Trading
+local Trading = {
+	["UpdateMessageScroll"] = function: 0x00000000c590bfa6,
+	["RenderPlayerList"] = function: 0x00000000b1042afe,
+	["UpdateXbox"] = function: 0x00000000e57a070e,
+	["IsProcessing"] = function: 0x00000000c7e4bdd6,
+	["UpdateDiamonds"] = function: 0x00000000f6568b7e,
+	["FigureOutTrade"] = function: 0x00000000042127be,
+	["UpdatePets"] = function: 0x000000007ae33406,
+	["script"] = Trading,
+	["ChangeDiamondAmount"] = function: 0x000000000eb93efe,
+	["sendChatMessage"] = function: 0x000000008eec7d1e,
+	["IsChatting"] = function: 0x000000008bdef12e,
+	["UpdatePetsScaling"] = function: 0x0000000065d7dcf6,
+	["Close"] = function: 0x00000000d48aa76e,
+	["ListScrolling"] = function: 0x000000003737745e,
+	["UpdateInterface"] = function: 0x0000000077a4ec6e,
+	["UpdateChat"] = function: 0x0000000052bbad9e,
+	["Reset"] = function: 0x00000000fc65da4e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Rename
+local Rename = {
+	["Prompt"] = function: 0x00000000cbc9b596,
+	["Rename"] = function: 0x00000000394069f6,
+	["script"] = Rename
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Inventory
+local Inventory = {
+	["UpdateNotifications"] = function: 0x00000000b7f84826,
+	["EquipBestPets"] = function: 0x000000009cd451b6,
+	["UpdateBottom"] = function: 0x000000009c20bbae,
+	["Update"] = function: 0x000000002f30573e,
+	["ToggleRename"] = function: 0x00000000780e6c76,
+	["ToggleMultiDelete"] = function: 0x0000000038554936,
+	["isVisible"] = function: 0x00000000fb0ec2d6,
+	["script"] = Inventory,
+	["ClearNotifications"] = function: 0x00000000e5e9cbae,
+	["OpenGift"] = function: 0x000000006b9d3736,
+	["UpdatePetsEquipped"] = function: 0x0000000041f945de,
+	["ShowAutoDeleteNotice"] = function: 0x000000000da160be,
+	["DeletePets"] = function: 0x000000009be0114e,
+	["LockPets"] = function: 0x00000000a9d558e6,
+	["ToggleGrid"] = function: 0x000000001a41e4ce,
+	["ToggleLock"] = function: 0x000000005c238b16,
+	["UnequipAllPets"] = function: 0x00000000a529804e,
+	["UpdateLazy"] = function: 0x000000001898d5f6,
+	["UpdateScrolling"] = function: 0x0000000007a51e7e,
+	["UpdateEquipButtons"] = function: 0x0000000055635066
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Bottom Buttons
+local Bottom Buttons = {
+	["script"] = Bottom Buttons,
+	["HookButton"] = function: 0x0000000056df574e,
+	["UpdateButtonsBar"] = function: 0x000000001507dc7e,
+	["Update"] = function: 0x00000000662770be,
+	["UpdateCore"] = function: 0x00000000bc775ab6,
+	["CoreIsOpen"] = function: 0x000000003f777e76,
+	["UpdateButtons"] = function: 0x00000000b6927286,
+	["UpdatePositioning"] = function: 0x000000003ace625e,
+	["CanOpenWindow"] = function: 0x000000005431f1a6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Coin Rewards HUD
+local Coin Rewards HUD = {
+	["script"] = Coin Rewards HUD,
+	["CoinBonusAnimation"] = function: 0x0000000069acfee6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Upgrades
+local Upgrades = {
+	["Update"] = function: 0x0000000084e6e056,
+	["script"] = Upgrades,
+	["Buy"] = function: 0x00000000aa8b9e1e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.WIndow Visibility Handling
+local WIndow Visibility Handling = {
+	["Track"] = function: 0x0000000048b45c2e,
+	["WindowOpened"] = function: 0x000000001e157ff6,
+	["script"] = WIndow Visibility Handling,
+	["CanOpen"] = function: 0x000000005f457ece,
+	["CloseOpenWindow"] = function: 0x0000000059dd249e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Exclusive Shop
+local Exclusive Shop = {
+	["UseTab"] = function: 0x00000000d2e23ae6,
+	["UpdateGamepasses"] = function: 0x00000000830f653e,
+	["UpdateOctupleEgg"] = function: 0x00000000f4b7408e,
+	["UpdateDiamonds"] = function: 0x000000007964381e,
+	["MerchAnimation"] = function: 0x0000000019628ace,
+	["Scaling"] = function: 0x0000000028a3fc06,
+	["Scrollbar"] = function: 0x00000000c6eb7136,
+	["UpdatePets"] = function: 0x0000000062e956ae,
+	["UpdateBoosts"] = function: 0x000000009cd8fbfe,
+	["UpdateInfinitePets"] = function: 0x00000000681aa6ae,
+	["SizeFrame"] = function: 0x0000000094c433be,
+	["Update15PetsEquipped"] = function: 0x000000003f1edabe,
+	["SetupTab"] = function: 0x00000000887fcece,
+	["script"] = Exclusive Shop,
+	["UpdateExclusiveEggsDeal"] = function: 0x000000000b577e6e,
+	["UpdatePriceFrame"] = function: 0x0000000016ff2dae,
+	["UpdateExclusiveEggs"] = function: 0x00000000b4afc49e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Achievements
+local Achievements = {
+	["UpdateLazy"] = function: 0x000000009659cc56,
+	["script"] = Achievements,
+	["UpdateAchievement"] = function: 0x00000000c26eb656,
+	["UpdateAll"] = function: 0x00000000251980de,
+	["Scrolling"] = function: 0x000000002052f05e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Achievement Progress
+local Achievement Progress = {
+	["CheckForProgress"] = function: 0x0000000066cd1156,
+	["Notification"] = function: 0x000000008e8896fe,
+	["script"] = Achievement Progress
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Server Boosts
+local Server Boosts = {
+	["Scrolling"] = function: 0x00000000bf84fdd6,
+	["script"] = Server Boosts,
+	["Update"] = function: 0x000000008c60d176,
+	["UpdatePriceFrame"] = function: 0x00000000dd253cce
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Notifications
+local Notifications = {
+	["script"] = Notifications,
+	["Add"] = function: 0x00000000aa4dbf96
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Progress Notifications
+local Progress Notifications = {
+	["CheckForNotifications"] = function: 0x000000004c92faae,
+	["AttemptNotification"] = function: 0x00000000cf59d1f6,
+	["script"] = Progress Notifications,
+	["SendNotification"] = function: 0x0000000085bf0916
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Teleport
+local Teleport = {
+	["Purchase"] = function: 0x00000000e684953e,
+	["CanTeleport"] = function: 0x000000009fb34c36,
+	["script"] = Teleport,
+	["Teleport"] = function: 0x00000000913e18b6,
+	["UpdateBottom"] = function: 0x000000005b2adb06,
+	["Clicked"] = function: 0x00000000f4816fb6,
+	["UpdateList"] = function: 0x000000005d20086e,
+	["Scrolling"] = function: 0x000000002a26ee86
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Settings
+local Settings = {
+	["ToggleSetting"] = function: 0x00000000ad75f8e6,
+	["script"] = Settings,
+	["Update"] = function: 0x0000000079a6528e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Ranks
+local Ranks = {
+	["PromptInstantRankup"] = function: 0x00000000fdcc1ed6,
+	["Update"] = function: 0x00000000087b138e,
+	["script"] = Ranks
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Active Server Boosts
+local Active Server Boosts = {
+	["Render"] = function: 0x00000000f45fe8a6,
+	["Scaling"] = function: 0x000000002605926e,
+	["script"] = Active Server Boosts
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Fuse Pets
+local Fuse Pets = {
+	["Clear"] = function: 0x00000000340e1a5e,
+	["Setup"] = function: 0x00000000fcab0e86,
+	["script"] = Fuse Pets,
+	["Fuse"] = function: 0x00000000e4d50b4e,
+	["Select"] = function: 0x0000000033ba2e7e,
+	["Scaling"] = function: 0x0000000021ccb55e,
+	["Update"] = function: 0x000000008427510e,
+	["Deselect"] = function: 0x00000000d8f24fe6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Rainbow Machine
+local Rainbow Machine = {
+	["Clear"] = function: 0x00000000ef943cbe,
+	["Setup"] = function: 0x000000000e7c6566,
+	["script"] = Rainbow Machine,
+	["Deselect"] = function: 0x00000000c051163e,
+	["Select"] = function: 0x00000000a34ebbae,
+	["Scaling"] = function: 0x00000000b05b3e8e,
+	["Update"] = function: 0x0000000032d5271e,
+	["Convert"] = function: 0x000000005333c8ae
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Twiter Codes
+local Twiter Codes = {
+	["script"] = Twiter Codes,
+	["Redeem"] = function: 0x00000000c0b6b2fe
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Update Log
+local Update Log = {
+	["Show"] = function: 0x000000005fc5c5b6,
+	["DoShow"] = function: 0x00000000d2d9c796,
+	["script"] = Update Log,
+	["Close"] = function: 0x00000000ab2aa146
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Diamonds Rain Animation
+local Diamonds Rain Animation = {
+	["script"] = Diamonds Rain Animation,
+	["RainDiamonds"] = function: 0x0000000087c6cd96
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Enchant Pets
+local Enchant Pets = {
+	["GetEnchants"] = function: 0x000000005a5c61e6,
+	["script"] = Enchant Pets,
+	["Deselect"] = function: 0x00000000f4cd46de,
+	["Select"] = function: 0x00000000efeb3226,
+	["UpdateEnchantButton"] = function: 0x000000007c7b1e06,
+	["Setup"] = function: 0x00000000ae39fbc6,
+	["Clear"] = function: 0x000000002b119416,
+	["Scaling"] = function: 0x000000009df0733e,
+	["Enchant"] = function: 0x00000000c1b44c4e,
+	["Update"] = function: 0x00000000afa766ee
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Auto Settings
+local Auto Settings = {
+	["UpdateRaritys"] = function: 0x00000000151b766e,
+	["script"] = Auto Settings,
+	["UpdateAutoHatch"] = function: 0x000000007f751436,
+	["ToggleRarity"] = function: 0x000000007a25173e,
+	["UpdateSideButton"] = function: 0x0000000064c56206,
+	["ToggleAutoHatchSetting"] = function: 0x00000000c6459086
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Collection
+local Collection = {
+	["Render"] = function: 0x000000006c105f1e,
+	["script"] = Collection,
+	["Scaling"] = function: 0x00000000cbfa1d0e,
+	["Update"] = function: 0x000000006c4646f6,
+	["Clear"] = function: 0x00000000bcf11c86
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Merch Codes
+local Merch Codes = {
+	["script"] = Merch Codes,
+	["Redeem"] = function: 0x00000000c497547e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Merchant
+local Merchant = {
+	["SetupButtons"] = function: 0x0000000057a612fe,
+	["script"] = Merchant,
+	["ClearItems"] = function: 0x0000000062e0c516,
+	["UpdateTimer"] = function: 0x00000000afe03c1e,
+	["UpdateItems"] = function: 0x00000000cb2d36ee,
+	["UpdateLevel"] = function: 0x00000000fd2bb5ae,
+	["Buy"] = function: 0x00000000e3023406
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Verify Twitter
+local Verify Twitter = {
+	["Verify"] = function: 0x00000000663ee1fe,
+	["script"] = Verify Twitter,
+	["Update"] = function: 0x0000000019a77bce
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Dark Matter Machine
+local Dark Matter Machine = {
+	["PetsDeselect"] = function: 0x00000000fb5a0a66,
+	["PetsClear"] = function: 0x00000000c553b34e,
+	["OpenTab"] = function: 0x00000000b39f981e,
+	["UpdateCategories"] = function: 0x00000000668ef6be,
+	["QueueScrolling"] = function: 0x00000000a9cb2596,
+	["PromptDarkMatterSkip"] = function: 0x00000000e736ed0e,
+	["PetsSelect"] = function: 0x00000000f321a23e,
+	["UpdateQueue"] = function: 0x00000000be92effe,
+	["script"] = Dark Matter Machine,
+	["PetsConvert"] = function: 0x000000007f02ca4e,
+	["RedeemQueuePet"] = function: 0x0000000051bc2386,
+	["PetsScaling"] = function: 0x000000007229c7b6,
+	["PetsSetup"] = function: 0x00000000e50fe176,
+	["PetsUpdate"] = function: 0x00000000ec7e076e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Hoverboards
+local Hoverboards = {
+	["script"] = Hoverboards,
+	["UpdateCustomizeButton"] = function: 0x00000000d84f885e,
+	["Equip"] = function: 0x0000000053099ed6,
+	["Scaling"] = function: 0x000000009fc3d8ee,
+	["Update"] = function: 0x00000000f3e3df7e,
+	["UpdateGamepassFrame"] = function: 0x00000000a385e886
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Bank Client
+local Bank Client = {
+	["CollectInterest"] = function: 0x000000004178c21e,
+	["DepositScrolling"] = function: 0x0000000024833d6e,
+	["UpdateSide"] = function: 0x00000000747f4e66,
+	["promptWithdraw"] = function: 0x000000004abc895e,
+	["UpdateMembers"] = function: 0x000000002664f9be,
+	["GetMyBanks"] = function: 0x0000000021dcf2de,
+	["UpdateUpgrades"] = function: 0x00000000e99a4cee,
+	["DecideInvite"] = function: 0x0000000068254ab6,
+	["UpdateBank"] = function: 0x000000008ae0d7fe,
+	["SelectPet"] = function: 0x00000000d4c1bc56,
+	["UpgradeBank"] = function: 0x000000005a145b0e,
+	["CancelOutgoingInvites"] = function: 0x00000000cdc5c82e,
+	["BuyBank"] = function: 0x000000008fddd6a6,
+	["Deposit"] = function: 0x0000000018c7fd7e,
+	["acceptWithdraw"] = function: 0x00000000a9513f76,
+	["UpdateWithdrawDiamonds"] = function: 0x00000000b2fc887e,
+	["UpdateSettings"] = function: 0x0000000080e2526e,
+	["SideScrolling"] = function: 0x00000000e581473e,
+	["GetMyInvites"] = function: 0x00000000c58668ae,
+	["Withdraw"] = function: 0x00000000edf517fe,
+	["acceptDeposit"] = function: 0x00000000e94ce266,
+	["InviteToBank"] = function: 0x0000000022ad7b9e,
+	["GetBank"] = function: 0x00000000890072ce,
+	["LeaveBank"] = function: 0x00000000d7604946,
+	["pressedLeave"] = function: 0x000000006b58978e,
+	["openDeposit"] = function: 0x000000003d26dffe,
+	["script"] = Bank Client,
+	["SwitchWindow"] = function: 0x000000006cef535e,
+	["openWithdraw"] = function: 0x0000000008ea4e0e,
+	["UpdateDeposit"] = function: 0x00000000b449e18e,
+	["SwitchSettingsWindow"] = function: 0x00000000b720c086,
+	["openSettings"] = function: 0x000000005da06826,
+	["Processing"] = function: 0x0000000022fb20b6,
+	["UpdateHistory"] = function: 0x000000009f3ae94e,
+	["UpdateWithdraw"] = function: 0x00000000d7432c66,
+	["cancelWithdraw"] = function: 0x00000000f44d9c66,
+	["UpdateDepositDiamonds"] = function: 0x00000000adecf9ee,
+	["BankScrolling"] = function: 0x00000000104df8fe,
+	["KickMember"] = function: 0x000000001e177836,
+	["Reset"] = function: 0x00000000e7d45a7e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Mastery
+local Mastery = {
+	["script"] = Mastery,
+	["Scaling"] = function: 0x000000005c0f8dde,
+	["Update"] = function: 0x0000000092471be6,
+	["LevelUpNotification"] = function: 0x000000009197108e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Free Gifts
+local Free Gifts = {
+	["Render"] = function: 0x00000000bd291256,
+	["TopAnimation"] = function: 0x00000000f6f49d5e,
+	["script"] = Free Gifts,
+	["Redeem"] = function: 0x00000000cb92a78e,
+	["Update"] = function: 0x000000008e2f8f96,
+	["UpdateTop"] = function: 0x00000000689aa2b6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Boosts
+local Boosts = {
+	["script"] = Boosts
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Active Boosts
+local Active Boosts = {
+	["Render"] = function: 0x00000000e30eb9fe,
+	["Scaling"] = function: 0x0000000084f12ffe,
+	["script"] = Active Boosts
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Booth Inventory
+local Booth Inventory = {
+	["AttemptBuy"] = function: 0x00000000359fa786,
+	["script"] = Booth Inventory,
+	["ThrottleRequest"] = function: 0x00000000c3e4623e,
+	["GetFullName"] = function: 0x00000000142d154e,
+	["Update"] = function: 0x000000002a280fd6,
+	["UpdateScrolling"] = function: 0x00000000549265d6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.List Pet
+local List Pet = {
+	["Prompt"] = function: 0x00000000645b1dce,
+	["script"] = List Pet,
+	["List"] = function: 0x00000000e0aaa6e6
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.SelectBooth
+local SelectBooth = {
+	["UpdateLazy"] = function: 0x000000003b8131d6,
+	["isVisible"] = function: 0x00000000a28fd1ce,
+	["script"] = SelectBooth,
+	["Update"] = function: 0x0000000057e50726,
+	["UpdateScrolling"] = function: 0x00000000d26dcf4e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Customize Booth
+local Customize Booth = {
+	["script"] = Customize Booth,
+	["Update"] = function: 0x0000000039c62f96,
+	["getBoothStyle"] = function: 0x0000000071863836,
+	["Scrolling"] = function: 0x000000009432ce5e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.Trading Plaza Choice
+local Trading Plaza Choice = {
+	["script"] = Trading Plaza Choice,
+	["Setup"] = function: 0x000000003f2acd96
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Local Leaderboard
+local Local Leaderboard = {
+	["Grab"] = function: 0x00000000ce281366,
+	["Check"] = function: 0x00000000099c41be,
+	["Update"] = function: 0x0000000091861b46,
+	["script"] = Local Leaderboard
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Global Leaderboard
+local Global Leaderboard = {
+	["Grab"] = function: 0x00000000e0df7386,
+	["Check"] = function: 0x000000007885815e,
+	["Update"] = function: 0x000000004df410a6,
+	["script"] = Global Leaderboard
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Fanart Wall
+local Fanart Wall = {
+	["Check"] = function: 0x0000000080779226,
+	["setup"] = false,
+	["Update"] = function: 0x0000000075c3e37e,
+	["script"] = Fanart Wall
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Advert Signs
+local Advert Signs = {
+	["script"] = Advert Signs,
+	["LoadSign"] = function: 0x000000001765539e,
+	["LoadWorld"] = function: 0x000000006979a32e
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Twitter Sign
+local Twitter Sign = {
+	["LoadWorld"] = function: 0x00000000de7bbc36,
+	["LoadSign"] = function: 0x00000000a4b802be,
+	["script"] = Twitter Sign,
+	["UpdateSign"] = function: 0x00000000d666ef06
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Update Countdown
+local Update Countdown = {
+	["Check"] = function: 0x0000000035b2fa86,
+	["UpdateBillboard"] = function: 0x00000000433bc496,
+	["UpdateScreen"] = function: 0x00000000f3cacab6,
+	["script"] = Update Countdown
+}
+
+Players.5bz.PlayerScripts.Scripts.GUIs.World GUIs.Event Countdown
+local Event Countdown = {
+	["script"] = Event Countdown,
+	["Update"] = function: 0x00000000449c000e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Cannons
+local Cannons = {
+	["script"] = Cannons,
+	["Init"] = function: 0x000000007257c4de,
+	["LoadWorld"] = function: 0x00000000352df87e,
+	["Fire"] = function: 0x000000000597f8a6,
+	["GetCannonPhysical"] = function: 0x00000000d103e116,
+	["ClientAttemptFire"] = function: 0x00000000c1a329de
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Pet Collection Machine
+local Pet Collection Machine = {
+	["Check"] = function: 0x000000009fadde4e,
+	["Setup"] = function: 0x00000000e0ead5de,
+	["script"] = Pet Collection Machine
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Eggs
+local Eggs = {
+	["script"] = Eggs,
+	["WorldLoaded"] = function: 0x00000000714aaae6,
+	["UpdateGroup"] = function: 0x000000002fb847ce,
+	["CachedProperty"] = function: 0x00000000ccdf1d06,
+	["Reset"] = function: 0x00000000e18134ee,
+	["SetupEgg"] = function: 0x000000007eff06fe,
+	["IsEggUnlocked"] = function: 0x000000008f410fc6,
+	["UpdateMasteryPerks"] = function: 0x00000000c17b58f6,
+	["UpdateAllEggs"] = function: 0x00000000c793f706,
+	["ToggleAutoHatch"] = function: 0x00000000b2a28e7e,
+	["UpdateAllGroups"] = function: 0x00000000dc96667e,
+	["GetAllEggs"] = function: 0x0000000034a7e636,
+	["UpdateUnlocked"] = function: 0x00000000c99dc026,
+	["GetAllGroups"] = function: 0x0000000080cba0be,
+	["UpdateEgg"] = function: 0x000000004f6ba7ae,
+	["UpdateAffordability"] = function: 0x000000003e1be4e6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Lootbags
+local Lootbags = {
+	["Remove"] = function: 0x0000000013b6963e,
+	["script"] = Lootbags,
+	["ScanForCollection"] = function: 0x0000000007599bb6,
+	["Collect"] = function: 0x00000000fa6fb5b6,
+	["Add"] = function: 0x00000000dd931426
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Music and Ambience
+local Music and Ambience = {
+	["Clear"] = function: 0x0000000070a132d6,
+	["script"] = Music and Ambience,
+	["Shuffle"] = function: 0x00000000b2365a5e,
+	["Set"] = function: 0x00000000893c3826
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Pets
+local Pets = {
+	["ChangePetTargetCoin"] = function: 0x000000007366d16e,
+	["script"] = Pets,
+	["UpdatePetSoundsSetting"] = function: 0x00000000a2a23f16,
+	["NetworkUpdate"] = function: 0x0000000046ee4206,
+	["ChangePetTargetPlayer"] = function: 0x0000000060bab03e,
+	["UpdateRaycastParams"] = function: 0x00000000c73d520e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Reedem VIP Rewards
+local Reedem VIP Rewards = {
+	["script"] = Reedem VIP Rewards,
+	["Animation"] = function: 0x000000008754299e,
+	["Raycast"] = function: 0x00000000c3f8aa36,
+	["UpdateHUD"] = function: 0x00000000bc15563e,
+	["Redeem"] = function: 0x00000000fb1dcde6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Hoverboard
+local Hoverboard = {
+	["CanUseHoverboard"] = function: 0x00000000d51d3d66,
+	["ProcessInput"] = function: 0x00000000bb91786e,
+	["UpdateButton"] = function: 0x00000000945053f6,
+	["Create"] = function: 0x00000000500a215e,
+	["UpdatePlayer"] = function: 0x000000003b17964e,
+	["Remove"] = function: 0x00000000e40aab56,
+	["Toggle"] = function: 0x00000000076de69e,
+	["TrackPlayer"] = function: 0x0000000019da1456,
+	["script"] = Hoverboard
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Open Eggs
+local Open Eggs = {
+	["script"] = Open Eggs,
+	["OpenEgg"] = function: 0x00000000c43b1a7e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Hacker Portal Quests
+local Hacker Portal Quests = {
+	["Setup"] = function: 0x00000000c5a4c1fe,
+	["script"] = Hacker Portal Quests,
+	["PromptQuest"] = function: 0x00000000fa1670c6,
+	["Check"] = function: 0x0000000068fcc266,
+	["Clicked"] = function: 0x000000007e3e001e,
+	["Travel"] = function: 0x000000009313e5ce,
+	["OpenPortal"] = function: 0x00000000e340924e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Reedem Rank Rewards
+local Reedem Rank Rewards = {
+	["script"] = Reedem Rank Rewards,
+	["Animation"] = function: 0x000000005a506196,
+	["Raycast"] = function: 0x000000009e8c522e,
+	["UpdateHUD"] = function: 0x00000000cbc92e1e,
+	["Redeem"] = function: 0x00000000c2b2e5ae
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Fireworks
+local Fireworks = {
+	["Firework"] = function: 0x000000007b9725e6,
+	["script"] = Fireworks,
+	["PlayFireworks"] = function: 0x00000000c93d7166
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Fantasy Portals
+local Fantasy Portals = {
+	["UpdatePortal"] = function: 0x0000000092004576,
+	["script"] = Fantasy Portals,
+	["Teleport"] = function: 0x00000000fa9ed96e,
+	["Check"] = function: 0x00000000bf271f06,
+	["Interact"] = function: 0x00000000bea7427e,
+	["Setup"] = function: 0x00000000cf7c61a6,
+	["Clean"] = function: 0x00000000bbe155de
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Hacker Gate
+local Hacker Gate = {
+	["Setup"] = function: 0x00000000c1bb3b16,
+	["script"] = Hacker Gate,
+	["IsUnlocked"] = function: 0x0000000098145586,
+	["Prompt"] = function: 0x00000000a49a4556,
+	["Unlock"] = function: 0x00000000d56d062e,
+	["Buy"] = function: 0x00000000792fc54e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Traveling Merchant
+local Traveling Merchant = {
+	["Show"] = function: 0x0000000087439d86,
+	["script"] = Traveling Merchant,
+	["UpdateTimer"] = function: 0x000000002802e7b6,
+	["Depart"] = function: 0x0000000098be281e,
+	["Check"] = function: 0x000000003bbb9396
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Select Coins
+local Select Coins = {
+	["InputDown"] = function: 0x00000000839183d6,
+	["SelectCoin"] = function: 0x00000000d534e41e,
+	["ProcessInput"] = function: 0x0000000099051bc6,
+	["InputUp"] = function: 0x00000000efb49926,
+	["script"] = Select Coins
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Gates
+local Gates = {
+	["BuyGate"] = function: 0x000000001dc474ce,
+	["script"] = Gates,
+	["Animation"] = function: 0x00000000ffffbfc6,
+	["LoadWorld"] = function: 0x00000000ceda1c96,
+	["SetupGate"] = function: 0x00000000522e9636,
+	["GateUnlocked"] = function: 0x00000000bbe6b5d6,
+	["RemoveGate"] = function: 0x0000000070ad880e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Cat Throne Return Door
+local Cat Throne Return Door = {
+	["Setup"] = function: 0x000000001b992d9e,
+	["script"] = Cat Throne Return Door,
+	["Teleport"] = function: 0x00000000ab259836
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Coins
+local Coins = {
+	["CalcSpecialBonusCurrencyMultiplier"] = function: 0x0000000072cebe96,
+	["script"] = Coins,
+	["PetDamageAnimation"] = function: 0x00000000a8696bb6,
+	["CalcSpecialBonusMultiplier"] = function: 0x00000000271ae6a6,
+	["InvokeCoins"] = function: 0x0000000094dc33e6,
+	["RemoveCoin"] = function: 0x000000003ce2cc26,
+	["UpdateCoins"] = function: 0x000000004767ed06,
+	["UpdateCoin"] = function: 0x000000002cf21b7e,
+	["CoinDamageAnimation"] = function: 0x00000000037ee5a6,
+	["AddCoin"] = function: 0x00000000cd3a6f3e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Tutorial
+local Tutorial = {
+	["Progress"] = function: 0x0000000034c00be6,
+	["Finished"] = function: 0x00000000982bcfee,
+	["script"] = Tutorial
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Auto Hatch
+local Auto Hatch = {
+	["AttemptHatch"] = function: 0x000000007a4d46d6,
+	["script"] = Auto Hatch,
+	["CanPerform"] = function: 0x000000002c1cf86e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Orbs
+local Orbs = {
+	["PlaySounds"] = function: 0x000000002212a03e,
+	["script"] = Orbs,
+	["Collect"] = function: 0x000000005625d946,
+	["GetClosestEntity"] = function: 0x000000005c252756,
+	["AddOrb"] = function: 0x00000000d2550076,
+	["UpdatePickupDistance"] = function: 0x00000000c2d85c56,
+	["TryToCombine"] = function: 0x0000000084dae8f6,
+	["Combine"] = function: 0x00000000ffbc6b4e,
+	["OrbLoop"] = function: 0x000000006675297e,
+	["RemoveOrb"] = function: 0x00000000e611d236,
+	["QueueOrbSound"] = function: 0x00000000fa0f2fee
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Dominus Gate
+local Dominus Gate = {
+	["Setup"] = function: 0x0000000014aacb36,
+	["script"] = Dominus Gate,
+	["IsUnlocked"] = function: 0x00000000d5a6de7e,
+	["Prompt"] = function: 0x00000000667b2616,
+	["Unlock"] = function: 0x00000000b1c639fe,
+	["Buy"] = function: 0x00000000670a772e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Cat Throne Gate
+local Cat Throne Gate = {
+	["Setup"] = function: 0x00000000136a8a56,
+	["script"] = Cat Throne Gate,
+	["Teleport"] = function: 0x0000000021171f96,
+	["PromptBuy"] = function: 0x00000000c8bc01e6,
+	["IsUnlocked"] = function: 0x000000006e94cdc6,
+	["Unlock"] = function: 0x00000000df22fa3e,
+	["Buy"] = function: 0x00000000acb3821e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Trading Booths
+local Trading Booths = {
+	["SetupClaimed"] = function: 0x000000007d8a5b5e,
+	["getStyle"] = function: 0x000000003b3222fe,
+	["ViewBooth"] = function: 0x0000000035dac02e,
+	["UpdateModel"] = function: 0x00000000e510777e,
+	["SetupUnclaimed"] = function: 0x00000000d83d4856,
+	["SetupModelPosition"] = function: 0x00000000ad5d986e,
+	["BoothScrolling"] = function: 0x00000000c42f2d36,
+	["SetupViewInteract"] = function: 0x000000003198ddf6,
+	["script"] = Trading Booths,
+	["Setup"] = function: 0x000000003ed13a9e,
+	["UpdateUI"] = function: 0x000000002cf4d2a6,
+	["SetupClaimInteract"] = function: 0x00000000ae4c9bde,
+	["UpdateBooth"] = function: 0x000000008dc616a6,
+	["SetupEditInteract"] = function: 0x000000008cf3b6b6,
+	["AttemptBuy"] = function: 0x000000003db5ca4e,
+	["GetFullName"] = function: 0x000000005351cd46,
+	["EditBooth"] = function: 0x0000000023d8dea6,
+	["SetupModel"] = function: 0x0000000017913276,
+	["ClaimBooth"] = function: 0x00000000fbc0bc4e,
+	["GetBooth"] = function: 0x000000004704bdb6,
+	["ThrottleRequest"] = function: 0x000000003676fc6e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Purchasable Booths
+local Purchasable Booths = {
+	["Setup"] = function: 0x00000000af75c85e,
+	["script"] = Purchasable Booths,
+	["RemoveInteract"] = function: 0x00000000e87212ee,
+	["IsPurchased"] = function: 0x00000000cc24f6e6,
+	["Prompt"] = function: 0x0000000091bd2dee
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Teleport To Player
+local Teleport To Player = {
+	["script"] = Teleport To Player,
+	["TeleporToPlayer"] = function: 0x000000004cc36336
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Apply SFX/Music Settings
+local Apply SFX/Music Settings = {
+	["script"] = Apply SFX/Music Settings,
+	["Update"] = function: 0x00000000bb10ae26
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Force Load World
+local Force Load World = {
+	["script"] = Force Load World
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Open Gui Pads
+local Open Gui Pads = {
+	["GetPads"] = function: 0x0000000021aff9ae,
+	["OpenGui"] = function: 0x00000000b053c87e,
+	["script"] = Open Gui Pads,
+	["Scan"] = function: 0x00000000a9f50816
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Server Misc Notifications
+local Server Misc Notifications = {
+	["script"] = Server Misc Notifications
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.World Animations
+local World Animations = {
+	["script"] = World Animations,
+	["ObliskAnimations"] = function: 0x000000006b73250e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Redeemed Rewards Notifications
+local Redeemed Rewards Notifications = {
+	["script"] = Redeemed Rewards Notifications,
+	["Msgs"] = function: 0x00000000a5aab87e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Glittering Power
+local Glittering Power = {
+	["script"] = Glittering Power
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Hacker Portal Animations
+local Hacker Portal Animations = {
+	["ShakeAnimation"] = function: 0x0000000067cc5ebe,
+	["PortalAnimation"] = function: 0x0000000034224436,
+	["script"] = Hacker Portal Animations,
+	["Animations"] = function: 0x00000000a56eaa46
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Void Animations
+local Void Animations = {
+	["Animations"] = function: 0x0000000027188966,
+	["script"] = Void Animations,
+	["CubeAnimations"] = function: 0x000000008af6f4ee,
+	["FloatingRockAnimations"] = function: 0x00000000cd5afc86
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Enchantment Circle Animation
+local Enchantment Circle Animation = {
+	["Check"] = function: 0x000000001830620e,
+	["Setup"] = function: 0x00000000a1a803de,
+	["script"] = Enchantment Circle Animation,
+	["UseAnimation"] = function: 0x000000003e894ae6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Dark Matter Machine Animation
+local Dark Matter Machine Animation = {
+	["Setup"] = function: 0x000000007945def6,
+	["script"] = Dark Matter Machine Animation,
+	["Check"] = function: 0x000000003e390d66,
+	["ClaimAnimation"] = function: 0x00000000ba16ab4e,
+	["UseAnimation"] = function: 0x0000000081eeb4b6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Boost Machine Animation
+local Boost Machine Animation = {
+	["Check"] = function: 0x00000000e5e6e896,
+	["Setup"] = function: 0x00000000b07d50c6,
+	["script"] = Boost Machine Animation,
+	["UseAnimation"] = function: 0x000000004ba45b36
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Fuse Pets Machine Animation
+local Fuse Pets Machine Animation = {
+	["Check"] = function: 0x000000007638d5ce,
+	["Setup"] = function: 0x000000000940ecd6,
+	["script"] = Fuse Pets Machine Animation,
+	["UseAnimation"] = function: 0x000000000a0cda36
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Rainbow Machine Animation
+local Rainbow Machine Animation = {
+	["Check"] = function: 0x000000001066570e,
+	["Setup"] = function: 0x00000000a18f7a26,
+	["script"] = Rainbow Machine Animation,
+	["UseAnimation"] = function: 0x00000000c81e2cf6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Spooky Upgrades Animation
+local Spooky Upgrades Animation = {
+	["Check"] = function: 0x000000008ec861b6,
+	["Setup"] = function: 0x000000004dc7e136,
+	["script"] = Spooky Upgrades Animation,
+	["UseAnimation"] = function: 0x00000000d51f6c06
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Upgrade Machine Animation
+local Upgrade Machine Animation = {
+	["Check"] = function: 0x000000000429925e,
+	["Setup"] = function: 0x0000000095f41916,
+	["script"] = Upgrade Machine Animation,
+	["UseAnimation"] = function: 0x000000001df11266
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Hardcore Secret Teleports
+local Hardcore Secret Teleports = {
+	["Clear"] = function: 0x000000003245ddbe,
+	["Setup"] = function: 0x000000009dd20d76,
+	["script"] = Hardcore Secret Teleports,
+	["Teleport"] = function: 0x00000000b64b02c6,
+	["Attempt"] = function: 0x00000000da5f9fce,
+	["Check"] = function: 0x000000007a8c02d6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Hardcore Mode Teleports
+local Hardcore Mode Teleports = {
+	["Request"] = function: 0x00000000f812f736,
+	["Setup"] = function: 0x00000000d5564cfe,
+	["script"] = Hardcore Mode Teleports,
+	["Check"] = function: 0x00000000118f9f36
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Leave Trading Plaza
+local Leave Trading Plaza = {
+	["Request"] = function: 0x00000000372d7206,
+	["Setup"] = function: 0x00000000e786eafe,
+	["script"] = Leave Trading Plaza,
+	["Check"] = function: 0x00000000c539b78e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Join Trading Plaza
+local Join Trading Plaza = {
+	["Setup"] = function: 0x00000000df3bbd2e,
+	["script"] = Join Trading Plaza,
+	["Request"] = function: 0x0000000071cca36e,
+	["Check"] = function: 0x00000000402bf906,
+	["Update"] = function: 0x00000000fbddfb6e,
+	["Buy"] = function: 0x00000000cbe6df76
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Secret House Interactive
+local Secret House Interactive = {
+	["Hook"] = function: 0x00000000da3d3846,
+	["script"] = Secret House Interactive,
+	["Teleport"] = function: 0x00000000390b765e,
+	["Has"] = function: 0x0000000013a42b56,
+	["Update"] = function: 0x00000000c554f59e,
+	["Give"] = function: 0x00000000e1c3ef4e
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Anniversary Balloons
+local Anniversary Balloons = {
+	["Animations"] = function: 0x0000000085079bfe,
+	["script"] = Anniversary Balloons,
+	["Clean"] = function: 0x00000000686b03a6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Secret Vault Interactive
+local Secret Vault Interactive = {
+	["Hook"] = function: 0x00000000006209b6,
+	["script"] = Secret Vault Interactive,
+	["Teleport"] = function: 0x00000000660bf1c6,
+	["Has"] = function: 0x00000000d2bf34fe,
+	["Update"] = function: 0x00000000e4137f6e,
+	["Give"] = function: 0x00000000834a4ff6
+}
+
+Players.5bz.PlayerScripts.Scripts.Game.Misc.Golden Machine Animation
+local Golden Machine Animation = {
+	["Check"] = function: 0x000000003d3f1376,
+	["Setup"] = function: 0x00000000e9631f86,
+	["script"] = Golden Machine Animation,
+	["UseAnimation"] = function: 0x000000003de1655e
+}
+
