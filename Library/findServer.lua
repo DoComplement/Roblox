@@ -28,7 +28,8 @@ local QUERY_FORMAT = {
 local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure search method
 ]]
 
-print("Execute queryServerSearch.getUsage() with this for usage.")
+warn("Search speed is limited by your internet speed.")
+print("Execute queryServerSearch.getUsage() with to see usage.")
 
 if not getgenv().table2String then
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/table2String.lua"))()	
