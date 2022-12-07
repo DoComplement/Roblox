@@ -1,4 +1,3 @@
-
 if getgenv().table2String then getfenv(getgenv().table2String).script:Destroy() end
 getgenv().table2String = function(Table, Title)
     if not Table or type(Table) ~= "table" then print("ERROR! Invalid table input!") return end
