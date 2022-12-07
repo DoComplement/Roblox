@@ -19,17 +19,12 @@ getgenv().table2String = function(Table, Title)
         
         local tab,tableString = table.concat(table.create(scope_level, '\t')),{}
         local size,last = getLength(entity)
+        local Type = type(entity)
     
-        if scope_level ~= 0 then
-            if type(title) == "string" then 
-                title = "[\""..title.."\"]" 
-            else
-                title = '['..title..']'
-            end
+        if type(title) == "string" then 
+            title = "[\""..title.."\"]" 
         else
-            if string.match(title, "%S+") ~= "local" then
-                title = "local "..title
-            end
+            title = '['..title..']'
         end
         
         if type(entity) == "table" then
@@ -48,11 +43,11 @@ getgenv().table2String = function(Table, Title)
         end
       
         if isLast == false then table.insert(tableString, ',') end
-        table.insert(tableString, '\n')
+        table.insert(tableString, " -- "..Type..'\n')
         return table.concat(tableString)
     end
     
-    return formatTable(Table, Title or "ConvertedTable")
+    return formatTable(Table, Title or '')
 end
 
 print("<string> getgenv().table2String(<table> Table, <string> nil or Table_Name)")
