@@ -10,9 +10,9 @@
 - add .Changed signal or metatable to all Humanoid DisplayName properties (check if the DisplayName is even used in the game before proceeding)
 ``` 
 __index = hookmetamethod(game, "__index", newcclosure(function(Self, Index)  
-  if tostring(Self) == "Humanoid" and tostring(Index) == "DisplayName" then -- or something like such
-    return (Self, nil) -- or something like such
-  end
-  return __index(Self, Index)
+    if tostring(Self) == "Humanoid" and tostring(Index) == "DisplayName" then -- or something like such
+        return (Self, nil) -- or something like such
+    end
+    return __index(Self, Index)
 end 
 ```  
