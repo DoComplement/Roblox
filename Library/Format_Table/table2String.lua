@@ -14,24 +14,38 @@ getgenv().table2String = function(Table, Title)
         return count,last
     end
     
-    local function formatTable(entity, title, scope_level, isLast)
-        scope_level = scope_level or 0
-        
-        local tab,tableString = table.concat(table.create(scope_level, '\t')),{}
-        local size,last = getLength(entity)
-        local Type = type(entity)
-    
-        if type(title) == "string" then 
-            title = "[\""..title.."\"]" 
-        else
-            title = '['..title..']'
+    local function concatTable(Table) -- table is created using table.insert
+        for Index, Value in ipairs(Table) do -- thus, ipairs can be used
+            Table[Index] = tostring(Value)
         end
+        return table.concat(Table)
+    end
+    
+	local simpleTypes = {
+		["number"] = '\n',
+		["string"] = '\n',
+		["table"] = '\n'
+	}
+	
+    local function formatTable(entity, title, tab, notLast)
+        
+        local tableString = {}
+        local size,last = getLength(entity)
+		local Type = simpleTypes[type(entity)] or " -->\t"..type(entity)..'\n'
+		
+        if #tab > 0 then
+			if type(title) == "string" then 
+				title = "[\""..title.."\"]" 
+			else
+				title = '['..tostring(title)..']'
+			end
+		end
         
         if type(entity) == "table" then
             if size > 0 then
                 table.insert(tableString, tab..title.." = {\n")
                 for idx,ent in next, entity do
-                    table.insert(tableString, formatTable(ent, idx, scope_level + 1, ent == last))
+                    table.insert(tableString, formatTable(ent, idx, table.concat(table.create(#tab + 1, '\t')), ent ~= last))
                 end
                 table.insert(tableString, tab.."}")
             else
@@ -42,12 +56,12 @@ getgenv().table2String = function(Table, Title)
             table.insert(tableString, tab..title.." = "..tostring(entity))
         end
       
-        if isLast == false then table.insert(tableString, ',') end
-        table.insert(tableString, " -- "..Type..'\n')
-        return table.concat(tableString)
+        if notLast then table.insert(tableString, ',') end 
+		if #tab > 0 then table.insert(tableString, Type) end
+        return concatTable(tableString)
     end
     
-    return formatTable(Table, Title or '')
+    return formatTable(Table, Title or "ConvertedTable", table.concat(table.create(0, '\t')), false)
 end
 
 print("<string> getgenv().table2String(<table> Table, <string> nil or Table_Name)")
@@ -60,4 +74,3 @@ print("<string> getgenv().table2String(<table> Table, <string> nil or Table_Name
     writefile("Servers.txt", table2String(Servers, "Servers"))
     etc.
 ]]
-
