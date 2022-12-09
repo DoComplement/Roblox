@@ -14,7 +14,7 @@ getgenv().table2String = function(Table, Title)
 		return count,last
 	end
 
-	local function concatTable(Table) -- table is created using table.insert
+	local function Concat(Table) -- table is created using table.insert
 		for Index, Value in ipairs(Table) do -- thus, ipairs can be used
 			Table[Index] = tostring(Value)
 		end
@@ -58,7 +58,7 @@ getgenv().table2String = function(Table, Title)
       
         	if notLast then table.insert(tableString, ',') end 
 		if #tab > 0 then table.insert(tableString, Type) end
-        	return concatTable(tableString)
+        	return Concat(tableString)
     	end
 	return formatTable(Table, Title or "ConvertedTable", table.concat(table.create(0, '\t')), false)
 end
