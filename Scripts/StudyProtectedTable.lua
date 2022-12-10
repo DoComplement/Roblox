@@ -1,4 +1,4 @@
---[[ UNTESTED CODE ]]
+--[[ Should crash upon execution for now ]]
 
 --[[ getgenv().table2String ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
@@ -107,4 +107,4 @@ local function studyProtectedMetatable(Table, Parent)
     setreadonly(mt, true)
 end
 
-studyProtectedMetatableMetatable(Lib, ProtectedLibrary)
+studyProtectedMetatable(Lib, ProtectedLibrary)
