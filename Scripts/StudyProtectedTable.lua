@@ -1,6 +1,6 @@
 --[[ 
 Is working, but breaks some in-game function for some reason 
-In PetSimX, the user is not longer able to collect Lootbags while this is active
+In PetSimX, the user is not able to collect Lootbags while this is active
 ]]
 
 --[[ getgenv().table2String ]]
