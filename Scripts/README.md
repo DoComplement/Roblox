@@ -6,4 +6,4 @@
   - Path of Calling Instance
   - Path of Calling Script (for spoofing)   
    
-  ![Screenshot #1] (https://github.com/DoComplement/Images/blob/fd316b4c24280d1a1a3aab909c0d891e5563e81f/foxy.png "loverboy")
+  ![Screenshot #1](https://github.com/DoComplement/Images/blob/fd316b4c24280d1a1a3aab909c0d891e5563e81f/foxy.png "loverboy")
