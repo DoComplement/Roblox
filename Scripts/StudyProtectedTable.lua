@@ -45,7 +45,7 @@ local function CompareTables(Array1, Array2)
     end return true
 end
 
-local function readMT(Metatable, Parent)
+local function StudyTable(Metatable, Parent)
     if isreadonly(Metatable) then setreadonly(mt, false) end
     local MetatableIndex = Metatable.__index
     Metatable.__index = newcclosure(function(Self, Index)
@@ -55,7 +55,7 @@ local function readMT(Metatable, Parent)
             
             if type(Element) == "table" then
                 Parent[Index] = {}
-                readMT(getrawmetatable(Element), Parent[Index])
+                StudyTable(getrawmetatable(Element), Parent[Index])
                 print("New Table found! \""..Index.."\"")
             else
                 Parent[Index] = tostring(Element)
@@ -68,5 +68,5 @@ local function readMT(Metatable, Parent)
     setreadonly(Metatable, true)
 end
 
-readMT(getrawmetatable(Lib), ProtectedLibrary)
+StudyTable(getrawmetatable(Lib), ProtectedLibrary)
 
