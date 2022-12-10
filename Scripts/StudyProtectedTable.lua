@@ -58,7 +58,7 @@ local function readMT(Metatable, Parent)
                 readMT(getrawmetatable(Element), Parent[Index])
                 print("New Table found! \""..Index.."\"")
             else
-                Parent[Index] = Element
+                Parent[Index] = tostring(Element)
                 print("New Index found!", Element, "at", Index)
             end
             UpdateLib()
