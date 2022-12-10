@@ -1,4 +1,4 @@
---[[ Should crash upon execution for now ]]
+--[[ Crashes upon execution for now ]]
 
 --[[ getgenv().table2String ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
