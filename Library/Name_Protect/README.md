@@ -17,6 +17,6 @@ __index = hookmetamethod(game, "__index", newcclosure(function(Self, Index)
 end 
 ```
 - Ignore Friends (with toggle)
-- Include types of filtering
+- Add these types of filtering
   - [Empty] => Filters names with an empty character
   - [Player #] => Filters names with Player followed by the player's respective index
