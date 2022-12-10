@@ -1,4 +1,7 @@
---[[ Is working, but breaks some in-game function for some reason ]]
+--[[ 
+Is working, but breaks some in-game function for some reason 
+In PetSimX, the user is not longer able to collect Lootbags while this is active
+]]
 
 --[[ getgenv().table2String ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
