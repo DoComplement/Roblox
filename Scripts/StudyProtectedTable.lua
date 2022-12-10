@@ -46,7 +46,7 @@ local function CompareTables(Array1, Array2)
 end
 
 local function StudyTable(Metatable, Parent)
-    if isreadonly(Metatable) then setreadonly(mt, false) end
+    if isreadonly(Metatable) then setreadonly(Metatable, false) end
     local MetatableIndex = Metatable.__index
     Metatable.__index = newcclosure(function(Self, Index)
         if Parent[Index] == nil then
