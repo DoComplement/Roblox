@@ -4,7 +4,7 @@
 `loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/EventSpy.lua"))()`  
 - Prints the invoked RemoteEvents and fired RemoteFunctions to the standard output with 
 
-<div align="center">Included</div>
+
   - Calling Instance with call type (InvokeServer, FireServer)   
   - Path of Calling Instance   
   - Path of Calling Script (for spoofing)    
