@@ -5,5 +5,5 @@
   - Calling Instance with call type (InvokeServer, FireServer)
   - Path of Calling Instance
   - Path of Calling Script (for spoofing)   
-  - 
-  ![Screenshot #1](/DoComplement/Images/blob/main/foxy.png "loverboy")
+   
+  ![Screenshot #1](/Images/blob/main/foxy.png "loverboy")
