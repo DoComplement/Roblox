@@ -11,7 +11,7 @@ rand.randSequence = function(Length)
 	local Sequence = table.create(Length, 0)
 	local referenceTable = rand.createLinearTable(Length)
 	for i=1,Length do
-		Sequence[i] = table.remove(referenceTable, math.random(1, #referenceTable))
+		Sequence[i] = table.remove(referenceTable, math.random(1, table.getn(referenceTable)))
 	end
 	return Sequence
 end
