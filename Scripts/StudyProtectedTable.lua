@@ -95,7 +95,7 @@ local function studyProtectedMetatable(Table, Parent)
                 studyProtectedMetatable(Self[Index], Parent[Index])
             elseif type(Self[Index]) == "function" and HookFunctionInputs then
                 Parent[Index] = {["Input Keys"] = {}}
-                studyFunctionInputs(Self[Index], Parent[Index])
+                studyFunctionInputs(Self[Index], Parent[Index]["Index Keys"])
             else
                 table.insert(Parent, Index)
             end
