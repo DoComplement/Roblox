@@ -9,7 +9,7 @@
   - Path of Calling Instance
   - Path of Calling Script (for spoofing)   
 
-<div alight="center>To Do</div>
+<div align="center>To Do</div>
   - Stuff
 
 ## StudyProtectedTable  (because I don't know a better way to get the indices)
