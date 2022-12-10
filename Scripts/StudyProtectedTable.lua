@@ -1,4 +1,4 @@
---[[ Crashes upon execution for now ]]
+--[[ Is working, but breaks some in-game function for some reason ]]
 
 --[[ getgenv().table2String ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
@@ -12,8 +12,8 @@ local ProtectedLibrary = {}         -- output library
 local Lib = require(game.ReplicatedStorage:WaitForChild("Framework"):WaitForChild("Library"))
 while not Lib.Loaded do game:GetService("RunService").Heartbeat:Wait() end
 
-local function UpdateOutput()
-    writefile("PetSimX_ProtectedLibrary.txt", getgenv().table2String(ProtectedLibrary, "ProtectedLibrary"))
+local UpdateLib = function()
+    writefile("TestProtect.txt", getgenv().table2String(ProtectedLibrary, "ProtectedLibrary")) 
 end
 
 local function GetCount(Table)
@@ -42,69 +42,28 @@ local function CompareTables(Array1, Array2)
     end return true
 end
 
-local function studyFunctionInputs(HookingFunction, Inputs)
-    local OldFunction
-    OldFunction = hookfunction(HookingFunction, function(...)
-        local Args = {...}
-        local Output = OldFunction(...)
-        if Args[2] then -- input is a table
+local function readMT(Metatable, Parent)
+    if isreadonly(Metatable) then setreadonly(mt, false) end
+    local MetatableIndex = Metatable.__index
+    Metatable.__index = newcclosure(function(Self, Index)
+        if Parent[Index] == nil then
+            Parent[Index] = true    -- avoid stack overflow from infinite index loop
+            local Element = Self[Index] -- will call .__index again
             
-            local Unique = true
-            for _,Value in pairs(Inputs) do
-                if type(Value) == "table" and CompareTables(Value, Args) then
-                    Unique = false
-                    break
-                end
-            end
-            
-            if Unique then
-                if IncludeOutputs then
-                    Inputs[Args] = Output or "nil"
-                else
-                    table.insert(Inputs, Args)
-                end
-                UpdateOutput()
-            end
-        else
-            if not Inputs[...] then
-                if IncludeOutputs then
-                    Inputs[Args] = Output or "nil"
-                else
-                    table.insert(Inputs, Args)
-                end
-                UpdateOutput()
-            end
-        end
-        
-        return Output
-    end)
-end
-
-local function studyProtectedMetatable(Table, Parent)
-    local mt = getrawmetatable(Table)
-    if isreadonly(mt) then
-        setreadonly(mt, false)
-    end
-    
-    local mtio = mt.__index
-    mt.__index = newcclosure(function(Self, Index)
-        
-        if not Parent[Index] then
-            if type(Self[Index]) == "table" then
+            if type(Element) == "table" then
                 Parent[Index] = {}
-                studyProtectedMetatable(Self[Index], Parent[Index])
-            elseif type(Self[Index]) == "function" and HookFunctionInputs then
-                Parent[Index] = {["Input Keys"] = {}}
-                studyFunctionInputs(Self[Index], Parent[Index]["Index Keys"])
+                readMT(getrawmetatable(Element), Parent[Index])
+                print("New Table found! \""..Index.."\"")
             else
-                table.insert(Parent, Index)
+                Parent[Index] = Element
+                print("New Index found!", Element, "at", Index)
             end
-            UpdateOutput()
+            UpdateLib()
         end
-        
-        return mtio(Self, Index)
+        return MetatableIndex(Self, Index)
     end)
-    setreadonly(mt, true)
+    setreadonly(Metatable, true)
 end
 
-studyProtectedMetatable(Lib, ProtectedLibrary)
+readMT(getrawmetatable(Lib), ProtectedLibrary)
+
