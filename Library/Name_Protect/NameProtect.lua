@@ -25,6 +25,7 @@ local chatFilterMain = {
     Scroller = Players.LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller,
     ClassTypes = {["TextLabel"]=true, ["TextButton"]=true, ["TextBox"]=true}, 
 --    Players = {},
+--    Paths = {},
     Names = {},
     lowerNames = {},
     Connections = {}, -- newChatEvent, bubbleChatEvent, newPlayerEvent, and removePlayerEvent
