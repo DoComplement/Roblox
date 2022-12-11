@@ -1,5 +1,6 @@
 --[[ 
 Metatable Spy is working, but FunctionHooking is not 100% working because of faulty Concat function
+Some, hopefully inconsequential, things do break when using this, ;_;
 In PetSimX, the user is not able to collect Lootbags while this is active
 ]]
 
