@@ -18,7 +18,7 @@
 ]]
 
 
-local Players,Workspace = game:GetService("Players"), game:GetService("Workspace")
+local Players,Workspace,RunService = Game:GetService("Players"), Game:GetService("Workspace"),Game:GetService("RunService")
 
 local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/random.lua"))()
 local chatFilterMain = {
@@ -40,7 +40,7 @@ local chatFilterMain = {
 local randomLabel = chatFilterMain.Scroller.Frame.TextLabel
 chatFilterMain.textOffset = randomLabel.TextBounds.X
 randomLabel.Text = randomLabel.Text..' '
-while randomLabel.TextBounds.X == chatFilterMain.textOffset do wait() end
+while randomLabel.TextBounds.X == chatFilterMain.textOffset do RunService.Heartbeat:Wait() end
 chatFilterMain.textOffset = randomLabel.TextBounds.X - chatFilterMain.textOffset
 randomLabel = nil
 
