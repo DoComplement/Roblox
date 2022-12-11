@@ -1,10 +1,11 @@
 --[[ 
-Is working, but breaks some in-game function for some reason 
+Metatable Spy is working, but FunctionHooking is not 100% working because of faulty Concat function
 In PetSimX, the user is not able to collect Lootbags while this is active
 ]]
 
 --[[ getgenv().table2String ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
+
 
 
 --[[ Library to be studied ]]
@@ -84,10 +85,14 @@ end
 
 
 local function StudyFunction(HookingFunction, Inputs)
-	local OldFunction
-	OldFunction = hookfunction(HookingFunction, function(...)		
-		return CheckUnique(Inputs, Concat({...}, ", "), OldFunction(...))
-	end)
+	local OldFunction,NewFunction = HookingFunction
+	local Success,ReturnStatement = pcall(function()
+    	NewFunction = hookfunction(HookingFunction, function(...)		
+    		return CheckUnique(Inputs, Concat({...}, ", "), NewFunction(...))
+    	end)
+    end)
+	if not Success then HookingFunction = OldFunction end
+	return Success,ReturnStatement
 end
 
 local function StudyTable(Metatable, Parent)
@@ -111,7 +116,7 @@ local function StudyTable(Metatable, Parent)
 					        ["Input Keys"] = {}
 					    }
 					}
-					Success,ReturnStatement = pcall(StudyFunction, Element, Parent[Index][StringElement]["Input Keys"])
+					Success,ReturnStatement = StudyFunction(Element, Parent[Index][StringElement]["Input Keys"])
 				else
 					Parent[Index] = StringElement
 				end
@@ -131,4 +136,4 @@ local function StudyTable(Metatable, Parent)
     setreadonly(Metatable, true)
 end
 
-StudyTable(getrawmetatable(Lib), ProtectedLibrary)
+StudyTable(getrawmetatable(Lib), ProtectedLibrary)  -- <-- Change stuff here
