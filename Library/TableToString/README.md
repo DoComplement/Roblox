@@ -10,26 +10,26 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 - The code can be placed in the autoexec folder, but you can either save the auto-updating loadstring or copy and save the raw code 
 - Input Parameters
     1) <tuple> Table	 --> The table to be converted to string
-    2) <string> Name 	 --> Name of MAIN table
+    2) <string> MainName --> Name of MAIN table (input not required, see Example 1)
     3) <boolean> Sort 	 --> Output table will be sorted. (true => Ascending, false => Descending, nil => Do not sort)
 
 ## Examples
 ```  
 local Table = {1, 3, 2, 5, 4}
-print(getgenv().ConvertTable(Table))
+print(getgenv().ConvertTable(Table, nil, true)) --> Sort Ascending
 --[[ Output
 {
 	[1] = 1,
-    	[2] = 3,
-	[3] = 2,
-	[4] = 5,
-	[5] = 4
+    	[2] = 2,
+	[3] = 3,
+	[4] = 4,
+	[5] = 5
 }
 ]]   
 ```
 ```
 local Table = {['O'] = 3, ['A'] = 1, ["and Sometimes"] = 'Y', ['I'] = 2, ['E'] = "Good", ['U'] = 4}
-setclipboard(getgenv().ConvertTable(Table, "Vowels", true)) --> sort Ascending
+setclipboard(getgenv().ConvertTable(Table, "Vowels", true))
 --[[ Output
 local Vowels = {
 	["A"] = 1,
