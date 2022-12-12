@@ -53,10 +53,14 @@ getgenv().ConvertTable = function(Table, Title, Sort)
 	end
         
         if EntityType == "table" then
-		table.insert(StringTable, Tab..Title.." = {\n")
+		if Title then
+			table.insert(StringTable, Tab..Title.." = {\n")
+		else
+			table.insert(StringTable, "{\n")
+		end
             	for _,Index in ipairs(Indices) do
                 	local Entity = UpperEntity[Index]
-                	table.insert(StringTable, formatTable(Entity, Index, table.concat(table.create(#Tab + 1, '\t')), Entity ~= Last))
+                	table.insert(StringTable, formatTable(Entity, Index, Tab..'\t', Entity ~= Last))
             	end
             	table.insert(StringTable, Tab.."}")
         else
@@ -69,7 +73,7 @@ getgenv().ConvertTable = function(Table, Title, Sort)
         return concatTable(StringTable)
     end
 
-    return formatTable(Table, Title or "ConvertedTable", table.concat(table.create(0, '\t')), false)
+    return formatTable(Table, Title or "ConvertedTable", '', false)
 end
 
 print("<string> getgenv().ConvertTable(<table> Table, <string> nil or Table_Name, <boolean> Sort | true -> Ascending, false -> Descending, nil -> no sort)")
