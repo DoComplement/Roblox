@@ -44,28 +44,28 @@ getgenv().ConvertTable = function(Table, Title, Sort)
             Indices,Last = GetIndices(UpperEntity) 
         end
 		
-        if #Tab > 0 then
-			if type(Title) == "string" then 
-				Title = "[\""..Title.."\"]" 
-			else
-				Title = '['..tostring(Title)..']'
-			end
+	if #Tab > 0 then
+		if type(Title) == "string" then 
+			Title = "[\""..Title.."\"]" 
+		else
+			Title = '['..tostring(Title)..']'
 		end
+	end
         
         if EntityType == "table" then
-            table.insert(StringTable, Tab..Title.." = {\n")
-            for _,Index in ipairs(Indices) do
-                local Entity = UpperEntity[Index]
-                table.insert(StringTable, formatTable(Entity, Index, table.concat(table.create(#Tab + 1, '\t')), Entity ~= Last))
-            end
-            table.insert(StringTable, Tab.."}")
+		table.insert(StringTable, Tab..Title.." = {\n")
+            	for _,Index in ipairs(Indices) do
+                	local Entity = UpperEntity[Index]
+                	table.insert(StringTable, formatTable(Entity, Index, table.concat(table.create(#Tab + 1, '\t')), Entity ~= Last))
+            	end
+            	table.insert(StringTable, Tab.."}")
         else
-            if EntityType == "string" then UpperEntity = "\""..UpperEntity.."\"" end
-            table.insert(StringTable, Tab..Title.." = "..tostring(UpperEntity))
+            	if EntityType == "string" then UpperEntity = "\""..UpperEntity.."\"" end
+            	table.insert(StringTable, Tab..Title.." = "..tostring(UpperEntity))
         end
       
         if notLast then table.insert(StringTable, ',') end 
-		if #Tab > 0 then table.insert(StringTable, TypeFormat) end
+	if #Tab > 0 then table.insert(StringTable, TypeFormat) end
         return concatTable(StringTable)
     end
 
