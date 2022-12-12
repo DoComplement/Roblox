@@ -11,7 +11,7 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
     1) <tuple> Table --> The table to be converted to string
     2) <string> Name --> Name of MAIN table
     3) <boolean> Sort --> Output table will be sorted. (true => Ascending, false => Descending, nil => Do not sort)
-<div align="center>Examples<\div>
+<div align="center>Examples</div>
 ```  
 ```
 
