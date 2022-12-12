@@ -3,7 +3,9 @@
 
 ## Usage
 - The code can be placed in the autoexec folder, but you can either execute the updating loadstring or copy the raw code and do so as you please
-```loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()``` 
+```   
+loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()
+``` 
 
 ## Improvements
 - Indexes through scope-level-defined dictionaries via ipairs (fastest way, no gapple)  
