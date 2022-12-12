@@ -2,7 +2,7 @@
 - Upon execution, the `Stringify.lua` file will add the ConvertTable function to the game environment (genv)
 
 ## Usage
-- The code can be placed in the autoexec folder, but you can either execute the updating loadstring or copy the raw code and do so as you please
+- The code can be placed in the autoexec folder, but you can either execute the updating loadstring or copy and save the raw code 
 ```   
 loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()
 ``` 
