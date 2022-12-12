@@ -5,39 +5,57 @@ print("Not nearly complete. execute textEffectsLib.getMethods() to see textEffec
 local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))()
 local stringToEffect = "This is a random String! WOW!"
 
-local textEffectLib = {}
+local textEffectsLib = {}
 
-textEffectsLib.specialConcat = function(Table)
-	local Concatenation = table.create(#Table)
-	for _,v in pairs(Table) do
-		table.insert(Concatenation, v)
+-- fix this method
+function textEffectsLib:Concat(Table)
+	local Concatenation = {}
+	for _,Value in pairs(Table) do
+		table.insert(Concatenation, Value)
 	end
 	return table.concat(Concatenation)
 end
 
 --[[ popEffect and sumEffect can be consolidated ]]
-textEffectsLib.Methods = {
-	["Pop"] = function(Instance, String)
-		local spaceString = table.create(#String, ' ')
-		String = String:split('')
+textEffectsLib.Modules = {
+	["Pop"] = {
+		["Random"] = function(Instance, String, Delay, Type)
+			local spaceString = table.create(#String, ' ')
+			String = String:split('')
 
-		for _,randIndex in ipairs(rand.randSequence(#String)) do
-			spaceString[randIndex] = String[randIndex]
-			Instance.Text = table.concat(spaceString) 
-			task.wait(0.05)
+			for _,randIndex in ipairs(rand.randSequence(#String)) do
+				spaceString[randIndex] = String[randIndex]
+				Instance.Text = table.concat(spaceString) 
+				task.wait(Delay or 0.05)
+			end
 		end
-	end,
-	["Sum"] = function(Instance, String, Delay)
-		local spaceString = {}
-		String = String:split('')
+	},
+	["Sum"] = {
+		["Random"] = function(Instance, String, Delay)
+			local spaceString = {}
+			String = String:split('')
 
-		for _,randIndex in ipairs(rand.randSequence(#String)) do
-			spaceString[randIndex] = String[randIndex]
-			Instance.Text = textEffectsLib.specialConcat(spaceString) 
-			if Delay then task.wait(Delay) end
+			for _,randIndex in ipairs(rand:randSequence(table.getn(String))) do
+				spaceString[randIndex] = String[randIndex]
+				Instance.Text = textEffectsLib:Concat(spaceString) 
+				task.wait(Delay or 0.05)
+			end
 		end
-	end,
-	["Sweep"] = function(Instance, String, Type) --[[ doStuff ]] end,
+	},
+	["Sweep"] = {
+		["Forward"] = function(Instance, String, Delay)
+			for Index = 1, #String do
+				Instance.Text = String:sub(1, Index)
+				task.wait(Delay or 0.05)
+			end
+		end,
+		["Backward"] = function(Instance, String, Delay)
+			for Index = #String, 1, -1 do
+				Instance.Text = String:sub(1, Index)
+				task.wait(Delay or 0.05)
+			end
+		end
+	},
 	
 	--[[ Types: Base, , Random, Sweep (in, out, left, right) ]]
 	--[[
@@ -45,34 +63,37 @@ textEffectsLib.Methods = {
 	    1) add extra characters to the randString and delete them accordingly to the end of the sequence
 	    2) make the encrypted characters rotate other random characters until they are fixed (could be a separate mode or toggle)
 	]]
-	["Decrypt"] = function(Instance, String, Type)
-		local Size = #String
-		local randString, refereceIndex = rand.randString(Size):split('')
-		String = String:split('')
+	["Decrypt"] = {
+		["Random"] = function(Instance, String, Type)
+			local Size = #String
+			local randString, refereceIndex = rand.randString(Size):split('')
+			String = String:split('')
 
-		--[[ current procedure is so-so ]]
-		local referenceTable = rand.randSequence(Size)
-		for Index = 1, Size do 
-			for count = 1,math.random(10, 50) do
-				randString[referenceTable[math.random(1, #referenceTable)]] = rand.AlphaBET[math.random(1, 64)]
+			--[[ current procedure is so-so ]]
+			local referenceTable = rand.randSequence(Size)
+			for Index = 1, Size do 
+				local Generator = Random.new()
+				for count = 1,Generator:NextInteger(10, 50) do
+					randString[referenceTable[Generator:NextInteger(1, #referenceTable)]] = rand.AlphaBET[Generator:NextInteger(1, 64)]
+					Instance.Text = table.concat(randString)
+				end
+				referenceIndex = table.remove(referenceTable, Generator:NextInteger(1, #referenceTable))
+				randString[referenceIndex] = String[referenceIndex]
 				Instance.Text = table.concat(randString)
-			end
-			referenceIndex = table.remove(referenceTable, math.random(1, #referenceTable))
-			randString[referenceIndex] = String[referenceIndex]
-			Instance.Text = table.concat(randString)
-			task.wait(0.05 + math.exp(Index - Size - 1))
-		end 
-	end
+				task.wait(0.05 + math.exp(Index - Size - 1))
+			end 
+		end
+	}
 }
 
-textEffectsLib.testMethod = function(Instance, String, Method)
+function textEffectsLib:testModule(Instance, String, Method)
 	print("Not Currently Defined")
 	Method = textEffectsLib.Methods[Method]
 	if Method then Method(Instance, String) end
 end
 
-textEffectLibs.spawnTestFrame = function(CopyDirectoryToClipboard)
-	if not game:GetService("Players").LocalPlayer.PlayerGui.TestGui then
+function textEffectsLib:spawnTestFrame(CopyDirectoryToClipboard)
+	if not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TestGui") then
 		local ScreenGui = Instance.new("ScreenGui")
 		local Frame = Instance.new("Frame")
 		local TextLabel = Instance.new("TextLabel")
@@ -97,20 +118,22 @@ textEffectLibs.spawnTestFrame = function(CopyDirectoryToClipboard)
 	end
 	if CopyDirectoryToClipboard then
 		setclipboard("game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
-		print("Directory Copied: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+		print("TextLabel Directory Copied: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
 	else
-		print("Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+		print("TextLabel Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
 	end
 end
 
+--[[
 textEffectsLib.getMethods = function()
 	print("Test each method on a random Text Instance (TextBox, TextLabel, TextButton) to see how they look")
-	print("<void> textEffectsLib.spawnTestFrame(<bool> CopyDirectoryToClipboard) -- spawns a TextLabel on the screen for the user to test methods on.")
-	print("<void> textEffectsLib.Methods["Pop"](<Instance> Instance, <string> String)")
-	print("<void> textEffectsLib.Methods["Sum"](<Instance> Instance, <string> String)")
-	print("<void> textEffectsLib.Methods["Decrypt"](<Instance> Instance, <string> String)")
-	print("<void> textEffectsLib.testMethod(<Instance> Instance, <string> String, <string> Method)")
+	print("<void> textEffectsLib:spawnTestFrame(<bool> CopyDirectoryToClipboard) -- spawns a TextLabel on the screen for the user to test methods on.")
+	print("<void> textEffectsLib.Modules["Pop"](<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.Modules["Sum"](<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib.Modules["Decrypt"](<Instance> Instance, <string> String)")
+	print("<void> textEffectsLib:testModule(<Instance> Instance, <string> String, <string> Method)")
 end
+]]	
 
 return textEffectsLib
 
