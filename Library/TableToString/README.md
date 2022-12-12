@@ -19,11 +19,11 @@ local Table = {1, 3, 2, 5, 4}
 print(getgenv().ConvertTable(Table, "Squiddy"))
 --[[ Output
 local Squiddy = {
-    [1] = 1,
-    [2] = 3,
-    [3] = 2,
-    [4] = 5,
-    [5] = 4
+	[1] = 1,
+    	[2] = 3,
+	[3] = 2,
+	[4] = 5,
+	[5] = 4
 }
 ]]   
 ```
