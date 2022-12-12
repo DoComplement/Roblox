@@ -10,7 +10,7 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 - The code can be placed in the autoexec folder, but you can either save the auto-updating loadstring or copy and save the raw code 
 - Input Parameters
     1) <tuple> Table	 --> The table to be converted to string
-    2) <string> MainName --> Name of MAIN table (input not required, see Example 1)
+    2) <string> MainName --> Name of MAIN table (input not required, see 1st example)
     3) <boolean> Sort 	 --> Output table will be sorted. (true => Ascending, false => Descending, nil => Do not sort)
 
 ## Examples
