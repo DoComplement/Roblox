@@ -37,7 +37,6 @@ getgenv().ConvertTable = function(Table, MainTitle, Sort)
     	local function formatTable(UpperEntity, Title, Tab, notLast)	
 		
 		local StringTable,EntityType = {},type(UpperEntity)
-		local TypeFormat = Types[EntityType] or " -->\t"..EntityType..'\n'
 		local Indices,Last
         
 		if EntityType == "table" then
@@ -74,7 +73,7 @@ getgenv().ConvertTable = function(Table, MainTitle, Sort)
         	end
       
         	if notLast then table.insert(StringTable, ',') end 
-		if #Tab > 0 then table.insert(StringTable, TypeFormat) end
+		if #Tab > 0 then table.insert(StringTable, Types[EntityType] or " -->\t"..EntityType..'\n') end
         	return table.concat(StringTable)
     	end
 	
