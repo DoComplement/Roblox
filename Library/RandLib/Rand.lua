@@ -8,19 +8,19 @@ function rand:createLinearTable(Length)
 end
 
 function rand:randSequence(Length)
-	local Sequence = table.create(Length, 0)
-	local referenceTable = rand.createLinearTable(Length)
+	local Sequence = table.create(Length, '\0')
+	local referenceTable = rand:createLinearTable(Length)
 	for i=1,Length do
-		Sequence[i] = table.remove(referenceTable, math.random(1, table.getn(referenceTable)))
+		Sequence[i] = table.remove(referenceTable, Random.new():NextInteger(1, table.getn(referenceTable)))
 	end
 	return Sequence
 end
 
 function rand:randomizeString(String)
-	local strTable = table.create(#String, ' ')
+	local strTable = table.create(#String, '\0')
 	String = String:split('')
-	for idx,randIdx in next, rand.randSequence(#String) do
-		strTable[idx] = String[randIdx]
+	for Idx,randIdx in next, rand:randSequence(table.getn(strTable)) do
+		strTable[Idx] = String[randIdx]
 	end
 	return table.concat(strTable)
 end
@@ -28,8 +28,8 @@ end
 rand.AlphaBET = rand:randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
 
 function rand:randString(Length)
-	local String = table.concat(table.create(Length, ' '))
-	return String:gsub('.', function() return rand.AlphaBET[math.random(1, 64)] end)
+	local String = table.concat(table.create(Length, '\0'))
+	return String:gsub('.', function() return rand.AlphaBET[Random.new():NextInteger(1, 64)] end)
 end
 
 function rand:updateAlphabet()
