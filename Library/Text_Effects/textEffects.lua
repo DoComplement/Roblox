@@ -2,7 +2,7 @@ print("Not nearly complete. execute textEffectsLib.getMethods() to see textEffec
 
 --[[ see to storing all methods in a table for simpler accessing ]]
 
-local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/random.lua"))()
+local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))()
 local stringToEffect = "This is a random String! WOW!"
 
 local textEffectLib = {}
