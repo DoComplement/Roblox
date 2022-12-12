@@ -1,6 +1,6 @@
 if getgenv().ConvertTable then getfenv(getgenv().ConvertTable).script:Destroy() end
 getgenv().ConvertTable = function(Table, Title, Sort)
-    if not Table or type(Table) ~= "table" then return Table end
+    assert(type(Table) == "table", "ERROR! Input table is not a valid table.")
     
     local function GetIndices(Table)
         local Indices = {}
