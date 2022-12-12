@@ -3,6 +3,6 @@
 
 ## Usage
 ```   
-local Url = "Https://raw.githubusercontent.com/DoComplement/Roblox/main/API_Dump/Dump.txt"
-local PropertyTable = Game:GetService("HttpService"):JSONDecode(Game:HttpGet(Url))
+local HttpService = Game:GetService("HttpService")
+local PropertyTable = HttpService:JSONDecode(Game:HttpGet("Https://raw.githubusercontent.com/DoComplement/Roblox/main/API_Dump/Dump.txt"))
 ```  
