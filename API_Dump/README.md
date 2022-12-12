@@ -1,6 +1,5 @@
 # Information  
-- Api Dump reference: `https://pastebin.com/TFSU2s5e`  
-- Other: `https://anaminus.github.io/rbx/json/api/latest.json`
+- This section contains properties for grabbing Roblox Instance properties (that aren't immediately known to everyday human knowledge)
 
 ## Calling
 ```   
@@ -8,3 +7,7 @@ local PropertyTable = Game:GetService("HttpService"):JSONDecode(Game:HttpGet("ht
 ```    
 
 ## Usage
+
+
+## To Do
+- Perhaps create comprehensible modules for relative API Usage
