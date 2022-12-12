@@ -2,8 +2,8 @@ print("execute rand.getMethods() for all methods and their usage")
 local rand = {}
 
 function rand:createLinearTable(Length)
-	local Table = table.create(Length, 0)
-	for i = 1, Length do Table[i] = i end
+	local Table = table.create(Length, 1)
+	for i = 2, Length do Table[i] = i end
 	return Table
 end
 
