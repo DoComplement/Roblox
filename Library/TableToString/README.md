@@ -14,7 +14,7 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 ```  
 { 
     ["imgonna"] = "blueberry", 
-    ["sugondese"] = yumberry_pomegranate  --> function   
+    ["sugondese"] = yumberry_pomegranate  --> function_...   
 }
 ```  
 
