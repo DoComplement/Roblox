@@ -2226,3 +2226,4 @@ PropertyTable = {
 		[1] = "Time"
 	}
 }
+return PropertyTable
