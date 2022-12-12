@@ -7,7 +7,7 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 ``` 
 
 ## Usage
-- The code can be placed in the autoexec folder, but you can either save the auto-updating loadstring or copy and save the raw code 
+- The code can be placed in the autoexec folder, but you can copy the auto-updating loadstring or the raw code 
 - Input Parameters
     1) <tuple> Table	 --> The table to be converted to string
     2) <string> MainName --> Name of MAIN table (input not required, see 1st example)
