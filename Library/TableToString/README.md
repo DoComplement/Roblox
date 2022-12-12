@@ -16,9 +16,9 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 ## Examples
 ```  
 local Table = {1, 3, 2, 5, 4}
-print(getgenv().ConvertTable(Table, "Squiddy"))
+print(getgenv().ConvertTable(Table))
 --[[ Output
-local Squiddy = {
+{
 	[1] = 1,
     	[2] = 3,
 	[3] = 2,
