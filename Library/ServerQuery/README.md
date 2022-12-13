@@ -1,7 +1,7 @@
 # Information
 - Stuff goes here
 - Search speed is somewhat dependant on your ping speed.
-- It is recommended to use AverageSearch and DeepFetch methods with fps and ping because the results will best represent the actual values.
+- Use AverageSearch and DeepFetch methods with fps and ping because the results will best represent the actual values.
 
 
 ## Methods
