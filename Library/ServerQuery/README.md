@@ -43,6 +43,7 @@ Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?
 ```   
 
 ## To Do
+- Add all methods in "getUsage" function
 - Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to integers
 ```   
 local Conversion = {
