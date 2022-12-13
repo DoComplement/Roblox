@@ -23,7 +23,7 @@ textEffectsLib.Modules = {
 			local spaceString = table.create(#String, ' ')
 			String = String:split('')
 
-			for _,randIndex in ipairs(rand.randSequence(#String)) do
+			for _,randIndex in ipairs(rand.randSequence(table.getn(spaceString))) do
 				spaceString[randIndex] = String[randIndex]
 				Instance.Text = table.concat(spaceString) 
 				task.wait(Delay or 0.05)
