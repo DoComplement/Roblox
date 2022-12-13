@@ -4,6 +4,24 @@
 ## Methods
 - ...
 
+## To Do
+- Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to pre-determined integers
+```   
+local Conversion = {
+	[1] = {		-- "Query" Type 
+		["Highest"] = 1,
+		["Lowest"] = 2,
+		["Equal"] = 3,
+	},
+	[2] = {		-- "Search" Type
+		["ping"] = 1,
+		["playing"] = 2,
+		["fps"] = 3,
+		["id"] = 4
+	}
+}
+```   
+
 ## General Url Format
 - Format options for a url search of a roblox game's server information
 ```   
