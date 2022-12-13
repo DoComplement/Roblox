@@ -19,6 +19,22 @@ queryServerSearch.Locals = {
 	averageFetch = false
 }
 
+--[[
+queryServerSearch.Conversion = {
+	[1] = {		-- "Query" Type 
+		["Highest"] = 1,
+		["Lowest"] = 2,
+		["Equal"] = 3,
+	},
+	[2] = {		-- "Search" Type
+		["ping"] = 1,
+		["playing"] = 2,
+		["fps"] = 3,
+		["id"] = 4
+	}
+}
+]]
+
 -- can be consolidated somehow
 queryServerSearch.optimizeQuery = {
 	["playing"] = {
