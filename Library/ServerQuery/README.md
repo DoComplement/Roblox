@@ -1,8 +1,12 @@
 # Information
 - Stuff goes here
+- Search speed is somewhat dependant on your ping speed.
+- It is recommended to use AverageSearch and DeepFetch methods with fps and ping because the results will best represent the actual values.
+
 
 ## Methods
 - ...
+
 
 ## Example Usage
 ```   
@@ -10,6 +14,7 @@
 -- getgenv().queryServerSearch.copyExecutionFormat("Lowest", "ping", 25)
 -- print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) --> print(queryServerSearch.testTeleport("Lowest", "ping", 25))
 ```   
+
 
 ## General Url Format
 - Format options for a url search of a roblox game's server information
@@ -42,8 +47,10 @@ Query_Format = {
 Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure 
 ```   
 
+
 ## To Do
-- Add all methods in "getUsage" function
+- See to modifying the code to use ipairs in fetchServer function (& test if it is faster than next)
+- Add all methods in "Usage" section of README, and add info to the Information section
 - Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to integers
 ```   
 local Conversion = {
@@ -60,6 +67,7 @@ local Conversion = {
 	}
 }
 ```   
+
 
 ## Removed Methods
 ```  
