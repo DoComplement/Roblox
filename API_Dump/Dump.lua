@@ -1,4 +1,4 @@
-local PropertyTable = {
+return {
 	["Accessory"] = {
 		[1] = "AccessoryType"
 	},
@@ -2225,4 +2225,4 @@ local PropertyTable = {
 		[2] = "DebugMode",
 		[3] = "Stiffness"
 	}
-}return PropertyTable
+}
