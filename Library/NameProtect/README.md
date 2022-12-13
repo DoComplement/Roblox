@@ -2,6 +2,7 @@
 - Stuff goes here
 
 ## To do
+- Perhaps, separate the chat module and the other path module
 - create filter function to not lower the string capitalization
 - alleviate filtering usernames outside the server (not necessary)
   - only feasible method is through format-filtering (using gsub, but gsub unfortunately acts as gmatch, see next point)
