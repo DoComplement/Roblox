@@ -270,12 +270,7 @@ queryServerSearch.setSearchSettings = function(...)
 end
 
 queryServerSearch.copyExecutionFormat = function(Query, Type, Quantity)
-    	local Header
-	if getgenv()["queryServerSearch"] then
-		Header = "print(pcall(getgenv().queryServerSearch.testTeleport, "
-	else
-		Header = "print(pcall(queryServerSearch.testTeleport, " 
-	end
+    	local Header = "print(pcall(queryServerSearch.testTeleport, " 
     
 	if queryServerSearch.Operation[Query] then
 		Query = '\"'..Query.."\", "
@@ -310,7 +305,8 @@ queryServerSearch.getUsage = function()
 		["Type"] = {
 			"ping",
 			"playing",
-			"fps"
+			"fps",
+			"id"
 		},
 		["Quantity"] = {
 			[1] = 2,
@@ -321,6 +317,7 @@ queryServerSearch.getUsage = function()
 		}
 	}
 	
+	--[[ Include other methods in here (for understanding and human usage) ]]
 	print("\nThis module was created for Gui application -> human input can cause error,boof >:`-()")
 	print("Any incorrect input will return an error, printed to the output via the pcall\n")
 	print(getgenv().table2String(queryServerSearch, "queryServerSearch"))
