@@ -9,10 +9,9 @@
 
 
 ## Example Usage
-```   
--- queryServerSearch.getUsage()    -- script has direct access
--- getgenv().queryServerSearch.copyExecutionFormat("Lowest", "ping", 25)
--- print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) --> print(queryServerSearch.testTeleport("Lowest", "ping", 25))
+- Find server with the average, lowest ping among 25 searches (will automatically teleport if server is found and not the same server, unless regardless teleport is specified)
+``` 
+print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) -- will print success value and any encountered error
 ```   
 
 
