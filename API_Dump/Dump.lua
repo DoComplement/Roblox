@@ -1,4 +1,4 @@
-PropertyTable = {
+local PropertyTable = {
 	["Accessory"] = {
 		[1] = "AccessoryType"
 	},
