@@ -74,10 +74,10 @@ textEffectsLib.Modules = {
 			for Index = 1, Size do 
 				local Generator = Random.new()
 				for count = 1,Generator:NextInteger(10, 50) do
-					randString[referenceTable[Generator:NextInteger(1, #referenceTable)]] = rand.AlphaBET[Generator:NextInteger(1, 64)]
+					randString[referenceTable[Generator:NextInteger(1, table.getn(referenceTable))]] = rand.AlphaBET[Generator:NextInteger(1, 64)]
 					Instance.Text = table.concat(randString)
 				end
-				referenceIndex = table.remove(referenceTable, Generator:NextInteger(1, #referenceTable))
+				referenceIndex = table.remove(referenceTable, Generator:NextInteger(1, table.getn(referenceTable)))
 				randString[referenceIndex] = String[referenceIndex]
 				Instance.Text = table.concat(randString)
 				task.wait(0.05 + math.exp(Index - Size - 1))
