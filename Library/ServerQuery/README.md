@@ -32,4 +32,5 @@ local QUERY_FORMAT = {
 ```   
 - serverType=0, sortOrder=1, excludeFullGames=true, limit=100 
 ```   
-local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure ```   
+local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure 
+```   
