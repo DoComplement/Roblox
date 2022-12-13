@@ -5,7 +5,7 @@
 - ...
 
 ## To Do
-- Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to pre-determined integers
+- Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to integers
 ```   
 local Conversion = {
 	[1] = {		-- "Query" Type 
