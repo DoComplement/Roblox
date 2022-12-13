@@ -178,7 +178,8 @@ queryServerSearch.fetchAverage = function(Query, Type, Quantity)
 end
 
 queryServerSearch.testTeleport = function(Query, Type, Quantity)
-	local accessTick = tick()
+	local AccessTick = tick()
+--	local iQuery,iType = Conversion[1][Query], Conversion[2][Type]
 
 	queryServerSearch.updateStatus["custom"]("Executing Server Query...", "Fetching server data...")
 	local Success, Server_List = queryServerSearch.fetchServerList(Query, Type)
@@ -247,9 +248,7 @@ queryServerSearch.testTeleport = function(Query, Type, Quantity)
 			end
 		end
 		queryServerSearch.updateStatus["custom"]("Teleporting to desired server...", "Desired server has an open slot!")
-		local TEMP
-		if Type == "playing" then TEMP = "player count" end
-		print("The server with the", Query:lower(), TEMP or Type, "has been found in", tick() - accessTick, "seconds!")
+		print("The server with the", Query:lower(), (Type == "playing" and "player count") or Type, "has been found in", tick() - AccessTick, "seconds!")
 		print(getgenv().table2String(currentServer, "Current Server Stats"))
 		print(getgenv().table2String(desiredServer, "New Server Stats"))
 		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, desiredServer.id)
