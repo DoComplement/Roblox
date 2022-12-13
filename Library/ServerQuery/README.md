@@ -4,22 +4,11 @@
 ## Methods
 - ...
 
-## To Do
-- Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to integers
+## Example Usage
 ```   
-local Conversion = {
-	[1] = {		-- "Query" Type 
-		["Highest"] = 1,
-		["Lowest"] = 2,
-		["Equal"] = 3,
-	},
-	[2] = {		-- "Search" Type
-		["ping"] = 1,
-		["playing"] = 2,
-		["fps"] = 3,
-		["id"] = 4
-	}
-}
+-- queryServerSearch.getUsage()    -- script has direct access
+-- getgenv().queryServerSearch.copyExecutionFormat("Lowest", "ping", 25)
+-- print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) --> print(queryServerSearch.testTeleport("Lowest", "ping", 25))
 ```   
 
 ## General Url Format
@@ -51,4 +40,22 @@ Query_Format = {
 - serverType=0, sortOrder=1, excludeFullGames=true, limit=100 
 ```   
 Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure 
+```   
+
+## To Do
+- Convert (& consolidate some) Linked Lists to Arrays by converting the input "Query" and search "Type" arguments to integers
+```   
+local Conversion = {
+	[1] = {		-- "Query" Type 
+		["Highest"] = 1,
+		["Lowest"] = 2,
+		["Equal"] = 3,
+	},
+	[2] = {		-- "Search" Type
+		["ping"] = 1,
+		["playing"] = 2,
+		["fps"] = 3,
+		["id"] = 4
+	}
+}
 ```   
