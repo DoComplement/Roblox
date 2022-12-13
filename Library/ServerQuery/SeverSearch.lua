@@ -1,39 +1,10 @@
 
-
--- format options for a url search of a roblox game's server information
---[[
-local QUERY_FORMAT = {
-	["serverType"] = {
-		["Public"] = 0,     -- others will throw an error
-		["Private Active"] = 1,
-		["Private Available"] = 2
-	},
-	["sortOrder"] = {   -- orders by number or players per server
-		[1] = 1,    -- Ascending
-		[2] = 2     -- Descending
-	},
-	["excludeFullGames"] = {
-		[1] = true,
-		[2] = false
-	},
-	["limit"]= {
-		[1] = 10,
-		[2] = 25,
-		[3] = 50,
-		[4] = 100
-	},
-	["cursor"] = "..." --> string corresponding to the next page of the search (max quantity of servers per page is defined by limit, max 100)
-}
--- serverType=0, sortOrder=1, excludeFullGames=true, limit=100 --> ...
-local Url = "https://games.roblox.com/v1/games/"..tostring(game.PlaceId).."/servers/0?sortOrder=1&excludeFullGames=true&limit=100&cursor" -- needs to have https secure search method
-]]
-
-warn("Search speed is somewhat dependant on your internet speed.")
+warn("Search speed is somewhat dependant on your ping speed.")
 print("Execute queryServerSearch.getUsage() with to see usage.")
 print("It is recommended to use AverageSearch and DeepFetch methods with fps and ping because the results will best represent the actual values.")
 
 if not getgenv().table2String then
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/table2String.lua"))()	
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()	
 end
 
 -- not really any significance in making the table a child of the game environment because the user will be removed regardless
@@ -357,7 +328,3 @@ queryServerSearch.getUsage = function()
 	print("execute: print(pcall(queryServerSearch.testTeleport, Query, Type, Quantity))")
 	print("to get call format, execute: copyExecutionFormat(Query, Type, Quantity) ")
 end
-
--- queryServerSearch.getUsage()    -- script has direct access
--- getgenv().queryServerSearch.copyExecutionFormat("Lowest", "ping", 25)
--- print(pcall(queryServerSearch.testTeleport, "Lowest", "ping", 25)) --> print(queryServerSearch.testTeleport("Lowest", "ping", 25))
