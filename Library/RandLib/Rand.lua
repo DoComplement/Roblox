@@ -1,4 +1,3 @@
-print("execute rand.getMethods() for all methods and their usage")
 local rand = {}
 
 function rand:createLinearTable(Length)
@@ -40,17 +39,6 @@ end
 
 function rand:updateAlphabet()
 	rand.AlphaBET = rand:Randomize(rand.AlphaBET)
-end
-
-function rand:getMethods()
-	print("<return type> directory (<argument type> argument)")
-	print("<table> rand.AlphaBET --> return table (tuple) of 64 characters corresponding to the system's alphabet")
-	print("<table> rand:createLinearTable(<unsigned integer> Length) --> returns linear array of \"Length\" where each the value at index i is equal to i")
-	print("<table> rand:randSequence(<unsigned integer> Length) --> returns a one-dimensional array with the indexes linear and the values random")
-	print("<string> rand:Randomize(<string> String) --> returns the input \"String\" with characters randomized")
-	print("<string> rand:randString(<unsigned integer> Length) --> returns a random string of \"Length\"")
-	print("<void> rand:updateAlphabet(<void>) --> randomizes the internal alphanumerical Alphabet which is used to generate random strings")
-	print("<void> rand:getMethods(<void>) --> returns each module and their calling method")
 end
 
 return rand
