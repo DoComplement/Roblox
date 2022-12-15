@@ -33,7 +33,7 @@ function rand:randString(Length)
 		return table.concat(table.create(Length, '\0')):gsub('.', function() return rand.AlphaBET[math.random(1, 64)] end)
 	else
 		local String = ''
-		for X = 1, Length do String = String .. rand.AlphaBET[math.random(1, 64)] end
+		for _ = 1, Length do String = String .. rand.AlphaBET[math.random(1, 64)] end
 		return String
 	end
 end
