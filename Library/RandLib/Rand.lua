@@ -16,7 +16,7 @@ function rand:randSequence(Length)
 	return Sequence
 end
 
--- must be string or array
+-- must be string or array (dictionary)
 function rand:Randomize(Entity, Concat)
 	if type(Entity) == "string" then Entity = Entity:split('') end
 	local Table = table.create(table.getn(Entity), '\0')
