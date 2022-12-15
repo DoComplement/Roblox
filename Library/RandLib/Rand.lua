@@ -17,29 +17,29 @@ function rand:randSequence(Length)
 end
 
 -- must be string or array
-function rand:Randomize(Entity)
+function rand:Randomize(Entity, Concat) 
 	local Table = table.create(#Entity, '\0')
 	if type(Entity) == "string" then Entity = Entity:split('') end
 	for Idx, randIdx in ipairs(rand:randSequence(table.getn(Table))) do
 		Table[Idx] = Entity[randIdx]
 	end
-	return (type(Entity) == "string" and table.concat(Table)) or Table
+	return (Concat and table.concat(Table)) or Table
 end
 
-rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
+rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ")
 
 function rand:randString(Length)
 	if Length >= 200 then
 		return table.concat(table.create(Length, '\0')):gsub('.', function() return rand.AlphaBET[math.random(1, 64)] end)
 	else
 		local String = ''
-		for i = 1, Length do String = String .. AlphaBET[math.random(1, 64)] end
+		for X = 1, Length do String = String .. rand.AlphaBET[math.random(1, 64)] end
 		return String
 	end
 end
 
 function rand:updateAlphabet()
-	rand.AlphaBET = rand:Randomize(table.concat(rand.AlphaBET)):split('')
+	rand.AlphaBET = rand:Randomize(rand.AlphaBET)
 end
 
 function rand:getMethods()
