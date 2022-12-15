@@ -3,7 +3,7 @@
 
 ## Methods
 `<return type> directory (<argument type> argument, ...)`  
-```<table> rand.AlphaBET```   
+``` <table> rand.AlphaBET ```   
 `returns table (tuple) of 64 characters corresponding to the system's alphabet`       
 ```<table> rand:createLinearTable(<int> Length)```   
 `returns linear array where each the value at index i is equal to i`   
