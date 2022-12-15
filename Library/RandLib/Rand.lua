@@ -26,7 +26,7 @@ function rand:Randomize(Entity)
 	return (type(Entity) == "string" and table.concat(Table)) or Table
 end
 
-rand.AlphaBET = rand:randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
+rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
 
 function rand:randString(Length)
 	if Length >= 200 then
@@ -39,7 +39,7 @@ function rand:randString(Length)
 end
 
 function rand:updateAlphabet()
-	rand.AlphaBET = rand:randomizeString(table.concat(rand.AlphaBET)):split('')
+	rand.AlphaBET = rand:Randomize(table.concat(rand.AlphaBET)):split('')
 end
 
 function rand:getMethods()
@@ -47,7 +47,7 @@ function rand:getMethods()
 	print("<table> rand.AlphaBET --> return table (tuple) of 64 characters corresponding to the system's alphabet")
 	print("<table> rand:createLinearTable(<unsigned integer> Length) --> returns linear array of \"Length\" where each the value at index i is equal to i")
 	print("<table> rand:randSequence(<unsigned integer> Length) --> returns a one-dimensional array with the indexes linear and the values random")
-	print("<string> rand:randomizeString(<string> String) --> returns the input \"String\" with characters randomized")
+	print("<string> rand:Randomize(<string> String) --> returns the input \"String\" with characters randomized")
 	print("<string> rand:randString(<unsigned integer> Length) --> returns a random string of \"Length\"")
 	print("<void> rand:updateAlphabet(<void>) --> randomizes the internal alphanumerical Alphabet which is used to generate random strings")
 	print("<void> rand:getMethods(<void>) --> returns each module and their calling method")
