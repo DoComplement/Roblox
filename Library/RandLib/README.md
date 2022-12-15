@@ -12,7 +12,14 @@
 <table> rand:createLinearTable(<int> Length)
 ```   
 `returns linear array where each the value at index i is equal to i`   
+      
+            
+            
+            
+            
     
+            
+                              
 ```   
 <table> rand:randSequence(<int> Length)
 ```   
