@@ -17,10 +17,10 @@ function rand:randSequence(Length)
 end
 
 -- must be string or array
-function rand:Randomize(Entity, Concat) 
-	local Table = table.create(#Entity, '\0')
+function rand:Randomize(Entity, Concat)
 	if type(Entity) == "string" then Entity = Entity:split('') end
-	for Idx, randIdx in ipairs(rand:randSequence(table.getn(Table))) do
+	local Table = table.create(table.getn(Entity), '\0')
+	for Idx, randIdx in ipairs(rand:randSequence(table.getn(Entity))) do
 		Table[Idx] = Entity[randIdx]
 	end
 	return (Concat and table.concat(Table)) or Table
