@@ -11,25 +11,31 @@ function rand:randSequence(Length)
 	local Sequence = table.create(Length, '\0')
 	local referenceTable = rand:createLinearTable(Length)
 	for i=1,Length do
-		Sequence[i] = table.remove(referenceTable, Random.new():NextInteger(1, table.getn(referenceTable)))
+		Sequence[i] = table.remove(referenceTable, math.random(1, table.getn(referenceTable)))
 	end
 	return Sequence
 end
 
-function rand:randomizeString(String)
-	local strTable = table.create(#String, '\0')
-	String = String:split('')
-	for Idx,randIdx in next, rand:randSequence(table.getn(strTable)) do
-		strTable[Idx] = String[randIdx]
+-- must be string or array
+function rand:Randomize(Entity)
+	local Table = table.create(#Entity, '\0')
+	if type(Entity) == "string" then Entity = Entity:split('') end
+	for Idx, randIdx in ipairs(rand:randSequence(table.getn(Table))) do
+		Table[Idx] = Entity[randIdx]
 	end
-	return table.concat(strTable)
+	return (type(Entity) == "string" and table.concat(Table)) or Table
 end
 
 rand.AlphaBET = rand:randomizeString("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ "):split('')
 
 function rand:randString(Length)
-	local String = table.concat(table.create(Length, '\0'))
-	return String:gsub('.', function() return rand.AlphaBET[Random.new():NextInteger(1, 64)] end)
+	if Length >= 200 then
+		return table.concat(table.create(Length, '\0')):gsub('.', function() return rand.AlphaBET[math.random(1, 64)] end)
+	else
+		local String = ''
+		for i = 1, Length do String = String .. AlphaBET[math.random(1, 64)] end
+		return String
+	end
 end
 
 function rand:updateAlphabet()
