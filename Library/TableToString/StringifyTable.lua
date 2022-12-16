@@ -16,9 +16,7 @@ getgenv().ConvertTable = function(Table, MainTitle, Sort)
 			end
 		end
         
-		if Indices[1] then -- if Table is non-empty
-			return Indices,Table[Indices[table.getn(Indices)]] -- Array and Last Element
-		end
+		return Indices,Table[Indices[table.getn(Indices)]] -- Array and Last Element
 	end
     
 	local function concatTable(Table) -- table is created using table.insert
