@@ -3,8 +3,7 @@
 
 ## Methods
 `<return type> directory (<argument type> argument, ...)`   
-.  
-.     
+<br /> <br />
 ```   
 <table> rand.AlphaBET 
 ```     
