@@ -19,13 +19,6 @@ getgenv().ConvertTable = function(Table, MainTitle, Sort)
 		return Indices,Table[Indices[table.getn(Indices)]] -- Array and Last Element
 	end
     
-	local function concatTable(Table) -- table is created using table.insert
-		for Index, Value in next, Table do -- thus, ipairs can be used
-			Table[Index] = tostring(Value)
-		end
-		return table.concat(Table)
-	end
-    
 	local Types = {
 		["number"] = '\n',
 		["string"] = '\n',
