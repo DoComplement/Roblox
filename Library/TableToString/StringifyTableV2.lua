@@ -1,5 +1,5 @@
-if getgenv().StringifyTable then getfenv(getgenv().StringifyTable).script:Destroy() end
-getgenv().StringifyTable = function(Table, MainTitle, Sort)
+if getgenv().t2s then getfenv(getgenv().t2s).script:Destroy() end
+getgenv().t2s = function(Table, MainTitle, Sort)
 	assert(type(Table) == "table", "ERROR! Input table is not a valid table.")
     
 	local function GetIndices(Table)
