@@ -21,32 +21,30 @@ getgenv().StringifyTable = function(Table, MainTitle, Sort)
     
 	local Tables = {}
 	local function formatTable(UpperEntity, Title, Tab, notLast)	
-	
+		
+		local Index = Title and (type(Title) == "string" and Tab.."[\""..Title.."\"] = " or Tab..'['..tostring(Title).."] = ") or ''
+		
 		if type(UpperEntity) == "table" then
+			Indices,Last = GetIndices(UpperEntity)
             if table.find(Tables, UpperEntity) == nil then -- checking for repeat-nested tables
                 table.insert(Tables, UpperEntity)
-				local StringTable,Indices,Last = {}, GetIndices(UpperEntity)
-				
-				for _,Index in ipairs(Indices) do
-					local Entity = UpperEntity[Index]
-					table.insert(StringTable, formatTable(Entity, Index, Tab..'\t', Last ~= Index))
+				local StringTable = {}
+				if table.getn(Indices) ~= 0 then
+					for _,Index in ipairs(Indices) do
+						local Entity = UpperEntity[Index]
+						table.insert(StringTable, formatTable(Entity, Index, Tab..'\t', Last ~= Index))
+					end
+					return Index.."{ \t-- "..tostring(UpperEntity)..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "}\n")
+				else 
+					return Index..(notLast and "{},\n" or "{}\n") 
 				end
-				return table.concat(StringTable)
 			else
-				if type(Title) == "string" then
-					return Tab.."[\""..Title.."\"] = "..tostring(UpperEntity)..(notLast and ",\n" or '\n')
-				else
-					return Tab..'['..tostring(Title).."] = "..tostring(UpperEntity)..(notLast and ",\n" or '\n') 
-				end
+				return Index.."\"Repeated Table\""..(notLast and ',' or '').."\t-- "..tostring(UpperEntity)..'\n'
 			end
 		else
-			if type(Title) == "string" then
-				return Tab.."[\""..Title.."\"] = "..tostring(UpperEntity)..(notLast and ",\n" or '\n')
-			else
-				return Tab..'['..tostring(Title).."] = "..tostring(UpperEntity)..(notLast and ",\n" or '\n')
-			end
+			return Index..tostring(UpperEntity)..(notLast and ",\n" or '\n')
 		end
 	end	
 	
-	return (MainTitle and "local ".. MainTitle.." = " or '').."{\n"..formatTable(Table,nil, '')..'}'
+	return (MainTitle and "local ".. MainTitle.." = " or '')..formatTable(Table, nil, '')
 end
