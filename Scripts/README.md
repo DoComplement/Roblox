@@ -16,5 +16,8 @@
   - may break some (hopefully) inconsequential in-game functions while actively spying  
   - (To do) Implement a function input & corresponding output hook for found functions in the table
   - Other stuff   
+### To do
+- Add spy methods for all metamethods for a metatable with easy configuration
+  - make the spy into a gui cuz yolo
    
   ![loverboy](https://github.com/DoComplement/Images/blob/fd316b4c24280d1a1a3aab909c0d891e5563e81f/foxy.png)
