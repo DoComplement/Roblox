@@ -39,7 +39,7 @@ getgenv().StringifyTable = function(Table, MainTitle, Sort)
 					return Index..(notLast and "{},\n" or "{}\n") 
 				end
 			else
-				return Index.."\"Repeated Table\""..(notLast and ',' or '').."\t-- "..tostring(Entity)..'\n'
+				return Index.."\"Repeated Table\",\t-- "..tostring(Entity)..'\n'
 			end
 		else
 			return Index..tostring(Entity)..(notLast and ",\n" or '\n')
