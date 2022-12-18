@@ -1,5 +1,5 @@
 # Information
-- Upon execution, the `Stringify.lua` file will add the ConvertTable function to the game environment (genv)
+- Upon execution, the `Stringify.lua` file will add the StringifyTable function to the game environment (genv)
 - The function will return a string-format of the input table, also influenced by the other arguments.
 
 ```   
@@ -16,7 +16,7 @@ loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/m
 ## Examples
 ```  
 local Table = {1, 3, 2, 5, 4}
-print(getgenv().ConvertTable(Table, nil, true)) --> Sort Ascending
+print(getgenv().StringifyTable(Table, nil, true)) --> Sort Ascending
 --[[ Output
 {
 	[1] = 1,
@@ -29,7 +29,7 @@ print(getgenv().ConvertTable(Table, nil, true)) --> Sort Ascending
 ```
 ```
 local Table = {['O'] = 3, ['A'] = 1, ["and Sometimes"] = 'Y', ['I'] = 2, ['E'] = "Good", ['U'] = 4}
-setclipboard(getgenv().ConvertTable(Table, "Vowels", true))
+setclipboard(getgenv().StringifyTable(Table, "Vowels", true))
 --[[ Output
 local Vowels = {
 	["A"] = 1,
