@@ -6,7 +6,7 @@
 loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()
 ```    
 <br />
-### Version 2
+### Version 2     
 - Version 2: Faster, and will work with repeat-nested tabled (tables that reappear in child tables). Such tables will influence infinite loops, as the same table is repeatedly encountered.   
 - Caveat: Although lua allows for this format, repeated tables will never be considered the last element of a table (because I haven't figured a way to devise that logic in the V2 code yet), so there will always be a comma after these elements.   
 ```
