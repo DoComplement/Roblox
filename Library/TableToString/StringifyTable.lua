@@ -1,5 +1,5 @@
-if getgenv().ConvertTable then getfenv(getgenv().ConvertTable).script:Destroy() end
-getgenv().ConvertTable = function(Table, MainTitle, Sort)
+if getgenv().StringifyTable then getfenv(getgenv().StringifyTable).script:Destroy() end
+getgenv().StringifyTable = function(Table, MainTitle, Sort)
 	assert(type(Table) == "table", "ERROR! Input table is not a valid table.")
     
     	local function GetIndices(Table)
@@ -71,4 +71,4 @@ getgenv().ConvertTable = function(Table, MainTitle, Sort)
     	return formatTable(Table, MainTitle, '', false)
 end
 
-print("<string> getgenv().ConvertTable(<table> Table, <string> nil or Table_Name, <boolean> Sort | true -> Ascending, false -> Descending, nil -> no sort)")
+print("<string> getgenv().StringifyTable(<table> Table, <string> nil or Table_Name, <boolean> Sort | true -> Ascending, false -> Descending, nil -> no sort)")
