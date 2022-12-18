@@ -19,9 +19,10 @@ getgenv().StringifyTable = function(Table, MainTitle, Sort)
 		return Indices,Table[Indices[table.getn(Indices)]] -- Array and Last Element
 	end
     
-	local Tables = {}
+	local Tables,Indices,Last,Model = {}
 	local function formatTable(Entity, Index, Tab, notLast)	
 		
+        _,Model = pcall(tostring, Entity)
 		Index = Index and (type(Index) == "string" and Tab.."[\""..Index.."\"] = " or Tab..'['..tostring(Index).."] = ") or ''
 		
 		if type(Entity) == "table" then
@@ -34,15 +35,15 @@ getgenv().StringifyTable = function(Table, MainTitle, Sort)
 						local Element = Entity[Index]
 						table.insert(StringTable, formatTable(Element, Index, Tab..'\t', Last ~= Element))
 					end
-					return Index.."{ \t-- "..tostring(Entity)..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "}\n")
+					return Index.."{ \t-- "..Model..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "}\n")
 				else 
 					return Index..(notLast and "{},\n" or "{}\n") 
 				end
 			else
-				return Index.."\"Repeated Table\",\t-- "..tostring(Entity)..'\n'
+				return Index.."\"Repeated Table\",\t-- "..Model..'\n'
 			end
 		else
-			return Index..tostring(Entity)..(notLast and ",\n" or '\n')
+			return Index..Model..(notLast and ",\n" or '\n')
 		end
 	end	
 	
