@@ -1,5 +1,5 @@
 
-if not getgenv().ConvertString then
+if not getgenv().StringifyTable then
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTable.lua"))()	
 end
 
@@ -261,8 +261,8 @@ queryServerSearch.testTeleport = function(Query, Type, Quantity)
 		end
 -- 		queryServerSearch.updateStatus["custom"]("Teleporting to desired server...", "Desired server has an open slot!")
 		print("The server with the", Query:lower(), (Type == "playing" and "player count") or Type, "has been found in", tick() - AccessTick, "seconds!")
-		print(getgenv().table2String(currentServer, "Current Server Stats"))
-		print(getgenv().table2String(desiredServer, "New Server Stats"))
+		print(getgenv().StringifyTable(currentServer, "Current Server Stats"))
+		print(getgenv().StringifyTable(desiredServer, "New Server Stats"))
 		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, desiredServer.id)
 	else
 -- 		queryServerSearch.updateStatus["custom"]("Current server already matches query...", "Error fetching servers, going idle...")
