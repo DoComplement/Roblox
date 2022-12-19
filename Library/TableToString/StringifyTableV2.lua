@@ -21,14 +21,14 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 		return Indices,Table[Indices[table.getn(Indices)]] -- Array and Last Element
 	end
     
-	local Tables,Indices,Last,Model = {}
+	local Tables = {}
 	local function formatTable(Entity, Index, Tab, notLast)	
 		
-	        _,Model = pcall(tostring, Entity)
+		local _,Model = pcall(tostring, Entity)
 		Index = Index and (type(Index) == "string" and Tab.."[\""..Index.."\"] = " or Tab..'['..tostring(Index).."] = ") or ''
 		
 		if type(Entity) == "table" then
-			Indices,Last = GetIndices(Entity)
+			local Indices,Last = GetIndices(Entity)
 			if table.find(Tables, Entity) == nil then -- checking for repeat-nested tables
                 		table.insert(Tables, Entity)
 				local StringTable = {}
