@@ -1,4 +1,4 @@
-print("Call: getgenv().t2s(Table, Title, Sort)")
+if Game:IsLoaded() == false then Game.Loaded:Wait() end
 
 if getgenv().t2s then getfenv(getgenv().t2s).script:Destroy() end
 getgenv().t2s = function(Table, MainTitle, Sort)
@@ -51,3 +51,4 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 	
 	return (MainTitle and "local ".. MainTitle.." = " or '')..formatTable(Table, nil, '')
 end
+print("<string> getgenv().t2s(<tuple> Table, <string> Title, <boolean> Sort)")
