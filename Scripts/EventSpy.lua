@@ -41,7 +41,7 @@ OldNamecall = hookmetamethod(Game, "__namecall", function(Self, ...)
         print("Calling Script:\t", getPath(Script))
         
         if table.unpack(Args) then
-            print(getgenv().t2s(Args, "Arguments"), '\n') --> will not work if table2String is not enabled
+            print(getgenv().t2s(Args, "Arguments")) --> will not work if table2String is not enabled
         else
             print("Arguments: nil\n")
         end
