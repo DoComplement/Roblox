@@ -1,4 +1,4 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/Format_Table/table2String.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTableV2.lua"))()
 local Services = {[Game:GetService("Players").LocalPlayer.Name] = "LocalPlayer"}
 local Types = {["InvokeServer"]=true, ["FireServer"]=true}
 local Classes = {["RemoteEvent"]=true, ["RemoteFunction"]=true}
