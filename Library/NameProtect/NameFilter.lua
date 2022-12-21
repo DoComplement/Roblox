@@ -46,8 +46,8 @@ randomLabel = nil
 
 chatFilterMain.addPlayer = function(Player)
 	if not chatFilterMain.Names[Player.Name] then
-		chatFilterMain.Names[Player.Name] = rand.randString(math.random(10, 15))
-		chatFilterMain.Names[Player.DisplayName] = rand.randString(math.random(10, 15))
+		chatFilterMain.Names[Player.Name] = rand:randString(math.random(10, 15))
+		chatFilterMain.Names[Player.DisplayName] = rand:randString(math.random(10, 15))
 		chatFilterMain.lowerNames[Player.Name:lower()] = Player.Name
 		chatFilterMain.lowerNames[Player.DisplayName:lower()] = Player.DisplayName
 		
@@ -79,7 +79,7 @@ chatFilterMain.filterGeneral = function(Text, isChatButton)
             if filteredName then
                 return '['..filteredName..']'
             else
-                return '['..rand.randString(math.random(10, 15))..']'
+                return '['..rand:randString(math.random(10, 15))..']'
             end
         end)
     else
