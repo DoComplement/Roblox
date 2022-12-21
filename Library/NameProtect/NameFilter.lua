@@ -148,9 +148,12 @@ chatFilterMain.Enable = function()
     
     -- [[ disable server messages and filter player messages ]]
     chatFilterMain.Connections["newChatEvent"] = chatFilterMain.Scroller.ChildAdded:Connect(function(Frame)
-        local TextButton = Frame:FindFirstChild("TextButton", true)
-        if TextButton then
-            TextButton.Text = chatFilterMain.filterGeneral(TextButton.Text, true)
+	if Frame:FindFirstChild("TextButton", true) then
+		for _,Child in ipairs(Frame.TextLabel:GetChildren()) do
+			if Child.ClassName == "TextButton" then
+				Child.Text = chatFilterMain.filterGeneral(Child.Text)
+			end
+		end
         else
             Frame.TextLabel.Text = chatFilterMain.filterGeneral(Frame.TextLabel.Text)
         end
