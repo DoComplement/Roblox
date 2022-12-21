@@ -20,7 +20,7 @@
 
 local Players,Workspace,RunService = Game:GetService("Players"), Game:GetService("Workspace"),Game:GetService("RunService")
 
-local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Classes/random.lua"))()
+local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))()
 local chatFilterMain = {
     Scroller = Players.LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller,
     ClassTypes = {["TextLabel"]=true, ["TextButton"]=true, ["TextBox"]=true}, 
