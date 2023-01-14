@@ -40,7 +40,7 @@ OldNamecall = hookmetamethod(Game, "__namecall", function(Self, ...)
         print("Reference:\t", table.concat({[1]=getPath(Self), [2]=':', [3]=Method, [4]="(...)"}))
         print("Calling Script:\t", getPath(Script))
         
-        if table.unpack(Args) then
+        if table.getn(Args) ~= 0 then
             print(getgenv().t2s(Args, "Arguments")) --> will not work if table2String is not enabled
         else
             print("Arguments: nil\n")
