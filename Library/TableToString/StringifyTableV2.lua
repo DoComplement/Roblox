@@ -34,7 +34,7 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 				local StringTable = {};
 				if table.getn(Indices) ~= 0 then
 					for _,Index in ipairs(Indices) do
-						local Element = Entity[Index;
+						local Element = Entity[Index];
 						table.insert(StringTable, formatTable(Element, Index, Tab..'\t', Last ~= Element));
 					end;
 					return Index.."{ \t-- "..Model..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "}\n");
