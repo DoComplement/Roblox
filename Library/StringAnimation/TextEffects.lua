@@ -1,20 +1,20 @@
-print("Not nearly complete. execute textEffectsLib.getMethods() to see textEffect methods")
+print("Not nearly complete. execute textEffectsLib.getMethods() to see textEffect methods");
 
 --[[ see to storing all methods in a table for simpler accessing ]]
 
-local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))()
-local stringToEffect = "This is a random String! WOW!"
+local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))();
+local stringToEffect = "This is a random String! WOW!";
 
-local textEffectsLib = {}
+local textEffectsLib = {};
 
 -- fix this method
 function textEffectsLib:Concat(Table)
-	local Concatenation = {}
+	local Concatenation = {};
 	for _,Value in pairs(Table) do
-		table.insert(Concatenation, Value)
-	end
-	return table.concat(Concatenation)
-end
+		table.insert(Concatenation, Value);
+	end;
+	return table.concat(Concatenation);
+end;
 
 --[[ popEffect and sumEffect can be consolidated ]]
 textEffectsLib.Modules = {
@@ -65,64 +65,64 @@ textEffectsLib.Modules = {
 	]]
 	["Decrypt"] = {
 		["Random"] = function(Instance, String, Type)
-			local Size = #String
-			local randString, refereceIndex = rand.randString(Size):split('')
-			String = String:split('')
+			local Size = #String;
+			local randString, refereceIndex = rand.randString(Size):split('');
+			String = String:split('');
 
 			--[[ current procedure is so-so ]]
-			local referenceTable = rand.randSequence(Size)
+			local referenceTable = rand.randSequence(Size);
 			for Index = 1, Size do 
 				local Generator = Random.new()
 				for count = 1,Generator:NextInteger(10, 50) do
-					randString[referenceTable[Generator:NextInteger(1, table.getn(referenceTable))]] = rand.AlphaBET[Generator:NextInteger(1, 64)]
-					Instance.Text = table.concat(randString)
-				end
-				referenceIndex = table.remove(referenceTable, Generator:NextInteger(1, table.getn(referenceTable)))
-				randString[referenceIndex] = String[referenceIndex]
-				Instance.Text = table.concat(randString)
-				task.wait(0.05 + math.exp(Index - Size - 1))
-			end 
-		end
+					randString[referenceTable[Generator:NextInteger(1, table.getn(referenceTable))]] = rand.AlphaBET[Generator:NextInteger(1, 64)];
+					Instance.Text = table.concat(randString);
+				end;
+				referenceIndex = table.remove(referenceTable, Generator:NextInteger(1, table.getn(referenceTable)));
+				randString[referenceIndex] = String[referenceIndex];
+				Instance.Text = table.concat(randString);
+				task.wait(0.05 + math.exp(Index - Size - 1));
+			end;
+		end;
 	}
-}
+};
 
 function textEffectsLib:testModule(Instance, String, Method)
-	print("Not Currently Defined")
-	Method = textEffectsLib.Methods[Method]
-	if Method then Method(Instance, String) end
-end
+	print("Not Currently Defined");
+	Method = textEffectsLib.Methods[Method];
+	if Method then Method(Instance, String) end;
+end;
 
 function textEffectsLib:spawnTestFrame(CopyDirectoryToClipboard)
-	if not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TestGui") then
-		local ScreenGui = Instance.new("ScreenGui")
-		local Frame = Instance.new("Frame")
-		local TextLabel = Instance.new("TextLabel")
+	if not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("TestGui") then;
+		local ScreenGui = Instance.new("ScreenGui");
+		local Frame = Instance.new("Frame");
+		local TextLabel = Instance.new("TextLabel");
 
-		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-		ScreenGui.Name = "TestGui"
+		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui");
+		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+		ScreenGui.Name = "TestGui";
 
-		Frame.Parent = ScreenGui
-		Frame.BackgroundColor3 = Color3.fromRGB(125, 125, 125)
-		Frame.BackgroundTransparency = 0.500
-		Frame.Position = UDim2.new(0.61585784, 0, 0.107231915, 0)
-		Frame.Size = UDim2.new(0, 403, 0, 73)
+		Frame.Parent = ScreenGui;
+		Frame.BackgroundColor3 = Color3.fromRGB(125, 125, 125);
+		Frame.BackgroundTransparency = 0.500;
+		Frame.Position = UDim2.new(0.61585784, 0, 0.107231915, 0);
+		Frame.Size = UDim2.new(0, 403, 0, 73);
 
-		TextLabel.Parent = Frame
-		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		TextLabel.Position = UDim2.new(0.024813896, 0, 0.150684938, 0)
-		TextLabel.Size = UDim2.new(0, 382, 0, 50)
-		TextLabel.Font = Enum.Font.SourceSans
-		TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-		TextLabel.TextSize = 14.000
-	end
+		TextLabel.Parent = Frame;
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+		TextLabel.Position = UDim2.new(0.024813896, 0, 0.150684938, 0);
+		TextLabel.Size = UDim2.new(0, 382, 0, 50);
+		TextLabel.Font = Enum.Font.SourceSans;
+		TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0);
+		TextLabel.TextSize = 14.000;
+	end;
 	if CopyDirectoryToClipboard then
-		setclipboard("game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
-		print("TextLabel Directory Copied: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
+		setclipboard("game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel");
+		print("TextLabel Directory Copied: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel");
 	else
-		print("TextLabel Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel")
-	end
-end
+		print("TextLabel Directory: game:GetService(\"Players\").LocalPlayer.PlayerGui.TestGui.Frame.TextLabel");
+	end;
+end;
 
 --[[
 textEffectsLib.getMethods = function()
@@ -135,5 +135,5 @@ textEffectsLib.getMethods = function()
 end
 ]]	
 
-return textEffectsLib
+return textEffectsLib;
 
