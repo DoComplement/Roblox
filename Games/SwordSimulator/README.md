@@ -16,5 +16,3 @@ This repository is the access point to the Sword Simulator kitty script created 
 
 ## Discord 
 - Send ```loverboy#3970``` a message on discord with your concern.
-
-```
