@@ -1,5 +1,5 @@
 # Sword Simulator Exploit Script
-This repository is the access point to the Sword Simulator kitty script created by Activities12 on V3rmillion
+This repository is the access point to the Sword Simulator kitty scripts created by Activities12 on V3rmillion
 
 ## Features
 - Fastest Auto-Farm
