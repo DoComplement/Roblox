@@ -109,7 +109,7 @@ t = task.defer(function()
 end);
 
 local function PickColor()
-	appendfile(Filename, "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..',')
+	appendfile(Filename, "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},")
 	Changed = false;
 	Index = Index + 1;
 end
