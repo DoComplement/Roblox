@@ -91,7 +91,7 @@ t = task.defer(function()
 end);
 
 local function PickColor()
-	appendfile("ColorPicks.lua", "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..",\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
+	appendfile("ColorPicks.lua", "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
 	Changed = false;
 	if Index == table.getn(Colors) - 1 then
 		appendfile("ColorPicks.lua", "\n};");
