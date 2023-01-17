@@ -76,24 +76,25 @@ Instance.new("UICorner", {
 	Parent = Next
 });
 
-writefile("ColorPicks.lua", "return {");
 local Changed = false;
 local Index = 1;
 local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua"))();
 
 local t,c1,c2
 t = task.defer(function()
-	while true do
-		Button.BackgroundColor3 = Color3.new(BrickColor.random().Color);
+	for _,Color in ipairs(Colors) do
+		Button.BackgroundColor3 = Color3.new(unpack(Color));
+		Button.Text = tostring(BrickColor.new(Button.BackgroundColor3));
 		Changed = true;
 		while Changed do task.wait() end
 	end
 end);
 
 local function PickColor()
-	appendfile("ColorPicks.lua", "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..',')
+	appendfile("ColorPicks.lua", "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..",\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
 	Changed = false;
 	if Index == table.getn(Colors) - 1 then
+		appendfile("ColorPicks.lua", "\n};");
 		task.cancel(t);
 		c1:Disconnect();
 		c2:Disconnect();
