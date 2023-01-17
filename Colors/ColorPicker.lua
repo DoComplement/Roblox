@@ -12,7 +12,8 @@ CreateInstance = hookfunction(Instance.new, function(ObjectType, Properties)
 end)
 
 local ScreenGui = Instance.new("ScreenGui", {
-	Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"),
+	Parent = game:GetService("CoreGui"),
+	Name = "ColorPicker",
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 });
 local Frame = Instance.new("Frame", {
@@ -75,7 +76,8 @@ Instance.new("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Next
 });
-
+local Filename = "ColorPicks_"..tostring(math.random(1e+6, 1e+7))..".lua";
+writefile(Filename, "return {");
 local Changed = false;
 local Index = 1;
 local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua"))();
@@ -87,21 +89,23 @@ t = task.defer(function()
 		Button.Text = tostring(BrickColor.new(Button.BackgroundColor3));
 		Changed = true;
 		while Changed do task.wait() end
+		if Button.Text == "Hot pink" then ScreenGui:Destroy() end
 	end
 end);
 
 local function PickColor()
-	appendfile("ColorPicks.lua", "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
+	appendfile(Filename, "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
 	Changed = false;
-	if Index == table.getn(Colors) - 1 then
-		appendfile("ColorPicks.lua", "\n};");
-		task.cancel(t);
-		c1:Disconnect();
-		c2:Disconnect();
-	end
 	Index = Index + 1;
+	if Button.Text == "Hot pink" then ScreenGui:Destroy() end
 end
 
 c1 = Next.MouseButton1Down:Connect(function() Changed = false end);
 c2 = Keep.MouseButton1Down:Connect(PickColor);
+ScreenGui.Destroying:Once(function()
+	appendfile(Filename, "\n};");
+	task.cancel(t);
+	c1:Disconnect();
+	c2:Disconnect();
+end)
 
