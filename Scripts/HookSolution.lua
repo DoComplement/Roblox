@@ -1,6 +1,6 @@
 -- this method is directly influenced from 0866 on v3rmillion
 
-_G.hooks = _G.hooks or {};
+_G.hooks = _G.hooks or {}; --  must be global
 
 local function createhook(fn)
     local function proxy(...)
@@ -8,12 +8,11 @@ local function createhook(fn)
         return (hook.replacement or hook.original)(...);
     end;
     
-    _G.hooks[fn] = {    
-        original = hookfunction(fn, proxy)  
-    };
+    local hook = { original = hookfunction(fn, proxy) };
+    _G.hooks[fn] = hook;
     
     return function(replacement)
-        _G.hooks[fn].replacement = replacement;
+        hook.replacement = replacement;
     end;
 end;
 
