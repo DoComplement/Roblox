@@ -1,3 +1,5 @@
+-- table of Color3 values for each unique BrickColor defined by Roblox (ignoring Medium stone grey)
+
 --[[
 writefile("Colors.lua", "return {");
 local found = {};
