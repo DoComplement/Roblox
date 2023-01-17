@@ -4,8 +4,8 @@ _G.hooks = _G.hooks or {}; --  must be global
 
 local function createhook(fn)
     local function proxy(...)
-        local hook = _G.hooks[debug.info(1, 'f')];
-        return (hook.replacement or hook.original)(...);
+        local hook = _G.hooks[debug.info(1, 'f')];  -- table corresponding to _G.hooks[fn]
+        return (hook.replacement or hook.original)(...);    -- crux
     end;
     
     local hook = { original = hookfunction(fn, proxy) };
