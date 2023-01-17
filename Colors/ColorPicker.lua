@@ -11,7 +11,7 @@ CreateInstance = hookfunction(Instance.new, function(ObjectType, Properties)
 	end
 end)
 
-ScreenGui = Instance.new("ScreenGui", {
+local ScreenGui = Instance.new("ScreenGui", {
 	Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"),
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 });
@@ -22,7 +22,7 @@ local Frame = Instance.new("Frame", {
 	Size = UDim2.new(0, 241, 0, 105)
 });
 
-Button = Instance.new("TextButton", {
+local Button = Instance.new("TextButton", {
 	Name = "Button",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 150),
@@ -35,7 +35,7 @@ Button = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-UICorner = Instance.new("UICorner", {
+Instance.new("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Button
 });
@@ -53,7 +53,7 @@ local Keep = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-UICorner_2 = Instance.new("UICorner", {
+Instance.new("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Keep
 });
@@ -71,7 +71,7 @@ local Next = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-UICorner_3 = Instance.new("UICorner", {
+Instance.new("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Next
 });
@@ -83,19 +83,17 @@ local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComp
 
 local t,c1,c2
 t = task.defer(function()
-	for _,Color in ipairs(Colors) do
-		Button.BackgroundColor3 = Color3.new(unpack(Color));
-		Button.Text = tostring(BrickColor.new(Button.BackgroundColor3));
+	while true do
+		Button.BackgroundColor3 = Color3.new(BrickColor.random().Color);
 		Changed = true;
 		while Changed do task.wait() end
 	end
 end);
 
 local function PickColor()
-	appendfile("ColorPicks.lua", "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..",\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
+	appendfile("ColorPicks.lua", "\n\t["..Index.."] = "..tostring(Button.BackgroundColor3)..',')
 	Changed = false;
 	if Index == table.getn(Colors) - 1 then
-		appendfile("ColorPicks.lua", "\n};");
 		task.cancel(t);
 		c1:Disconnect();
 		c2:Disconnect();
@@ -105,3 +103,4 @@ end
 
 c1 = Next.MouseButton1Down:Connect(function() Changed = false end);
 c2 = Keep.MouseButton1Down:Connect(PickColor);
+
