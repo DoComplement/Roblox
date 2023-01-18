@@ -95,7 +95,7 @@ local function StudyFunction(HookingFunction, Inputs)
 	return Success,ReturnStatement
 end
 
-local function StudyTable(Metatable, Parent)
+return function(Metatable, Parent)
 	if isreadonly(Metatable) then setreadonly(Metatable, false) end
 		local MetatableIndex = Metatable.__index
 		Metatable.__index = newcclosure(function(Self, Index)
@@ -139,5 +139,3 @@ local function StudyTable(Metatable, Parent)
 	end)
 	setreadonly(Metatable, true)
 end
-
-StudyTable(getrawmetatable(Lib), ProtectedLibrary)  -- <-- Change stuff here
