@@ -18,7 +18,7 @@ local StudyTable = loadstring(Game:HttpGet("https://raw.githubusercontent.com/Do
   - will format the found indeces into a table and store the output in a file    
   - prints each found index and table to the standard output    
   - may break some (hopefully) inconsequential in-game functions while actively spying  
-  - (To do) Implement a function input & corresponding output hook for found functions in the table
+  - (To do) Implement a function input & corresponding output hook for found functions in the table (fix the hookfunction solution)
   - Other stuff   
 
 ## Hookfunction Solution (credit goes to 0866 on v3rmillion)
