@@ -18,7 +18,7 @@
   - Other stuff   
 
 ## Hookfunction Solution (credit goes to 0866 on v3rmillion)
-```local createHook = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/HookSolution.lua"))()```
+``` local createHook = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/HookSolution.lua"))() ```
 - hooks functions with upvalue errors upon normal hookfunction attempts (arg#2, too many upvalues error)
 - doesn't update the original function
   -> allows for repeated, unique hooking and unhooking (hooking with nil)
