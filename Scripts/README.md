@@ -1,7 +1,9 @@
 # Scripts
 
 ## EventSpy  
-`loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/EventSpy.lua"))()`  
+```
+loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/EventSpy.lua"))()
+```  
 - Prints the invoked RemoteEvents and fired RemoteFunctions to the standard output with 
   - Calling Instance with call type (InvokeServer, FireServer)   
   - Path of Calling Instance   
@@ -9,7 +11,9 @@
   - Other stuff later on    
 
 ## StudyProtectedTable  (because I don't know a better way to get the indices)    
-```local StudyTable = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/StudyProtectedTable.lua"))()```   
+```
+local StudyTable = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/StudyProtectedTable.lua"))()
+```   
 - Finds the hidden indices of the a protected table whose indices return nil from a forced call    
   - will format the found indeces into a table and store the output in a file    
   - prints each found index and table to the standard output    
@@ -18,7 +22,7 @@
   - Other stuff   
 
 ## Hookfunction Solution (credit goes to 0866 on v3rmillion)
-``` local createHook = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/HookSolution.lua"))() ```
+```local createHook = loadstring(Game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Scripts/HookSolution.lua"))()```     
 - hooks functions with upvalue errors upon normal hookfunction attempts (arg#2, too many upvalues error)
 - doesn't update the original function
   -> allows for repeated, unique hooking and unhooking (hooking with nil)
