@@ -1,36 +1,36 @@
-
---[[ NOT COMPLETE, CURRENTLY DESIGNED TO NOT BE UNIVERSAL (to reduce bloat) ]]
+if Game:IsLoaded() == false then Game.Loaded:Wait() end
 
 local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))();
 local Main = {
-    Scroller = Game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller,
+    Scroller = Game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller,
     ClassTypes = {["TextLabel"]=true, ["TextButton"]=true, ["TextBox"]=true}, 
     Names = {},
-    Connections = {}, -- newChatEvent, bubbleChatEvent, newPlayerEvent, and removePlayerEvent
-    SpaceOffset = 0,
+    Connections = {}, -- newChatEvent, bubbleChatEvent, newPlayerEvent, 
+    SpaceOffset = '',
     hideStats = true,
-    Enabled = true
+    Enabled = false
 };
 
 -- idk a better way to get the textOffet for the space character
 -- game:GetService("TextService"):GetTextSize(...) was not working 100% of the time
-local Label = Main.Scroller.Frame.TextLabel
-Main.SpaceOffset = Label.TextBounds.X	-- get current x-bounds
-Label.Text = Label.Text..' '	-- update x-bounds with a single space
-while Label.TextBounds.X == Main.SpaceOffset do task.wait() end	-- wait until x-bounds are updated
-Main.SpaceOffset = Label.TextBounds.X - Main.SpaceOffset -- calculate single space bounds value (can probably be calculated easier from text size and font)
-Label = nil -- deallocate
+local Label = Main.Scroller.Frame.TextLabel;
+local Offset = Label.TextBounds.X; -- get current x-bounds
+Label.Text = Label.Text..' ';	-- update x-bounds with a single space
+while Label.TextBounds.X == Offset do task.wait() end;	-- wait until x-bounds are updated
+Main.SpaceOffset = table.concat(table.create(2*(Label.TextBounds.X - Offset),' ')); -- can probably be calculated easier from text size and font
+Offset,Label = nil; -- deallocate
 
-function Main:AddPlayer(Player)
-	if Main.Names[Player.Name:lower()] == nil then
+function Main.AddPlayer(Player)
+	local lName,lDisplayName = Player.Name:lower(),Player.DisplayName:lower();
+	if Main.Names[lName] == nil then
 		local Name = rand:randString(math.random(10, 15));
 		local DisplayName = rand:randString(math.random(10, 15));
 		
-		Main.Names[Player.Name:lower()] = {[1] = Name, [2] = Name:len() - Player.Name:len()};
-		Main.Names[Player.DisplayName:lower()] = {[1] = DisplayName, [2] = DisplayName:len() - Player.DisplayName:len()};
+		Main.Names[lName] = {[1] = Name, [2] = Name:len() - lName:len()};
+		Main.Names[lDisplayName] = {[1] = DisplayName, [2] = DisplayName:len() - lDisplayName:len()};
 		
-		Player.Name = Main.Names[Player.Name:lower()];
-		Player.DisplayName = Main.Names[Player.DisplayName:lower()];
+		Player.Name = Main.Names[lName][1];
+		Player.DisplayName = Main.Names[lDisplayName][1];
 	end;
 end;
 
@@ -40,19 +40,18 @@ end;
 function Main:Filter(Text)
 	local LowerText = Text:lower();
 	local Indices,changed,i1,i2,offset = {},nil;
-    for Username,Filter in next, Main.Lower do
+    for Username,Filter in next, Main.Names do
 		offset = 0; -- reset offset
 		i1,i2 = LowerText:find(Username); -- get start and end indices of found username
 		changed = (i1~=nil); 
-		while i1 ~= 0 do
+		while i1 ~= nil do
 			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]}); -- see use below (for _,Table in ipairs(Indices) do ...)
 			offset = offset + Filter[2]; -- update offset
 			i1,i2 = LowerText:find(Username, i2); -- update indices
 		end;
 		
-		if changed then 
-			LowerText = LowerText:gsub(Username, Filter[1]); -- will update lowertext for multiple usernames found in the same string
-		end;
+		-- must update lowertext if multiple usernames are found in the same string
+		if changed then LowerText = LowerText:gsub(Username, Filter[1]); end; 
 	end;
 	
 	for _,Table in ipairs(Indices) do
@@ -62,22 +61,21 @@ function Main:Filter(Text)
 	return Text;
 end;
 
-local TextOffset,Spaces
 function Main:Update(TextLabel, Text)
-    local TextOffset,Spaces = 2*Main.SpaceOffset,'';
+    local Offset,Spaces = 0,Main.SpaceOffset;
     for _,Label in ipairs(TextLabel:GetChildren()) do
-        TextOffset = TextOffset + Label.TextBounds.X
-    end
+		Offset = Offset + Label.TextBounds.X;
+    end;
 	
-	for _=1, TextOffset do Spaces = Spaces .. ' ';
-    return Spaces..Main:Filter(Text)
+	for _=1,Offset do Spaces = Spaces .. ' '; end;
+    return Spaces..Main:Filter(Text);
 end
 
 function Main:Enable()
-	if Main.Enabled then return end;
+	if Main.Enabled then return; end;
     
     -- Initialize Name Tables
-    for _,Player in ipairs(Game:GetService("Players"):GetPlayers()) do Main:AddPlayer(Player) end
+    for _,Player in ipairs(Game:GetService("Players"):GetPlayers()) do Main.AddPlayer(Player); end;
     
     -- update Name Tables on new player added
 	table.insert(Main.Connections, Game:GetService("Players").PlayerAdded:Connect(Main.AddPlayer));
@@ -85,11 +83,11 @@ function Main:Enable()
     -- [[ filter all active chat messages ]]
 	local TextButton = nil;
     for Index,Frame in ipairs(Main.Scroller:GetChildren()) do
-		if Index == 1 then continue end;
+		if Index == 1 then continue; end;
         TextButton = Frame:FindFirstChild("TextButton", true);
         if TextButton ~= nil then
             TextButton.Text = Main:Filter(TextButton.Text);
-            Frame.TextLabel.Text = Main:Update(Frame.TextLabel, Frame.TextLabel.Text:match("%s*(.+)"))
+            Frame.TextLabel.Text = Main:Update(Frame.TextLabel, Frame.TextLabel.Text:match("%s*(.+)"));
         else
             Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text)
         end
@@ -100,13 +98,13 @@ function Main:Enable()
 		if Frame:FindFirstChild("TextButton", true) ~= nil then
 			for _,Child in ipairs(Frame.TextLabel:GetChildren()) do
 				if Child.ClassName == "TextButton" then
-					Child.Text = Main:Filter(Child.Text)
-				end
-			end
+					Child.Text = Main:Filter(Child.Text);
+				end;
+			end;
         else
-            Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text)
-        end
-    end)
+            Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text);
+        end;
+    end));
     
     
     -- disable Bubble chat
@@ -138,19 +136,17 @@ function Main:Disable()
 	Main.Enabled = false;
 end;
 
-Main.Enable();
+Main:Enable();
 
 local OldNewIndex
 OldNewIndex = hookmetamethod(game, "__newindex", function(Self, Index, Value)
     if Main.Enabled then
-        if Self.Parent ~= nil and Self.Parent.Parent == Main.Scroller ~= nil and Index == "Text" then
+        if Self.Parent ~= nil and Self.Parent.Parent == Main.Scroller and Index == "Text" then
             return OldNewIndex(Self, Index, Main:Update(Self, Value:match("%s*(.+)"))); -- removes all white spaces (can lead to erroneous errors)
         end;
     end;
     
     return OldNewIndex(Self, Index, Value);
 end);
--- print("CALLED ALL")
-
-
+print("CALLED ALL")
 
