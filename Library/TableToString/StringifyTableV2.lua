@@ -17,7 +17,7 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 			end;
 		end;
         
-		return Indices,Table[Indices[table.getn(Indices)]]; -- Array and Last Element
+		return Indices,table.getn(Indices); -- Array and Last Index
 	end;
     
 	local Tables = {};
@@ -32,9 +32,9 @@ getgenv().t2s = function(Table, MainTitle, Sort)
                 table.insert(Tables, Entity);
 				local StringTable = {};
 				if table.getn(Indices) ~= 0 then
-					for _,Index in ipairs(Indices) do
-						local Element = Entity[Index];
-						table.insert(StringTable, formatTable(Element, Index, Tab..'\t', Last ~= Element));
+					for Token,Value in ipairs(Indices) do
+						local Element = Entity[Value];
+						table.insert(StringTable, formatTable(Element, Value, Tab..'\t', Last ~= Token));
 					end;
 					return Index.."{ \t-- "..Model..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "};\n");
 				else 
