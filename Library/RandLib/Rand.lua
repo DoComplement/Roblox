@@ -1,14 +1,14 @@
 local rand = {};
 
-function rand:createLinearTable(Length)
-	local Table = table.create(Length, 0);
+function rand:Linear(Length)
+	local Table = table.create(Length, 1);
 	for i = 2, Length do Table[i] = i end;
 	return Table;
 end;
 
-function rand:randSequence(Length)
+function rand:Sequence(Length)
 	local Sequence = table.create(Length, '');
-	local referenceTable = rand:createLinearTable(Length);
+	local referenceTable = rand:Linear(Length);
 	for i=1,Length do
 		Sequence[i] = table.remove(referenceTable, math.random(1, table.getn(referenceTable)));
 	end;
@@ -19,7 +19,7 @@ end;
 function rand:Randomize(Entity, Concat)
 	if type(Entity) == "string" then Entity = Entity:split('') end;
 	local Table = table.create(table.getn(Entity), '');
-	for Idx, randIdx in ipairs(rand:randSequence(table.getn(Entity))) do
+	for Idx, randIdx in ipairs(rand:Sequence(table.getn(Entity))) do
 		Table[Idx] = Entity[randIdx];
 	end;
 	return (Concat and table.concat(Table)) or Table;
