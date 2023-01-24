@@ -36,18 +36,18 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 						local Element = Entity[Index];
 						table.insert(StringTable, formatTable(Element, Index, Tab..'\t', Last ~= Element));
 					end;
-					return Index.."{ \t-- "..Model..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "}\n");
+					return Index.."{ \t-- "..Model..'\n'..table.concat(StringTable)..Tab..(notLast and "},\n" or "};\n");
 				else 
-					return Index..(notLast and "{},\n" or "{}\n");
+					return Index..(notLast and "{},\n" or "{};\n");
 				end;
 			else
 				return Index.."\"Repeated Table\",\t-- "..Model..'\n';
 			end;
 		else
-			return Index..Model..(notLast and ",\n" or '\n');
+			return Index..Model..(notLast and ",\n" or ";\n");
 		end;
 	end;
 	
-	return (MainTitle and "local ".. MainTitle.." = " or '')..formatTable(Table, nil, '');
+	return (MainTitle and "local ".. MainTitle.." = " or "return ")..formatTable(Table, nil, '');
 end;
 print("<string> getgenv().t2s(<tuple> Table, <string> Title, <boolean> Sort)");
