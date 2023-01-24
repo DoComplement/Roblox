@@ -25,6 +25,10 @@ function rand:Randomize(Entity, Concat)
 	return (Concat and table.concat(Table)) or Table;
 end;
 
+function rand:Char()
+	
+end
+
 rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
 function rand:randString(Length)
