@@ -34,21 +34,24 @@ function Main:AddPlayer(Player)
 	end;
 end;
 
+-- Not a brilliant method for filtering a string
+-- benefit: will filter any uppercase/lowercase string properly with the casing of the original string maintained after filtering.
+-- drawback: will not filter sub-portions of usernames (billy from xx_billy_xx will not get filtered)
 function Main:Filter(Text)
 	local LowerText = Text:lower();
 	local Indices,changed,i1,i2,offset = {},nil;
     for Username,Filter in next, Main.Lower do
-		offset = 0;
+		offset = 0; -- reset offset
 		i1,i2 = LowerText:find(Username); -- get start and end indices of found username
-		changed = (i1~=nil);
+		changed = (i1~=nil); 
 		while i1 ~= 0 do
-			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]});
-			offset = offset + Filter[2];
-			i1,i2 = LowerText:find(Username, i2);
+			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]}); -- see use below (for _,Table in ipairs(Indices) do ...)
+			offset = offset + Filter[2]; -- update offset
+			i1,i2 = LowerText:find(Username, i2); -- update indices
 		end;
 		
-		if changed then
-			LowerText = LowerText:gsub(Username, Filter[1]);
+		if changed then 
+			LowerText = LowerText:gsub(Username, Filter[1]); -- will update lowertext for multiple usernames found in the same string
 		end;
 	end;
 	
