@@ -6,7 +6,6 @@ local Main = {
     Scroller = Game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller,
     ClassTypes = {["TextLabel"]=true, ["TextButton"]=true, ["TextBox"]=true}, 
     Names = {},
-    Lower = {},
     Connections = {}, -- newChatEvent, bubbleChatEvent, newPlayerEvent, and removePlayerEvent
     SpaceOffset = 0,
     hideStats = true,
@@ -26,8 +25,6 @@ function Main:AddPlayer(Player)
 	if Main.Names[Player.Name] == nil then
 		Main.Names[Player.Name] = rand:randString(math.random(10, 15));
 		Main.Names[Player.DisplayName] = rand:randString(math.random(10, 15));
-		Main.Lower[Player.Name:lower()] = Player.Name;
-		Main.Lower[Player.DisplayName:lower()] = Player.DisplayName;
 		
 		Player.Name = Main.Names[Player.Name];
 		Player.DisplayName = Main.Names[Player.DisplayName];
@@ -35,9 +32,9 @@ function Main:AddPlayer(Player)
 end;
 
 function Main:Check(Text)
-	local LowerText = Text;
-    for Lower,Name in next, Main.Lower do
-		LowerText = LowerText:lower():gsub(Lower, Main.Names[Name]);
+	local LowerText = Text:lower();
+    for Username,Filter in next, Main.Lower do
+		LowerText = LowerText:gsub(Username:lower(), Filter);
 	end;
 	
 	-- connect the changes between LowerText and Text:lower()
