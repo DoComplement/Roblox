@@ -2,7 +2,6 @@ local rand = {};
 
 function rand:createLinearTable(Length)
 	local Table = table.create(Length, 0);
-	for i,_ in ipairs(Table) do 
 	for i = 2, Length do Table[i] = i end;
 	return Table;
 end;
@@ -26,26 +25,18 @@ function rand:Randomize(Entity, Concat)
 	return (Concat and table.concat(Table)) or Table;
 end;
 
-function rand:Char()
-	return rand.AlphaBET[math.random(1, 64)];
-end
-
 rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
 function rand:randString(Length)
 	assert(Length > 0);
-	rand:updateAlphabet();
+	rand.AlphaBET = rand:Randomize(rand.AlphaBET);
 	if Length >= 200 then
-		return table.concat(table.create(Length, '')):gsub('.', rand.Char);
+		return table.concat(table.create(Length, '')):gsub('.', rand.AlphaBET[math.random(1, 64)]);
 	else
 		local String = '';
 		for _=1,Length do String = String .. rand.AlphaBET[math.random(1, 64)] end;
 		return String;
 	end;
-end;
-
-function rand:updateAlphabet()
-	rand.AlphaBET = rand:Randomize(rand.AlphaBET);
 end;
 
 return rand;
