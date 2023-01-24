@@ -20,7 +20,7 @@ while Label.TextBounds.X == Offset do task.wait() end;	-- wait until x-bounds ar
 Main.SpaceOffset = table.concat(table.create(2*(Label.TextBounds.X - Offset),' ')); -- can probably be calculated easier from text size and font
 Offset,Label = nil; -- deallocate
 
-function Main.AddPlayer(Player)
+Main.AddPlayer = function(Player)
 	local lName,lDisplayName = Player.Name:lower(),Player.DisplayName:lower();
 	if Main.Names[lName] == nil then
 		local Name = rand:randString(math.random(10, 15));
