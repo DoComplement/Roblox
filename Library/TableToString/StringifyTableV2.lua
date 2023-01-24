@@ -1,13 +1,13 @@
-if Game:IsLoaded() == false then Game.Loaded:Wait() end;
+if Game:IsLoaded() == false then Game.Loaded:Wait(); end;
 
 if getgenv().t2s ~= nil then getfenv(getgenv().t2s).script:Destroy() end;
 getgenv().t2s = function(Table, MainTitle, Sort)
 	assert(type(Table) == "table", "ERROR! Input table is not a valid table.");
     
 	local function GetIndices(Table)
-        	local Indices = {};
-        	for Index,Value in next, Table do 
-        		table.insert(Indices, Index);
+        local Indices = {};
+        for Index,Value in next, Table do 
+        	table.insert(Indices, Index);
 		end;
         
 		if Sort ~= nil then
@@ -30,7 +30,7 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 		if type(Entity) == "table" then
 			local Indices,Last = GetIndices(Entity);
 			if table.find(Tables, Entity) == nil then -- checking for repeat-nested tables
-                		table.insert(Tables, Entity);
+                table.insert(Tables, Entity);
 				local StringTable = {};
 				if table.getn(Indices) ~= 0 then
 					for _,Index in ipairs(Indices) do
