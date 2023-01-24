@@ -22,35 +22,52 @@ Main.SpaceOffset = Label.TextBounds.X - Main.SpaceOffset -- calculate single spa
 Label = nil -- deallocate
 
 function Main:AddPlayer(Player)
-	if Main.Names[Player.Name] == nil then
-		Main.Names[Player.Name] = rand:randString(math.random(10, 15));
-		Main.Names[Player.DisplayName] = rand:randString(math.random(10, 15));
+	if Main.Names[Player.Name:lower()] == nil then
+		local Name = rand:randString(math.random(10, 15));
+		local DisplayName = rand:randString(math.random(10, 15));
 		
-		Player.Name = Main.Names[Player.Name];
-		Player.DisplayName = Main.Names[Player.DisplayName];
+		Main.Names[Player.Name:lower()] = {[1] = Name, [2] = Name:len() - Player.Name:len()};
+		Main.Names[Player.DisplayName:lower()] = {[1] = DisplayName, [2] = DisplayName:len() - Player.DisplayName:len()};
+		
+		Player.Name = Main.Names[Player.Name:lower()];
+		Player.DisplayName = Main.Names[Player.DisplayName:lower()];
 	end;
 end;
 
-function Main:Check(Text)
+function Main:Filter(Text)
 	local LowerText = Text:lower();
+	local Indices,changed,i1,i2,offset = {},nil;
     for Username,Filter in next, Main.Lower do
-		LowerText = LowerText:gsub(Username:lower(), Filter);
+		offset = 0;
+		i1,i2 = LowerText:find(Username); -- get start and end indices of found username
+		changed = (i1~=nil);
+		while i1 ~= 0 do
+			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]});
+			offset = offset + Filter[2];
+			i1,i2 = LowerText:find(Username, i2);
+		end;
+		
+		if changed then
+			LowerText = LowerText:gsub(Username, Filter[1]);
+		end;
 	end;
 	
-	-- connect the changes between LowerText and Text:lower()
+	for _,Table in ipairs(Indices) do
+		Text = Text:sub(1, Table[1]) .. Table[3] .. Text:sub(Table[2]);	
+	end
 	
 	return Text;
 end;
 
 local TextOffset,Spaces
-function Main:Filter(TextLabel, Text)
+function Main:Update(TextLabel, Text)
     local TextOffset,Spaces = 2*Main.SpaceOffset,'';
     for _,Label in ipairs(TextLabel:GetChildren()) do
         TextOffset = TextOffset + Label.TextBounds.X
     end
 	
 	for _=1, TextOffset do Spaces = Spaces .. ' ';
-    return Spaces..Main:Check(Text)
+    return Spaces..Main:Filter(Text)
 end
 
 function Main:Enable()
@@ -68,10 +85,10 @@ function Main:Enable()
 		if Index == 1 then continue end;
         TextButton = Frame:FindFirstChild("TextButton", true);
         if TextButton ~= nil then
-            TextButton.Text = Main:Check(TextButton.Text);
-            Frame.TextLabel.Text = Main:Filter(Frame.TextLabel, Frame.TextLabel.Text:match("%s*(.+)"))
+            TextButton.Text = Main:Filter(TextButton.Text);
+            Frame.TextLabel.Text = Main:Update(Frame.TextLabel, Frame.TextLabel.Text:match("%s*(.+)"))
         else
-            Frame.TextLabel.Text = Main:Check(Frame.TextLabel.Text)
+            Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text)
         end
     end
     
@@ -80,11 +97,11 @@ function Main:Enable()
 		if Frame:FindFirstChild("TextButton", true) ~= nil then
 			for _,Child in ipairs(Frame.TextLabel:GetChildren()) do
 				if Child.ClassName == "TextButton" then
-					Child.Text = Main:Check(Child.Text)
+					Child.Text = Main:Filter(Child.Text)
 				end
 			end
         else
-            Frame.TextLabel.Text = Main:Check(Frame.TextLabel.Text)
+            Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text)
         end
     end)
     
@@ -124,7 +141,7 @@ local OldNewIndex
 OldNewIndex = hookmetamethod(game, "__newindex", function(Self, Index, Value)
     if Main.Enabled then
         if Self.Parent ~= nil and Self.Parent.Parent == Main.Scroller ~= nil and Index == "Text" then
-            return OldNewIndex(Self, Index, Main:Filter(Self, Value:match("%s*(.+)"))); -- removes all white spaces (can lead to erroneous errors)
+            return OldNewIndex(Self, Index, Main:Update(Self, Value:match("%s*(.+)"))); -- removes all white spaces (can lead to erroneous errors)
         end;
     end;
     
