@@ -34,7 +34,7 @@ function rand:randString(Length)
 		return table.concat(table.create(Length, '')):gsub('.', rand.AlphaBET[math.random(1, 64)]);
 	else
 		local String = '';
-		for _=1,Length do String = String .. rand.AlphaBET[math.random(1, 64)] end;
+		for _=1,Length do String ..= rand.AlphaBET[math.random(1, 64)] end;
 		return String;
 	end;
 end;
