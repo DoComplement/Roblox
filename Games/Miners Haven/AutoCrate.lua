@@ -10,15 +10,13 @@ local crates = game:GetService("Players").LocalPlayer.Crates:GetChildren()
 local Initials = {}
 
 -- setting the initial value of the user's crates
-for i = 1, #crates do
-    
-    table.insert(Initials, crates[i].value)
-    
-end
+for _,crate in ipairs(crates) do
+    table.insert(Initials, crate.value);
+end;
 
 
 -- Creating an instance to control activation of the While Loop
-if not PlayerBin.LocalPlayer:FindFirstChild("LOOP_CONSTRAINT") then
+if PlayerBin.LocalPlayer:FindFirstChild("LOOP_CONSTRAINT") == nil then
     
     g_ = Instance.new("TextBox")
     g_.Name = "LOOP_CONSTRAINT"
@@ -42,16 +40,11 @@ local iter = 0
 -- function to count the number of crates/boxes spawned in the workspace
 local function count(location)
     
-    val = 0
+    local val = 0
     
-    for i,v in pairs(location:GetChildren()) do
-        
-        if v:FindFirstChild("TouchInterest") and v:FindFirstChild("Open") then
-            
-            val = val + 1
-            
-        end
-    end
+    for i,v in ipairs(location:GetChildren()) do
+        if v:FindFirstChild("TouchInterest") ~= nil and v:FindFirstChild("Open") ~= nil then val += 1; end; 
+    end;
     
     return val
     
@@ -59,17 +52,16 @@ end
 
 local function change(r)
     
-    step = 0
+    local step = 0
     
     if r == 0 then
         
-        sum = 0 
         return 0
         
     else
-        for i = 1, #crates do
+        for i,crate in ipairs(crates) do
             
-            step = step + (crates[i].value - Initials[i])
+            step += (crate.value - Initials[i])
             
         end
     end
@@ -84,7 +76,7 @@ local function caseTeleport(Location)
     
     if count(Location) > 0 then
 
-         for i,v in pairs(Location:GetChildren()) do
+         for i,v in ipairs(Location:GetChildren()) do
                 
             -- checks if there are any crates/any other objects of interest spawned in the workspace
             if v:FindFirstChild("TouchInterest") and v:FindFirstChild("Open") then
