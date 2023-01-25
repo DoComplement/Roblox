@@ -46,7 +46,7 @@ function Main:Filter(Text)
 		changed = (i1~=nil); 
 		while i1 ~= nil do
 			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]}); -- see use below (for _,Table in ipairs(Indices) do ...)
-			offset = offset + Filter[2]; -- update offset
+			offset += Filter[2]; -- update offset
 			i1,i2 = LowerText:find(Username, i2); -- update indices
 		end;
 		
@@ -64,7 +64,7 @@ end;
 function Main:Update(TextLabel, Text)
     local Offset,Spaces = 0,Main.SpaceOffset;
     for _,Label in ipairs(TextLabel:GetChildren()) do
-		Offset = Offset + Label.TextBounds.X;
+		Offset += Label.TextBounds.X;
     end;
 	
 	for _=1,Offset do Spaces = Spaces .. ' '; end;
