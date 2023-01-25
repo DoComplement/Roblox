@@ -96,7 +96,7 @@ end);
 local function PickColor()
 	appendfile(Filename, "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
 	Changed = false;
-	Index = Index + 1;
+	Index += 1;
 	if Button.Text == "Hot pink" then ScreenGui:Destroy() end
 end
 
