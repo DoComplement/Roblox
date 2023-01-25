@@ -20,7 +20,7 @@ end;
 textEffectsLib.Modules = {
 	["Pop"] = {
 		["Random"] = function(Instance, String, Delay, Type)
-			local spaceString = table.create(#String, ' ')
+			local spaceString = table.create(String:len(), ' ')
 			String = String:split('')
 
 			for _,randIndex in ipairs(rand.randSequence(table.getn(spaceString))) do
@@ -44,13 +44,13 @@ textEffectsLib.Modules = {
 	},
 	["Sweep"] = {
 		["Forward"] = function(Instance, String, Delay)
-			for Index = 1, #String do
+			for Index = 1, String:len() do
 				Instance.Text = String:sub(1, Index)
 				task.wait(Delay or 0.05)
 			end
 		end,
 		["Backward"] = function(Instance, String, Delay)
-			for Index = #String, 1, -1 do
+			for Index = String:len(), 1, -1 do
 				Instance.Text = String:sub(1, Index)
 				task.wait(Delay or 0.05)
 			end
@@ -65,7 +65,7 @@ textEffectsLib.Modules = {
 	]]
 	["Decrypt"] = {
 		["Random"] = function(Instance, String, Type)
-			local Size = #String;
+			local Size = String:len();
 			local randString, refereceIndex = rand.randString(Size):split('');
 			String = String:split('');
 
