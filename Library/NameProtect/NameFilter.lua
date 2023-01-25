@@ -15,7 +15,7 @@ local Main = {
 -- game:GetService("TextService"):GetTextSize(...) was not working 100% of the time
 local Label = Main.Scroller.Frame.TextLabel;
 local Offset = Label.TextBounds.X; -- get current x-bounds
-Label.Text = Label.Text..' ';	-- update x-bounds with a single space
+Label.Text ..= ' ';	-- update x-bounds with a single space
 while Label.TextBounds.X == Offset do task.wait() end;	-- wait until x-bounds are updated
 Main.SpaceOffset = table.concat(table.create(2*(Label.TextBounds.X - Offset),' ')); -- can probably be calculated easier from text size and font
 Offset,Label = nil; -- deallocate
