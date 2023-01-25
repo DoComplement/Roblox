@@ -109,11 +109,6 @@ if HEADER then
     	LP.PlayerGui.ScreenGui.Settings.Visible = b
     end
     
-    -- returns the index of a potion in the list based on the name of the potion in the parameter - str -
-    local function getPotion(str)
-    	for i = 1, #potions do if string.match(str, potions[i]) then return i end end
-    end
-    
     -- function to get the main button to the screen
     local function getp1_F()
     	if LP.PlayerGui.ScreenGui:FindFirstChild("PetsFrame") then LP.PlayerGui.ScreenGui:FindFirstChild("PetsFrame").Parent = nil end
@@ -154,12 +149,13 @@ if HEADER then
     
     	wait(1)
         p_F.Tabs.Potions.Visible = true
-        repeat wait(); p_F.Tabs.Potions.Position = UDim2.fromOffset(LP:GetMouse().X - (LP.PlayerGui.ScreenGui.AbsoluteSize.X/1920)*1436, LP:GetMouse().Y - (LP.PlayerGui.ScreenGui.AbsoluteSize.Y/973)*202)
+        repeat task.wait(); p_F.Tabs.Potions.Position = UDim2.fromOffset(LP:GetMouse().X - (LP.PlayerGui.ScreenGui.AbsoluteSize.X/1920)*1436, LP:GetMouse().Y - (LP.PlayerGui.ScreenGui.AbsoluteSize.Y/973)*202)
         until p_F.Main.Title.Text == "My Potions"
         p_F.Tabs.Potions.Visible = false
         p_UIL.Parent = p_F.Tabs
         
-        p_Max = tonumber(string.sub(p_F.Main.Counters.Stored.Amount.Text, string.find(p_F.Main.Counters.Stored.Amount.Text, "/") + 1, string.len(p_F.Main.Counters.Stored.Amount.Text))) 
+        local Text = p_F.Main.Counters.Stored.Amount.Text;
+        p_Max = tonumber(string.sub(Text, string.find(Text, "/") + 1, string.len(Text))) 
     	game:GetService("StarterGui"):SetCore("SendNotification", {
     		Title = "Potions tab found...",
     		Text = "Processing potion quantities...",
@@ -167,9 +163,12 @@ if HEADER then
     	}) 
     
     	wait(3) -- data may take a few seconds to load
-       	for i,v in pairs(p_F.Main.Pages.Potions.List.Grid:GetChildren()) do
-       		if v:FindFirstChild("Detail") then p_Q[getPotion(v.Detail.Inner.PotionName.Text)] = p_Q[getPotion(v.Detail.Inner.PotionName.Text)] + 1; sum = sum + 1 end
-       	end
+       	for i,v in ipairs(p_F.Main.Pages.Potions.List.Grid:GetChildren()) do
+       		if v:FindFirstChild("Detail") then 
+                p_Q[table.find(potions,v.Detail.Inner.PotionName.Text)] += 1; 
+                sum += 1;
+            end;
+       	end;
        
         p_F.Main.Pages.Potions.List.Grid.UIGridLayout.CellSize = UDim2.fromOffset(115, 115)
     	LP.PlayerGui.ScreenGui.MainButtons.Pets.Position = UDim2.new(0, 0, 0, 0)
@@ -455,7 +454,7 @@ if HEADER then
     	local s_F = LP.PlayerGui.ScreenGui.StatsFrame; local t_ = {}
     	local stats = {s_F["Gems"].Amount.Text, s_F["Stars"].Amount.Text, s_F["Crystals"].Amount.Text, s_F["Magma"].Amount.Text}
     	for i = 1, #stats do t_[i] = string.gsub(stats[i], ",", ""); t_[i] = tonumber(t_[i]) end
-    	local index = getPotion(str)
+    	local index = table.find(potions,str)
     	local b
     	pcall(function()
     		if index < 3 then b = t_[1] >= 10000000 
@@ -487,7 +486,7 @@ if HEADER then
     							for x = 1, 3 do
     								if i_T[8]["P_Label"..x].Text ~= "Empty Potion Slot" and i_T[8]["P_Bool"..x].Value then -- checks for a ready potion
     									if checkBrew(i_T[8]["P_Label"..x].Text) and sum < p_Max then
-    										Event:FireServer("BrewPotion", getPotion(i_T[8]["P_Label"..x].Text)) -- brews the potion
+    										Event:FireServer("BrewPotion", table.find(potions, i_T[8]["P_Label"..x].Text)) -- brews the potion
     										i_T[8]["P_Bool"..x].Value = false
     									else print("Either you\'ve maxed your potion storage, or you don\'t have enough resources to brew: " .. i_T[8]["P_Label"..x].Text); reset(x) end break
     								end
@@ -499,7 +498,8 @@ if HEADER then
     									break
     								end
     							end
-    							p_Q[getPotion(b_F.Brewing["Brew"..i].Brewing.ItemName.Text)] = p_Q[getPotion(b_F.Brewing["Brew"..i].Brewing.ItemName.Text)] + 1;  sum = sum + 1
+    							p_Q[table.find(potions, b_F.Brewing["Brew"..i].Brewing.ItemName.Text)] += 1;  
+                                sum += 1;
     							Event:FireServer("ClaimPotion", i)
     						end
     						wait(0.5)
