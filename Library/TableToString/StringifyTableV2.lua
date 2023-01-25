@@ -24,7 +24,7 @@ getgenv().t2s = function(Table, MainTitle, Sort)
 	local function formatTable(Entity, Index, Tab, notLast)	
 		
 		local _,Model = xpcall(function() return type(Entity) == "string" and '\"'..Entity..'\"' or tostring(Entity) end, tostring, Entity);
-		Index = Index and (type(Index) == "string" and Tab.."[\""..Index.."\"] = " or Tab..'['..tostring(Index).."] = ") or '';
+		Index = Index ~= nil and (type(Index) == "string" and Tab.."[\""..Index.."\"] = " or Tab..'['..tostring(Index).."] = ") or '';
 		
 		if type(Entity) == "table" then
 			local Indices,Last = GetIndices(Entity);
