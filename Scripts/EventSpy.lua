@@ -1,51 +1,30 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/StringifyTableV2.lua"))()
-local Services = {[game:GetService("Players").LocalPlayer.Name] = "LocalPlayer"}
-local Types = {["InvokeServer"]=true, ["FireServer"]=true}
-local Classes = {["RemoteEvent"]=true, ["RemoteFunction"]=true}
+assert(pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua"))));
+local Services = {};
+local Types = {[1] = "FireServer";[2] = "InvokeServer";};
+local Username = game:GetService("Players").LocalPlayer.Name;
 
--- Get Services
-local Success, Service
+-- Note: service-substitution is only used to indicate the event directory stems from a service (and can be removed via bias)
+
+-- get table of services for substitution
 for _,Instance in ipairs(game:GetChildren()) do
-    if Instance.ClassName ~= '' then -- not tamper proof
-        Services[Instance.Name] = "game:GetService(\""..Instance.ClassName.."\")"
-    end
-end
-Success,Service = nil,nil   -- deallocate cuz not used after here
+    if Instance.ClassName == '' then continue; end;-- not tamper proof
+    Services[Instance.Name] = "game:GetService(\""..Instance.ClassName.."\")";
+end;
 
-local function getPath(Instance)
-    if Instance == game or Instance.Parent == nil or Instance.Parent == game then 
-        return (Services[Instance.Name] or Instance.Name)
-    end
-    
-    local iName = (Services[Instance.Name] or Instance.Name)
-    local iParent = Instance.Parent
-    
-    while iParent ~= game do
-        iName = (Services[iParent.Name] or iParent.Name)..'.'..iName
-        iParent = iParent.Parent
-    end 
-    
-    return iName
-end
+local function FormatPath(Path)
+    return Path:gsub(Username, "LocalPlayer"):gsub("^(%a+)", Services);
+end;
 
-local OldNamecall -- doesnt provide return value
+local OldNamecall = nil; -- doesnt provide return value
 OldNamecall = hookmetamethod(game, "__namecall", function(Self, ...)
+    if table.find(Types, getnamecallmethod()) == nil then -- if namecall doesn't indicate a remote
+        return OldNamecall(Self, ...)    
+    end;
     
-    local Args = {...}
-    local Method = getnamecallmethod()
-    local Script = getcallingscript() or script
-    
-    if Types[Method] then
-        print(Self.ClassName..":\t", Self)
-        print("Reference:\t", table.concat({[1]=getPath(Self), [2]=':', [3]=Method, [4]="(...)"}))
-        print("Calling Script:\t", getPath(Script))
-        
-        if table.getn(Args) ~= 0 then
-            print(getgenv().t2s(Args, "Arguments")) --> will not work if table2String is not enabled
-        else
-            print("Arguments: nil\n")
-        end
-    end
+    print(Self.ClassName..":\t", Self);
+    print("Reference:\t", FormatPath(Self:GetFullName())..':'..getnamecallmethod().."(...)");
+    print("Calling Script:\t", FormatPath((getcallingscript() or script):GetFullName())..'');
+    print(getgenv().t2s({...}, "Arguments"));
 
     return OldNamecall(Self, ...)
 end)
