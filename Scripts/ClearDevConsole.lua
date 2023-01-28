@@ -3,7 +3,7 @@
 
 local function OpenDevConsole(DevConsoleUI)
     if DevConsoleUI:FindFirstChild("MainView") == nil then
-        local Box = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
+        local Box = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar;
 
         game:GetService("VirtualUser"):CaptureController();
         Box:SetTextFromInput("/console");
@@ -15,8 +15,7 @@ end;
 
 return function()
     for _,Instance in ipairs(OpenDevConsole(game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI).ClientLog:GetChildren()) do
-        if tonumber(Instance.Name) ~= nil then
-            Instance.Visible = false; 
-        end;
+        if tonumber(Instance.Name) == nil then continue; end;
+        Instance.Visible = false; 
     end;
 end;
