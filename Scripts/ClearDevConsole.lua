@@ -2,14 +2,14 @@
 -- the function can be bound to a keybind to clear the console on some command as well as setting the command to F9 so the console always opens cleared
 
 local function OpenDevConsole(DevConsoleUI)
-    if DevConsoleUI:FindFirstChild("MainView") == nil then
-        local Box = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar;
-
-        game:GetService("VirtualUser"):CaptureController();
-        Box:SetTextFromInput("/console");
-        Box:CaptureFocus();
-        game:GetService("VirtualUser"):TypeKey("0x0D"); -- Press Enter Key
+    if DevConsoleUI:FindFirstChild("MainView") ~= nil then
+        return DevConsoleUI.MainView;
     end;
+    local Box = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar;
+    game:GetService("VirtualUser"):CaptureController();
+    Box:SetTextFromInput("/console");
+    Box:CaptureFocus();
+    game:GetService("VirtualUser"):TypeKey("0x0D"); -- Press Enter Key
     return DevConsoleUI:WaitForChild("MainView");
 end;
 
