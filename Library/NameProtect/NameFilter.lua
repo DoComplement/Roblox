@@ -21,17 +21,17 @@ Main.SpaceOffset = table.concat(table.create(2*(Label.TextBounds.X - Offset),' '
 Offset,Label = nil; -- deallocate
 
 Main.AddPlayer = function(Player)
-	local lName,lDisplayName = Player.Name:lower(),Player.DisplayName:lower();
-	if Main.Names[lName] == nil then
-		local Name = rand:randString(math.random(10, 15));
-		local DisplayName = rand:randString(math.random(10, 15));
+	if Main.Names[Player.Name:lower()] ~= nil then return; end;
+
+	local lName = Player.Name:lower();
+	local Name = rand:randString(math.random(10, 15));
+	local lDisplayName = Player.DisplayName:lower();
+	local DisplayName = rand:randString(math.random(10, 15));
 		
-		Main.Names[lName] = {[1] = Name, [2] = Name:len() - lName:len()};
-		Main.Names[lDisplayName] = {[1] = DisplayName, [2] = DisplayName:len() - lDisplayName:len()};
-		
-		Player.Name = Main.Names[lName][1];
-		Player.DisplayName = Main.Names[lDisplayName][1];
-	end;
+	Main.Names[lName] = {[1] = Name, [2] = Name:len() - lName:len()};
+	Main.Names[lDisplayName] = {[1] = DisplayName, [2] = DisplayName:len() - lDisplayName:len()};
+	
+	-- change all active text with username
 end;
 
 -- Not a brilliant method for filtering a string
@@ -40,7 +40,7 @@ end;
 function Main:Filter(Text)
 	local LowerText = Text:lower();
 	local Indices,changed,i1,i2,offset = {},nil;
-    for Username,Filter in next, Main.Names do
+	for Username,Filter in next, Main.Names do
 		offset = 0; -- reset offset
 		i1,i2 = LowerText:find(Username); -- get start and end indices of found username
 		changed = (i1~=nil); 
