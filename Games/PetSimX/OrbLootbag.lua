@@ -1,24 +1,23 @@
-local Workspace = game:GetService("Workspace")
-local Orbs,Lootbags = Workspace["__THINGS"].Orbs, Workspace["__THINGS"].Lootbags
-local PrimaryPart = game:GetService("Players").LocalPlayer.Character.PrimaryPart
-local Connections = {}
 
-for _,Orb in ipairs(Orbs:GetChildren()) do
-	Orb.CFrame = PrimaryPart.CFrame;
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local PrimaryPart = (LocalPlayer.Character or LpcalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart");
+PrimaryPart.Parent.CharacterAdded:Connect(function(c)
+	PrimaryPart = c:WaitForChild("HumanoidRootPart");
+end);
+
+local function Sauce(O)
+	while O.Parent ~= nil and task.wait() do
+		O.CFrame = PrimaryPart.CFrame;
+	end;
 end;
 
-for _,Lootbag in ipairs(Lootbags:GetChildren()) do
-	Lootbag.CFrame = PrimaryPart.CFrame;
+for _,Orb in ipairs(Workspace["__THINGS"].Orbs:GetChildren()) do
+	task.defer(Sauce, Orb);
 end;
 
-Connections["OrbConnection"] = Orbs.ChildAdded:Connect(function(Orb)
-	while Orb.Parent ~= nil and task.wait() do
-		Orb.CFrame = PrimaryPart.CFrame
-	end
-end)
+for _,Lootbag in ipairs(Workspace["__THINGS"].Lootbags:GetChildren()) do
+	task.defer(Sauce, Lootbag);
+end;
 
-Connections["LootbagConnection"] = Lootbags.ChildAdded:Connect(function(Lootbag)
-	while Lootbag.Parent ~= nil and task.wait() do
-		Lootbag.CFrame = PrimaryPart.CFrame
-	end
-end)  
+Workspace["__THINGS"].Orbs.ChildAdded:Connect(Sauce)
+Workspace["__THINGS"].Lootbags.ChildAdded:Connect(Sauce)
