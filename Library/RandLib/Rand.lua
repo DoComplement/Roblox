@@ -30,13 +30,9 @@ rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXx
 function rand:randString(Length)
 	assert(Length > 0);
 	rand.AlphaBET = rand:Randomize(rand.AlphaBET);
-	if Length >= 200 then
-		return table.concat(table.create(Length, '')):gsub('.', rand.AlphaBET[math.random(1, 64)]);
-	else
-		local String = '';
-		for _=1,Length do String ..= rand.AlphaBET[math.random(1, 64)] end;
-		return String;
-	end;
+	local str = {};
+	for i=1,Length do str[i] = rand.AlphaBET[math.random(1, 64)]; end;
+	return table.concat(str);
 end;
 
 return rand;
