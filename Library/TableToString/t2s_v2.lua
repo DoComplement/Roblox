@@ -1,8 +1,8 @@
 if Game:IsLoaded() == false then Game.Loaded:Wait() end
+if t2s then return; end;
 
-getgenv().t2s = nil;
 getgenv().t2s = function(Table, Title, Sort)
-	assert(type(Table) == "table", "ERROR! Input table is not a valid table.")
+	assert(type(Table) == "table", "ERROR! Input table is not a valid table.");
     
 	local function GetIndices(Table)
 		local Indices = {}
@@ -19,16 +19,22 @@ getgenv().t2s = function(Table, Title, Sort)
         
 		return Indices -- Array and Last Element
 	end
-    
-	local Tables = {}
+	
+	local Tables = {};
 	local function formatTable(Entity, Index, Tab)
-		local _,Model = xpcall(function() return type(Entity) == "string" and '\"'..Entity..'\"' or tostring(Entity) end, tostring, Entity);
-		if Index == nil then 
-			Index = ''; 
-		elseif type(Index) == "string" then 
-			Index = Tab.."[\""..Index.."\"] = ";
+		local Model,T = pcall(type, Entity);
+		if T == "string" then
+			Model = '\"'..Entity..'\"';
 		else
+			Model = tostring(Entity);
+		end;
+		
+		if type(Index) == "string" then 
+			Index = Tab.."[\""..Index.."\"] = ";
+		elseif Index ~= nil then
 			Index = Tab..'['..tostring(Index).."] = ";
+		else
+			Index = '';
 		end;
 		
 		if type(Entity) ~= "table" then 
@@ -54,4 +60,4 @@ getgenv().t2s = function(Table, Title, Sort)
 	
 	return (Title and "local ".. Title.." = " or "return ")..formatTable(Table, nil, '')
 end
-print("<string> getgenv().t2s(<tuple> Table, <string> Title, <boolean> Sort)")
+print("<string> t2s(<tuple> Table, <string> Title, <boolean> Sort)")
