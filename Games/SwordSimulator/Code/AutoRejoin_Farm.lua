@@ -20,9 +20,10 @@ end);
 if game:IsLoaded() == false then game.Loaded:Wait() end;
 
 local Players = game:GetService("Players");
-local PrimaryPart = Players.LocalPlayer.Character.PrimaryPart;
+local LocalPlayer = Players.LocalPlayer;
+local PrimaryPart = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()).PrimaryPart;
 
-Players.LocalPlayer.CharacterAdded:Connect(function(Character)
+LocalPlayer.CharacterAdded:Connect(function(Character)
 	PrimaryPart = Character:WaitForChild("HumanoidRootPart");
 end);
 
@@ -35,8 +36,8 @@ task.defer(function()
 end);
 
 -- Anti AFK
-local Mouse = Players.LocalPlayer:GetMouse();
-Players.LocalPlayer.Idled:connect(function()	
+local Mouse = LocalPlayer:GetMouse();
+LocalPlayer.Idled:connect(function()	
 	task.wait(math.random(1, 45));
 	
 	game:GetService("VirtualUser"):CaptureController();
@@ -47,7 +48,7 @@ end);
 
 --[[					Auto Egg Hatch Begin						
 local EggEvent = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase;
-local DungeonHandler = Players.LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
+local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 local Bvent = Instance.new("BindableEvent");
 
 local counter = (os.time() + 3)%10;
