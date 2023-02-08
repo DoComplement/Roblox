@@ -82,7 +82,7 @@ for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base
 _G.MAX_ZONE = Modules[1].CurrentZone;
 _G.TARGET = "AutumnPaladin";
 _G.ZONE_TO_FARM = "22";
-_G.EGG = "Autumn Egg 2";
+_G.EGG = "Event Egg";
 
 -- Edit these toggles
 _G.IGNORE_ITEM_MESSAGES = true;
@@ -110,8 +110,9 @@ local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComple
 
 local CurrentZone,DungeonState = "Other",nil;
 for _,Folder in ipairs(Folders[1]:GetChildren()) do
-	if Folder.Name == "Other" then continue end;
-	CurrentZone = Folder.Name;
+	if Folder.Name ~= "Other" then
+		CurrentZone = Folder.Name;
+	end;
 end;
 
 -- local table of all Zones and their respective Mobs & Boss(es) <- devs stack event zones in the same folder
@@ -156,13 +157,14 @@ end);
 -- Check if the "Toggle" argument is valid for any input by reference (Even a global or upvalue boolean) 
 local function FollowMob(Mob, Index, Health)
 	while task.wait() and _G.ACTIVE and Toggles[Index] and Health.Text ~= "0 Health" and Mob.PrimaryPart ~= nil do	
-		if (HumanoidRootPart.Position - Mob.PrimaryPart.Position).Magnitude < 5 then continue; end;
-		HumanoidRootPart.CFrame = Mob.PrimaryPart.CFrame;
+		if (HumanoidRootPart.Position - Mob.PrimaryPart.Position).Magnitude >= 5 then
+			HumanoidRootPart.CFrame = Mob.PrimaryPart.CFrame;
+		end;
 	end;
 end;
 
 local function GetHealth(Head)
-	if Head ~= nil and Head.ExtraData.RedBar.Health.Text ~= "0 Health" then
+	if Head ~= nil and Head:WaitForChild("ExtraData").RedBar.Health.Text ~= "0 Health" then
 		return Head.ExtraData.RedBar.Health;
 	end;
 end;
@@ -181,9 +183,10 @@ end;
 local function YieldHead(Mob)
 	local Loading = nil;
 	Loading = Mob.ChildAdded:Connect(function(Child)
-		if Child.Name ~= "Head" then return; end;
-		Loading = Loading:Disconnect();
-		FarmBoss(Mob);
+		if Child.Name == "Head" then
+			Loading = Loading:Disconnect();
+			FarmBoss(Mob);
+		end;
 	end);
 end;
 
@@ -305,12 +308,11 @@ local function EquipBest(Category, Event)
     end
 	
     for _,ID in ipairs(Best) do
-        if table.find(EquippedItems, ID) == nil then 
-            Events[3].EquipItem:InvokeServer(Category..'s', EquippedItems);	-- Unequip Current items
-			task.wait(2);
-			Events[3].EquipItem:InvokeServer(Category..'s', Best);
-            return;
-        end;
+        if table.find(EquippedItems, ID) ~= nil then continue end;
+		Events[3].EquipItem:InvokeServer(Category..'s', EquippedItems);	-- Unequip Current items
+		task.wait(2);
+		Events[3].EquipItem:InvokeServer(Category..'s', Best);
+		return;
     end;
 end;
 
@@ -329,7 +331,7 @@ local function ClaimDailyRewards()
 		if inGroup(11109344) == false then
 			print("Not in Tachyon Roblox Group, so group rewards can not be claimed.");
 			print("Group rewards will be claimed if you join mid-game.");
-			repeat task.wait(1) until inGroup(11109344); -- stack-up problem here
+			repeat task.wait(1) until inGroup(11109344);
 		end;
 		Events[3].ClaimGroupDailyReward:InvokeServer();
 		if _G.PRINT_REWARDS_DATA then print("Claimed Group Rewards") end;
