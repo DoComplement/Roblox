@@ -3,7 +3,7 @@ if game.PlaceId ~= 7026949294 then return end;
 
 -- reconnect when disconnected
 task.defer(function()
-	game:GetService("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
+	game:WaitForChild("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
 		task.wait(3);
 		UI = UI:FindFirstChild("ErrorTitle", true);
 		if UI == nil or UI.Text ~= "Disconnected" then return end;
@@ -21,15 +21,16 @@ if game:IsLoaded() == false then game.Loaded:Wait() end;
 
 local Players = game:GetService("Players");
 local LocalPlayer = Players.LocalPlayer;
-local PrimaryPart = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()).PrimaryPart;
+local PrimaryPart = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart");
 
 LocalPlayer.CharacterAdded:Connect(function(Character)
 	PrimaryPart = Character:WaitForChild("HumanoidRootPart");
 end);
 
 task.defer(function()
-	PrimaryPart.CFrame = CFrame.new(3508.42798, 36.5313873, 12369.9121, -0.945489943, -9.52416528e-08, 0.325651348, -1.07699051e-07, 1, -2.02262811e-08, -0.325651348, -5.41960858e-08, -0.945489943); -- Autumn Zone Boss
+--	PrimaryPart.CFrame = CFrame.new(3508.42798, 36.5313873, 12369.9121, -0.945489943, -9.52416528e-08, 0.325651348, -1.07699051e-07, 1, -2.02262811e-08, -0.325651348, -5.41960858e-08, -0.945489943); -- Autumn Zone Boss
 --	PrimaryPart.CFrame = CFrame.new(3527.39844, 30.7223492, 12150.4932, -0.308820128, -9.9491011e-08, 0.951120436, -4.06626661e-08, 1, 9.14012119e-08, -0.951120436, -1.04485594e-08, -0.308820128); -- Autumn Zone Egg 2;
+	PrimaryPart.CFrame = CFrame.new(74.7213516, 25.8495693, -106.706306, 0.286026955, -2.58336925e-08, 0.958221555, 9.23232193e-08, 1, -5.98229799e-10, -0.958221555, 8.86372078e-08, 0.286026955); -- Event Egg;
     PrimaryPart.Anchored = true;
     task.wait(3);
     PrimaryPart.Anchored = false;
@@ -46,7 +47,7 @@ end);
 
 
 
---[[					Auto Egg Hatch Begin						
+--					Auto Egg Hatch Begin						
 local EggEvent = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase;
 local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 local Bvent = Instance.new("BindableEvent");
@@ -55,18 +56,18 @@ local counter = (os.time() + 3)%10;
 Bvent.Event:Connect(function() 
 	if os.time()%10 ~= counter then return; end;
 	counter = (counter + 3)%10;
-	EggEvent:InvokeServer("Autumn Egg 2", "Hatch3"); 
+	EggEvent:InvokeServer("Event Egg", "Hatch3"); 
 end);
 
 local f=nil;f = hookfunction(os.time, function()
-	if getcallingscript() == DungeonHandler then Bvent:Fire(); end;
+	if getcallingscript() == DungeonHandler then Bvent:Fire() end;
 	return f();
 end);
 --  					Auto Egg Hatch End						]]	
 
 
 
---[[					Auto Attack Begin						]]	
+--[[					Auto Attack Begin							
 local HitEvent = game:GetService("ReplicatedStorage").Remotes.Gameplay.FireHit;
 
 local function GetHealth(Head)
