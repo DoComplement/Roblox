@@ -33,8 +33,8 @@ if PlayerData.Replica.Data == nil then PlayerData.Loaded:Wait(); end; -- wait un
 PlayerData = PlayerData.Replica.Data.Main;
 
 local Gems = LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount;
-local _,Colors = pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")));
-assert(Colors ~= nil and pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua", "nil return from HttpGet"))), "Error loading http-script");
+local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua"))();
+assert(Colors ~= nil and  pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua", "nil return from HttpGet"))), "Error loading http-script");
 
 local Main = {
 	[1] = {	-- Gem Toggles
