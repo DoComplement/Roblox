@@ -1,4 +1,4 @@
-Data_Main { 	-- table: 0x00000000facf6f98
+{ 	-- table: 0x00000000facf6f98
 	["MS"] = MarketplaceService;
 	["LS"] = LocalizationService;
 	["eventBar"] = Bar;
