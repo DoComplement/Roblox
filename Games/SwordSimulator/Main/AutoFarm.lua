@@ -1,4 +1,5 @@
-if game.PlaceId ~= 7026949294 or _G.LOADED then return end; _G.LOADED = true;
+if game.PlaceId ~= 7026949294 or _G.LOADED==true then return end;
+_G.LOADED = true;
 if game:IsLoaded() == false then game.Loaded:Wait() end;
 
 --[[ TO DO:
@@ -18,9 +19,7 @@ end;
 
 local Services = {
     [1] = game:GetService("Players");
-    [2] = game:GetService("ReplicatedStorage");
-    [3] = game:GetService("GroupService");
-	[4] = game:GetService("VirtualUser");
+    [2] = game:GetService("GroupService");
 };
 
 -- Reference Variables for Auto Daily Rewards
@@ -29,9 +28,9 @@ local DailyRewards = {
     [2] = game:GetService("CollectionService"):GetTagged("RankRewardZone")[1].Countdown.CountdownUI.Frame.Countdown;
 }
 
--- Player Variables (See to adding these back into the tuple-format. I don't think the time loss is even slightly significant)
-local HumanoidRootPart = Services[1].LocalPlayer.Character.HumanoidRootPart;
-local HitEvent = Services[2].Remotes.Gameplay.FireHit;
+local HumanoidRootPart = (Services[1].LocalPlayer.Character or Services[1].LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart");
+HumanoidRootPart.CanTouch=false;
+local HitEvent = game.ReplicatedStorage.Remotes.Gameplay.FireHit;
 
 Services[1].LocalPlayer.CharacterAdded:Connect(function(Character)
 	HumanoidRootPart = Character:WaitForChild("HumanoidRootPart");
@@ -40,15 +39,15 @@ end);
 -- Important Folders
 local Folders = {
     [1] = Workspace.Mobs; -- Workspace.Mobs
-	[2] = Services[2].Saturn.Modules.GameDependent; -- ReplicatedStorage.Saturn.Modules.GameDependent
+	[2] = game.ReplicatedStorage.Saturn.Modules.GameDependent; -- ReplicatedStorage.Saturn.Modules.GameDependent
 	[3] = Services[1].LocalPlayer.PlayerGui; -- Players.LocalPlayer.PlayerGui
 }
 
 -- Frequently-Used Remote Events
 local Events = {
-    [1] = Services[2].Events.GetDungeonData; -- Dungeon State
-    [2] = Services[2].Remotes.Gameplay.RequestPetPurchase; -- Egg Purchase
-	[3] = Services[2].Events; -- Events CurrentZone
+    [1] = game.ReplicatedStorage.Events.GetDungeonData; -- Dungeon State
+    [2] = game.ReplicatedStorage.Remotes.Gameplay.RequestPetPurchase; -- Egg Purchase
+	[3] = game.ReplicatedStorage.Events; -- Events CurrentZone
 	[4] = Instance.new("BindableEvent"); -- Egg Hatch Signal
 	[5] = Instance.new("BindableEvent"); -- Auto Dungeon Signal
 }
@@ -70,11 +69,11 @@ local Routines = {}
 local MobsTable = table.create(table.getn(Modules[5]), ''); -- All Mobs per Zone
 local BossTable = table.create(table.getn(MobsTable), ''); -- Bosses per Zone
 local Teleports = table.create(table.getn(MobsTable), ''); -- Zone Teleport CFrames for ease-of-access
-for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = Info.ZoneSpawn; end; -- Teleport positions
+for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn); end; -- Teleport positions, Vector3
 
-local ElementInventory = {}
+local ElementInventory = {};
 for _,Element in ipairs(Folders[2].Elements:GetChildren()) do ElementInventory[Element.Name] = 0 end
-for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base] = ElementInventory[Element.Base] + 1 end
+for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base] += 1 end;
 
 --[[ All the below values can be changed mid-game ]]
 
@@ -82,7 +81,7 @@ for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base
 _G.MAX_ZONE = Modules[1].CurrentZone;
 _G.TARGET = "AutumnPaladin";
 _G.ZONE_TO_FARM = "22";
-_G.EGG = "Event Egg";
+_G.EGG = "Autumn Egg 2";
 
 -- Edit these toggles
 _G.IGNORE_ITEM_MESSAGES = true;
@@ -90,28 +89,26 @@ _G.PRINT_REWARDS_DATA = false;
 _G.PRINT_DUNGEON_DATA = true;
 _G.PRINT_WEAPON_DATA = true;
 
-_G.INDEX_RANDOMLY = true;
+_G.INDEX_RANDOMLY = false;
 _G.FARM_DUNGEON = true;
 _G.JOIN_DUNGEON = true; -- may only want to use in private servers
 
 _G.FARM_TARGET = true;
+_G.FARM_BOSS = true;
 _G.FARM_EGGS = true;
 _G.FARM_MAX = true;
 _G.ACTIVE = true;
 
-local Toggles = {
-	[1] = true;	-- _G.FARM_BOSS
-	[2] = true;	-- AwayFromBoss
-	[3] = false; -- Farming Dungeon
-};
+local AwayFromBoss=true;
+local AtDungeon=false;
 
 -- rand class
-local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))()
+local rand = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua"))();
 
 local CurrentZone,DungeonState = "Other",nil;
 for _,Folder in ipairs(Folders[1]:GetChildren()) do
 	if Folder.Name ~= "Other" then
-		CurrentZone = Folder.Name;
+	    CurrentZone = Folder.Name;
 	end;
 end;
 
@@ -121,7 +118,7 @@ for Zone,Info in ipairs(Modules[5]) do
 	BossTable[Zone] = {};
 	local Model = nil;
     for _,Mob in next, Info.Mobs do 
-		Model = tostring(Mob.Model);
+		Model = Mob.Model.Name;
         if Mob.Quantity == 1 and table.find(BossTable[Zone], Model) == nil then 
             table.insert(BossTable[Zone], Model);
         elseif table.find(MobsTable[Zone], Model) == nil then
@@ -131,11 +128,11 @@ for Zone,Info in ipairs(Modules[5]) do
 end;
 
 -- fills MobsTable folders from EventMobs ModuleScript
-if Services[2]:FindFirstChild("EventMobs", true) then
+if game.ReplicatedStorage:FindFirstChild("EventMobs", true)~=nil then
 	local Model = nil;
-	for _,Zone in next, require(Services[2]:FindFirstChild("EventMobs", true)) do
+	for _,Zone in next, require(game.ReplicatedStorage:FindFirstChild("EventMobs", true)) do
 		for _,Mob in next, Zone do 
-			Model = tostring(Mob.Model);
+			Model = Mob.Model.Name;
 			if Mob.Quantity == 1 and table.find(BossTable[1], Model) == nil then 	
 				table.insert(BossTable[1], Model);
 			elseif table.find(MobsTable[1], Model) == nil then
@@ -147,71 +144,62 @@ end;
 
 -- Signals to update "Boss" as the player enters a new area within the same zone (Devs overlap zones)
 Folders[3].ChildAdded:Connect(function(Instance)
-	if Instance.Name ~= "Transition" then return; end;
+	if Instance.Name ~= "Transition" then return end;
 	local ACTIVE = _G.ACTIVE
 	_G.ACTIVE = false
-	while Folders[3]:FindFirstChild("Transition") ~= nil do task.wait(1); end; -- waits until transition is gone (zone is loaded) 
+	Instance.AncestryChanged:Wait(); -- waits until transition is gone (zone is loaded) 
 	_G.ACTIVE = ACTIVE;
 end);
 
--- Check if the "Toggle" argument is valid for any input by reference (Even a global or upvalue boolean) 
-local function FollowMob(Mob, Index, Health)
-	while task.wait() and _G.ACTIVE and Toggles[Index] and Health.Text ~= "0 Health" and Mob.PrimaryPart ~= nil do	
-		if (HumanoidRootPart.Position - Mob.PrimaryPart.Position).Magnitude >= 5 then
-			HumanoidRootPart.CFrame = Mob.PrimaryPart.CFrame;
-		end;
+local function FarmBoss(Mob, Humanoid)    
+	while Humanoid.Health>0 do -- repeating if any toggle is disabled before defeating the boss
+		while (_G.ACTIVE and _G.FARM_BOSS and AwayFromBoss) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
+		AwayFromBoss = false;
+		HumanoidRootPart.CFrame = Mob.WorldPivot;
+    	while Humanoid.Health>0 and _G.ACTIVE and _G.FARM_BOSS and task.wait() do	
+    		HumanoidRootPart.CFrame = Mob.WorldPivot;
+    	end;
+		AwayFromBoss = true;
 	end;
 end;
 
-local function GetHealth(Head)
-	if Head ~= nil and Head:WaitForChild("ExtraData").RedBar.Health.Text ~= "0 Health" then
-		return Head.ExtraData.RedBar.Health;
-	end;
-end;
-
-local function FarmBoss(Mob)
-	if table.find(BossTable[CurrentZone + 0], Mob.Name) == nil then return; end; -- if Mob is not a boss
-	local Health = Mob:WaitForChild("Head"):WaitForChild("ExtraData"):WaitForChild("RedBar"):WaitForChild("Health");
-	while Health.Text ~= "0 Health" do -- repeating if any toggle is disabled before defeating the boss
-		while (_G.ACTIVE and Toggles[1] and Toggles[2]) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
-		Toggles[2] = false;
-		FollowMob(Mob, 1, Health);
-		Toggles[2] = true;
-	end;
-end;
-
-local function YieldHead(Mob)
-	local Loading = nil;
-	Loading = Mob.ChildAdded:Connect(function(Child)
-		if Child.Name == "Head" then
-			Loading = Loading:Disconnect();
-			FarmBoss(Mob);
+local loading = nil;
+local function YieldHumanoid(Mob)
+	if table.find(BossTable[tonumber(CurrentZone,10)], Mob.Name) == nil then return end; -- if Mob is not a boss
+	loading = Mob.ChildAdded:Connect(function(child)
+		if child.Name == "Humanoid" then
+			loading:Disconnect();
+			FarmBoss(Mob, child);
 		end;
 	end);
 end;
 
 local function SearchBosses(Zone)
-	local Bosses = BossTable[CurrentZone + 0];
+	local Bosses = BossTable[tonumber(Zone.Name,10)];
 	for _,Mob in ipairs(Zone:GetChildren()) do -- Search for bosses
-		if table.find(Bosses, Mob.Name) ~= nil then
-			YieldHead(Mob);
+		if table.find(Bosses, Mob.Name)==nil then -- if mob is not a zone-boss
+			continue;
+		elseif Mob.PrimaryPart==nil then -- wait for primary part if not loaded yet (no primary part -> no humanoid)
+			Mob:GetPropertyChangedSignal("PrimaryPart"):Wait();
 		end;
+		FarmBoss(Mob, Mob.Humanoid);
 	end;
 end;
 
 -- Finding the Boss(s) when a new zone is entered;
+local ChildAdded,ParentChanged = nil;
 Folders[1].ChildAdded:Connect(function(NewZone)
 	CurrentZone = NewZone.Name;
-	if BossTable[CurrentZone + 0][1] == nil then return; end;
+	if BossTable[tonumber(CurrentZone,10)][1]==nil then return end;
 	
-	SearchBosses(NewZone); -- Initialize Bosses in New Zone
+	task.defer(SearchBosses,NewZone); -- Initialize Bosses in New Zone
 	
-	local ChildAdded,ParentChanged = nil;
-	ChildAdded = NewZone.ChildAdded:Connect(FarmBoss);
-	ParentChanged = NewZone:GetPropertyChangedSignal("Parent"):Connect(function() 
-		if NewZone.Parent == Folders[1] then return; end;
-		ChildAdded = ChildAdded:Disconnect();
-		ParentChanged = ParentChanged:Disconnect();
+	ChildAdded = NewZone.ChildAdded:Connect(YieldHumanoid);
+	ParentChanged = NewZone.AncestryChanged:Connect(function() 
+		if NewZone.Parent ~= Folders[1] then
+			ChildAdded:Disconnect();
+			ParentChanged:Disconnect();
+		end;
 	end);
 end);
 
@@ -308,16 +296,17 @@ local function EquipBest(Category, Event)
     end
 	
     for _,ID in ipairs(Best) do
-        if table.find(EquippedItems, ID) ~= nil then continue end;
-		Events[3].EquipItem:InvokeServer(Category..'s', EquippedItems);	-- Unequip Current items
-		task.wait(2);
-		Events[3].EquipItem:InvokeServer(Category..'s', Best);
-		return;
+        if table.find(EquippedItems, ID) == nil then 
+            Events[3].EquipItem:InvokeServer(Category..'s', EquippedItems);	-- Unequip Current items
+			task.wait(2);
+			Events[3].EquipItem:InvokeServer(Category..'s', Best);
+            return;
+        end;
     end;
 end;
 
 local function inGroup(GroupID)
-	for _,Group in ipairs(Services[3]:GetGroupsAsync(Services[1].LocalPlayer.UserId)) do
+	for _,Group in ipairs(Services[2]:GetGroupsAsync(Services[1].LocalPlayer.UserId)) do
 		if GroupID == Group.Id then
 			return true;
 		end;
@@ -351,47 +340,43 @@ end;
 local function autosInit()
 
     -- Initializing automatic playtime rewards
-    local PlaytimeRewards = Folders[3].Rewards.Main.Frame;
-
-    if table.getn(PlaytimeRewards:GetChildren()) > 1 then
-        for Index = 12 - table.getn(PlaytimeRewards:GetChildren()), 10 do
-			if PlaytimeRewards[Index].TimeLeft.Text ~= "CLICK TO CLAIM" then
-				local Connection;
-				Connection = PlaytimeRewards[Index].TimeLeft:GetPropertyChangedSignal("TextColor3"):Once(function()
-					Events[3].GiveStayReward:FireServer(Index);
-					if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Index) end;
-					delay(3, function() PlaytimeRewards[Index]:Destroy() end);
-					Connection:Disconnect();
-					Connection = nil;
-				end)
-            else 
-                Events[3].GiveStayReward:FireServer(Index)
-				if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Index) end
-                delay(3, function() PlaytimeRewards[Index]:Destroy() end)
-            end
-        end
-    end
+    for _,Reward in ipairs(Folders[3].Rewards.Main.Frame:GetChildren()) do
+		if Reward.Name=="UIGridLayout" then continue end;
+		if Reward.TimeLeft.Text ~= "CLICK TO CLAIM" then
+			Reward.TimeLeft:GetPropertyChangedSignal("TextColor3"):Once(function()
+			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name,10));
+			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end;
+			task.delay(3, Reward.Destroy, Reward);
+			end)
+		else 
+			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name,10))
+			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end
+			task.delay(3, Reward.Destroy, Reward);
+		end;
+    end;
     
 	-- for playtime rewards that are added mid-game
-    PlaytimeRewards.ChildAdded:Connect(function(Reward)
+    Folders[3].Rewards.Main.Frame.ChildAdded:Connect(function(Reward)
         Reward:WaitForChild("TimeLeft"):GetPropertyChangedSignal("TextColor3"):Once(function()
-			Events[3].GiveStayReward:FireServer(Reward.Name + 0)	-- find the function that calls this remote event
-			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end
-			task.delay(3, function() Reward:Destroy() end)
+			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name, 10));
+			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end;
+			task.delay(3, Reward.Destroy, Reward);
         end)
     end)
 
     -- Initializing automatic Daily (SpinReward) rewards
     local SpinReward = Folders[3].Main.Top.DailyRewards.UnClaimed
 	
-    if SpinReward.Visible then Events[3].ClaimDailyReward:InvokeServer()
+    if SpinReward.Visible then 
+		Events[3].ClaimDailyReward:InvokeServer()
 		if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end
 	end
     
     SpinReward:GetPropertyChangedSignal("Visible"):Connect(function()
-        if SpinReward.Visible == false then return; end;
-		Events[3].ClaimDailyReward:InvokeServer();
-		if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end;
+        if SpinReward.Visible then
+			Events[3].ClaimDailyReward:InvokeServer();
+			if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end;
+		end;
     end);
 
     -- Initializing automatic Rank and Group rewards
@@ -404,38 +389,33 @@ local function autosInit()
 	task.defer(ClaimRankRewards)	-- Initialize Rank Rewards
 
     -- Initializing automatic Index rewards
-    local Index = Folders[3].PetIndex.Main
+    local Index = Folders[3].PetIndex.Main;
     
     for _,Category in ipairs({"Weapon", "Pet"}) do
         local Counter = Index[Category.."IndexRewards"].Counter
-        if Counter.Text ~= "Completed" then
+        if Counter.Text == "Completed" then continue end;
 			
-			local function GetRatio(String)
-				local T,B = String:gmatch("(.+)/(.+) .+")()
-				return (T + 0)/(B + 0) >= 1
-			end			
+		local function GetRatio(T,B)
+			return tonumber(T,10)>=tonumber(B,10);
+		end			
+		
+		while task.wait() and Counter.Text ~= "Completed" and GetRatio(Counter.Text:match("(.+)/(.+)")) do
+			Events[3].IndexCompleted:FireServer(Category)
+		end
 			
-			while task.wait() and Counter.Text ~= "Completed" and GetRatio(Counter.Text) do
-				Events[3].IndexCompleted:FireServer(Category)
-			end
-			
-            if Counter.Text ~= "Completed" then
-				local Button,Connection = Index[Category.."IndexRewards"].Claim;
-				Connection = Button:GetPropertyChangedSignal("Visible"):Connect(function()
-					if Button.Visible then 
-						Events[3].IndexCompleted:FireServer(Category);
-						if _G.PRINT_REWARDS_DATA then print("Claimed", Category, "Index"); end;
-						Button.Visible = false;
-					end;
-					task.delay(1, function() 
-						if Counter.Text == "Completed" then 
-							if _G.PRINT_REWARDS_DATA then print(Category, "Indexes Completed") end;
-							Connection:Disconnect();
-						end;
-					end);
-				end);
+        if Counter.Text == "Completed" then continue end;
+		local Button,Connection = Index[Category.."IndexRewards"].Claim,nil;
+		Connection = Button:GetPropertyChangedSignal("Visible"):Connect(function()
+			if Button.Visible==false then return end;
+			Events[3].IndexCompleted:FireServer(Category);
+			if _G.PRINT_REWARDS_DATA then print("Claimed", Category, "Index"); end;
+			Button.Visible = false;
+			task.wait(1)
+			if Counter.Text == "Completed" then 
+				if _G.PRINT_REWARDS_DATA then print(Category, "Indexes Completed") end;
+				Connection=Connection:Disconnect();
 			end;
-        end;
+		end);
     end;
     
     -- Automatic Zone and Teleport purchases
@@ -489,8 +469,9 @@ local HitDetector = CreateInstance("Part", {
 });
 
 HitDetector.Touched:Connect(function(Hit)
-	if _G.ACTIVE == false or Hit.Name ~= "HumanoidRootPart" or Services[1]:FindFirstChild(Hit.Parent.Name) ~= nil or GetHealth(Hit.Parent:FindFirstChild("Head")) == nil then return; end;
-	HitEvent:FireServer(nil, Hit.Parent, Hit.Position);
+	if _G.ACTIVE and Hit.Name=="HumanoidRootPart" and Hit.Parent.Parent.Name==_G.ZONE_TO_FARM and Hit.Parent.Humanoid.Health~=0 then
+		HitEvent:FireServer(nil, Hit.Parent, Hit.Position);
+	end;
 end);
 
 game:GetService("RunService").RenderStepped:Connect(function()
@@ -500,8 +481,8 @@ end);
 -- Auto Dungeon
 Events[5].Event:Connect(function()
 	DungeonState = Events[1]:InvokeServer(); -- updated once every second
-	if Toggles[3] or ((_G.JOIN_DUNGEON and DungeonState == "Starting") == false and os.time() < (Modules[1].LastDungeonEnter + 3600)) or DungeonState == "Begun" then return; end;
-	Toggles[3] = true;
+	if AtDungeon or ((_G.JOIN_DUNGEON and DungeonState == "Starting") == false and os.time() < (Modules[1].LastDungeonEnter + 3600)) or DungeonState == "Begun" then return; end;
+	AtDungeon = true;
 	if _G.PRINT_DUNGEON_DATA then print("Dungeon is ready") end
 	while _G.FARM_DUNGEON == false do task.wait(1) end		-- when dungeon is ready, waits until dungeon farming is active
 	
@@ -511,14 +492,14 @@ Events[5].Event:Connect(function()
 	task.wait(2)
 
 		-- (2) Store current variable data
-	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, Toggles[1], _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
+	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
 	for ID,_ in next, Modules[1].EquippedItems.Weapons do table.insert(EquippedWeapons, ID) end
 	
 		-- (3) Equip best weapons for Dungeon
 	EquipBest("Weapon")
 	
 		-- (4) Disable potentially inflicting variables
-	_G.ACTIVE, _G.FARM_MAX, Toggles[1], _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
+	_G.ACTIVE, _G.FARM_MAX, _G.FARM_BOSS, _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
 	task.wait(4)
 	
 		-- (5) Teleport user to dungeon loading zone
@@ -543,17 +524,16 @@ Events[5].Event:Connect(function()
 	HumanoidRootPart.Anchored = false
 	
 	   -- (10) re-assign variables
-	_G.FARM_MAX, _G.ZONE_TO_FARM, Toggles[1], _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
-	Toggles[3] = false;
+	_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
+	AtDungeon = false;
 end);
 
 -- Auto Egg Hatching
 local EggClocking = (os.time() + 3)%10;
 Events[4].Event:Connect(function()
-	if os.time()%10 ~= EggClocking then return; end;
+	if _G.FARM_EGGS == false or os.time()%10 ~= EggClocking then return end;
 	EggClocking = (EggClocking + 3)%10;
 	
-	if _G.FARM_EGGS == false then return; end;
 	if Modules[1].Gamepasses["40355989"] == nil then 
 		return Events[2]:InvokeServer(_G.EGG, "Hatch");
 	end;
@@ -561,7 +541,7 @@ Events[4].Event:Connect(function()
 end);
 
 local NewTime = nil;
-NewTime = hookfunction(os.time, function() -- 
+NewTime = hookfunction(os.time, function() 
 	if getcallingscript() == Modules[6] then 
 		Events[4]:Fire(); -- Egg Hatch
 		Events[5]:Fire(); -- Auto Dungeon
@@ -570,23 +550,26 @@ NewTime = hookfunction(os.time, function() --
 end);
 
 local function CheckZone()
-	if CurrentZone == "Other" or CurrentZone == _G.ZONE_TO_FARM then return; end; -- "CurrentZone" is current zone
-	HumanoidRootPart.CFrame = CFrame.new(Teleports[tonumber(_G.ZONE_TO_FARM)]);
-	HumanoidRootPart.Anchored = true
-	task.wait(1)
-	HumanoidRootPart.Anchored = false
+	if CurrentZone ~= "Other" and CurrentZone ~= _G.ZONE_TO_FARM then  -- "CurrentZone" is current zone
+		HumanoidRootPart.CFrame = Teleports[tonumber(_G.ZONE_TO_FARM)];
+		HumanoidRootPart.Anchored = true;
+		task.wait(1);
+		HumanoidRootPart.Anchored = false;
+	end;
 end
 
 local function GetMobs(Mobs)
 	if _G.FARM_TARGET then
 		for _,Mob in ipairs(Folders[1][CurrentZone]:GetChildren()) do
-			if Mob.Name ~= _G.TARGET or Mob:FindFirstChild("Head") == nil then continue; end;
-			table.insert(Mobs, Mob);
+			if Mob.Parent~=nil and Mob.Name == _G.TARGET then
+				table.insert(Mobs, Mob);
+			end;
 		end;
 	else
 		for _,Mob in ipairs(Folders[1][CurrentZone]:GetChildren()) do
-			if Mob:FindFirstChild("Head") == nil then continue; end;
-			table.insert(Mobs, Mob);
+			if Mob.Parent~=nil then
+				table.insert(Mobs, Mob);
+			end;
 		end;
 	end;
 	
@@ -599,16 +582,21 @@ end;
 
 -- Auto Farm Specific & General
 task.defer(function()
-	local Mobs,Health = {}
+	local Mobs,Humanoid = {},nil;
 
     while task.wait() do
-		while (_G.ACTIVE and Toggles[2]) == false do task.wait(); end;
+		while (_G.ACTIVE and AwayFromBoss) == false do task.wait() end;
 		CheckZone();
 		
         for _,Mob in ipairs(GetMobs(Mobs)) do 
-			if (_G.ACTIVE or Toggles[2]) == false then break; end;
-			Health = GetHealth(Mob:FindFirstChild("Head"));
-            if Health ~= nil then FollowMob(Mob, 2, Health); end;
+			if (_G.ACTIVE or AwayFromBoss) == false then break;
+			elseif Mob.PrimaryPart~=nil and Mob.Humanoid.Health>0 then
+			    Humanoid=Mob.Humanoid;
+			    HumanoidRootPart.CFrame = Mob.WorldPivot;
+                while Humanoid.Health>0 and _G.ACTIVE and AwayFromBoss and task.wait() do	
+        			HumanoidRootPart.CFrame = Mob.WorldPivot;
+            	end;
+            end;
         end;
 		table.clear(Mobs);
     end;
@@ -629,10 +617,17 @@ game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(func
 end);
 
 -- Anti AFK
-local Mouse = Services[1].LocalPlayer:GetMouse();
-Services[1].LocalPlayer.Idled:Connect(function()	
-	wait(math.random(5, 45));
-	
-	Services[4]:CaptureController();
-	Services[4]:ClickButton2(Vector2.new(Mouse.X, Mouse.Y));
-end);
+if getconnections~=nil then
+    for _,v in next, getconnections(Services[1].LocalPlayer.Idled) do
+        v:Disable();
+    end;
+else
+    local Mouse = Services[1].LocalPlayer:GetMouse();
+    local VirtualUser = game:GetService("VirtualUser");
+    Services[1].LocalPlayer.Idled:Connect(function()	
+    	task.wait(math.random(5, 45));
+    	
+    	VirtualUser:CaptureController();
+    	VirtualUser:ClickButton2(Vector2.new(Mouse.X, Mouse.Y));
+    end);
+end;
