@@ -1,4 +1,4 @@
-if game.PlaceId ~= 7026949294 or _G.LOADED==true then return end;
+if game.PlaceId ~= 7026949294 or _G.LOADED then return end; 
 _G.LOADED = true;
 if game:IsLoaded() == false then game.Loaded:Wait() end;
 
@@ -69,11 +69,11 @@ local Routines = {}
 local MobsTable = table.create(table.getn(Modules[5]), ''); -- All Mobs per Zone
 local BossTable = table.create(table.getn(MobsTable), ''); -- Bosses per Zone
 local Teleports = table.create(table.getn(MobsTable), ''); -- Zone Teleport CFrames for ease-of-access
-for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn); end; -- Teleport positions, Vector3
+for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn) end; -- Teleport positions
 
-local ElementInventory = {};
+local ElementInventory = {}
 for _,Element in ipairs(Folders[2].Elements:GetChildren()) do ElementInventory[Element.Name] = 0 end
-for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base] += 1 end;
+for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base] = ElementInventory[Element.Base] + 1 end
 
 --[[ All the below values can be changed mid-game ]]
 
@@ -81,7 +81,7 @@ for _,Element in next, Modules[1].AuraInventory do ElementInventory[Element.Base
 _G.MAX_ZONE = Modules[1].CurrentZone;
 _G.TARGET = "AutumnPaladin";
 _G.ZONE_TO_FARM = "22";
-_G.EGG = "Autumn Egg 2";
+_G.EGG = "Christmas Zone 2 Egg 2";
 
 -- Edit these toggles
 _G.IGNORE_ITEM_MESSAGES = true;
@@ -94,11 +94,11 @@ _G.FARM_DUNGEON = true;
 _G.JOIN_DUNGEON = true; -- may only want to use in private servers
 
 _G.FARM_TARGET = true;
-_G.FARM_BOSS = true;
 _G.FARM_EGGS = true;
 _G.FARM_MAX = true;
 _G.ACTIVE = true;
 
+getgenv().FARM_BOSS=true;
 local AwayFromBoss=true;
 local AtDungeon=false;
 
@@ -128,11 +128,11 @@ for Zone,Info in ipairs(Modules[5]) do
 end;
 
 -- fills MobsTable folders from EventMobs ModuleScript
-if game.ReplicatedStorage:FindFirstChild("EventMobs", true)~=nil then
+if game.ReplicatedStorage:FindFirstChild("EventMobs", true) then
 	local Model = nil;
 	for _,Zone in next, require(game.ReplicatedStorage:FindFirstChild("EventMobs", true)) do
 		for _,Mob in next, Zone do 
-			Model = Mob.Model.Name;
+			Model = tostring(Mob.Model);
 			if Mob.Quantity == 1 and table.find(BossTable[1], Model) == nil then 	
 				table.insert(BossTable[1], Model);
 			elseif table.find(MobsTable[1], Model) == nil then
@@ -144,19 +144,20 @@ end;
 
 -- Signals to update "Boss" as the player enters a new area within the same zone (Devs overlap zones)
 Folders[3].ChildAdded:Connect(function(Instance)
-	if Instance.Name ~= "Transition" then return end;
-	local ACTIVE = _G.ACTIVE
-	_G.ACTIVE = false
-	Instance.AncestryChanged:Wait(); -- waits until transition is gone (zone is loaded) 
-	_G.ACTIVE = ACTIVE;
+	if Instance.Name == "Transition" then 
+    	local ACTIVE = _G.ACTIVE
+    	_G.ACTIVE = false
+    	Instance.AncestryChanged:Wait(); -- waits until transition is gone (zone is loaded) 
+    	_G.ACTIVE = ACTIVE;
+    end;
 end);
 
 local function FarmBoss(Mob, Humanoid)    
 	while Humanoid.Health>0 do -- repeating if any toggle is disabled before defeating the boss
-		while (_G.ACTIVE and _G.FARM_BOSS and AwayFromBoss) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
+		while (_G.ACTIVE and FARM_BOSS and AwayFromBoss) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
 		AwayFromBoss = false;
 		HumanoidRootPart.CFrame = Mob.WorldPivot;
-    	while Humanoid.Health>0 and _G.ACTIVE and _G.FARM_BOSS and task.wait() do	
+    	while Humanoid.Health>0 and _G.ACTIVE and FARM_BOSS and task.wait() do	
     		HumanoidRootPart.CFrame = Mob.WorldPivot;
     	end;
 		AwayFromBoss = true;
@@ -320,7 +321,7 @@ local function ClaimDailyRewards()
 		if inGroup(11109344) == false then
 			print("Not in Tachyon Roblox Group, so group rewards can not be claimed.");
 			print("Group rewards will be claimed if you join mid-game.");
-			repeat task.wait(1) until inGroup(11109344);
+			repeat task.wait(1) until inGroup(11109344); -- stack-up problem here
 		end;
 		Events[3].ClaimGroupDailyReward:InvokeServer();
 		if _G.PRINT_REWARDS_DATA then print("Claimed Group Rewards") end;
@@ -344,39 +345,37 @@ local function autosInit()
 		if Reward.Name=="UIGridLayout" then continue end;
 		if Reward.TimeLeft.Text ~= "CLICK TO CLAIM" then
 			Reward.TimeLeft:GetPropertyChangedSignal("TextColor3"):Once(function()
-			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name,10));
-			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end;
-			task.delay(3, Reward.Destroy, Reward);
+				Events[3].GiveStayReward:FireServer(tonumber(Reward.Name, 10));
+				if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end;
+				task.delay(3, Reward.Destroy, Reward);
 			end)
-		else 
-			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name,10))
+        else 
+            Events[3].GiveStayReward:FireServer(tonumber(Reward.Name))
 			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end
-			task.delay(3, Reward.Destroy, Reward);
-		end;
-    end;
+            task.delay(3, Reward.Destroy, Reward);
+        end
+    end
     
 	-- for playtime rewards that are added mid-game
     Folders[3].Rewards.Main.Frame.ChildAdded:Connect(function(Reward)
         Reward:WaitForChild("TimeLeft"):GetPropertyChangedSignal("TextColor3"):Once(function()
-			Events[3].GiveStayReward:FireServer(tonumber(Reward.Name, 10));
-			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end;
-			task.delay(3, Reward.Destroy, Reward);
+			Events[3].GiveStayReward:FireServer(Reward.Name + 0)	-- find the function that calls this remote event
+			if _G.PRINT_REWARDS_DATA then print("Claimed Playtime reward", Reward.Name) end
+			task.delay(3, function() Reward:Destroy() end)
         end)
     end)
 
     -- Initializing automatic Daily (SpinReward) rewards
     local SpinReward = Folders[3].Main.Top.DailyRewards.UnClaimed
 	
-    if SpinReward.Visible then 
-		Events[3].ClaimDailyReward:InvokeServer()
+    if SpinReward.Visible then Events[3].ClaimDailyReward:InvokeServer()
 		if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end
 	end
     
     SpinReward:GetPropertyChangedSignal("Visible"):Connect(function()
-        if SpinReward.Visible then
-			Events[3].ClaimDailyReward:InvokeServer();
-			if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end;
-		end;
+        if SpinReward.Visible == false then return; end;
+		Events[3].ClaimDailyReward:InvokeServer();
+		if _G.PRINT_REWARDS_DATA then print("Collected Daily Rewards") end;
     end);
 
     -- Initializing automatic Rank and Group rewards
@@ -388,71 +387,75 @@ local function autosInit()
 	task.defer(ClaimDailyRewards)	-- Initialize Daily Rewards
 	task.defer(ClaimRankRewards)	-- Initialize Rank Rewards
 
-    -- Initializing automatic Index rewards
-    local Index = Folders[3].PetIndex.Main;
+--     -- Initializing automatic Index rewards
+--     local Index = Folders[3].PetIndex.Main
     
-    for _,Category in ipairs({"Weapon", "Pet"}) do
-        local Counter = Index[Category.."IndexRewards"].Counter
-        if Counter.Text == "Completed" then continue end;
+--     for _,Category in ipairs({"Weapon", "Pet"}) do
+--         local Counter = Index[Category.."IndexRewards"].Counter
+--         if Counter.Text ~= "Completed" then
 			
-		local function GetRatio(T,B)
-			return tonumber(T,10)>=tonumber(B,10);
-		end			
-		
-		while task.wait() and Counter.Text ~= "Completed" and GetRatio(Counter.Text:match("(.+)/(.+)")) do
-			Events[3].IndexCompleted:FireServer(Category)
-		end
+-- 			local function GetRatio(T,B)
+-- 				return tonumber(T,10)/tonumber(B,10) >= 1
+-- 			end			
 			
-        if Counter.Text == "Completed" then continue end;
-		local Button,Connection = Index[Category.."IndexRewards"].Claim,nil;
-		Connection = Button:GetPropertyChangedSignal("Visible"):Connect(function()
-			if Button.Visible==false then return end;
-			Events[3].IndexCompleted:FireServer(Category);
-			if _G.PRINT_REWARDS_DATA then print("Claimed", Category, "Index"); end;
-			Button.Visible = false;
-			task.wait(1)
-			if Counter.Text == "Completed" then 
-				if _G.PRINT_REWARDS_DATA then print(Category, "Indexes Completed") end;
-				Connection=Connection:Disconnect();
-			end;
-		end);
-    end;
+-- 			while task.wait() and Counter.Text ~= "Completed" and GetRatio(Counter.Text:match("(%d+)/(%d+)")) do
+-- 				Events[3].IndexCompleted:FireServer(Category)
+-- 			end
+			
+--             if Counter.Text ~= "Completed" then
+-- 				local Button,Connection = Index[Category.."IndexRewards"].Claim;
+-- 				Connection = Button:GetPropertyChangedSignal("Visible"):Connect(function()
+-- 					if Button.Visible then 
+-- 						Events[3].IndexCompleted:FireServer(Category);
+-- 						if _G.PRINT_REWARDS_DATA then print("Claimed", Category, "Index"); end;
+-- 						Button.Visible = false;
+-- 					end;
+-- 					task.delay(1, function() 
+-- 						if Counter.Text == "Completed" then 
+-- 							if _G.PRINT_REWARDS_DATA then print(Category, "Indexes Completed") end;
+-- 							Connection:Disconnect();
+-- 						end;
+-- 					end);
+-- 				end);
+-- 			end;
+--         end;
+--     end;
     
-    -- Automatic Zone and Teleport purchases
-    local TeleportButtons = Folders[3].Teleports.Main.ListFrame;
-    if _G.MAX_ZONE >= table.getn(Modules[5]) then return; end;
+--     -- Automatic Zone and Teleport purchases
+--     local TeleportButtons = Folders[3].Teleports.Main.ListFrame;
+--     if _G.MAX_ZONE >= table.getn(Modules[5]) then return; end;
         
-	-- set to false if you do not want the doors and teleports to be automatically purchased
-	_G.PURCHASE_DOORS = false;
-	_G.PURCHASE_TELEPORTS = false;
+-- 	-- set to false if you do not want the doors and teleports to be automatically purchased
+-- 	_G.PURCHASE_DOORS = false;
+-- 	_G.PURCHASE_TELEPORTS = false;
 	
-	task.defer(function()
-		while task.wait(1) do
-			for Index=2, table.getn(Modules[5])-1 do
-				if _G.PURCHASE_DOORS and Workspace.Worlds["Zone"..Index]:FindFirstChild("PurchaseNewZone") then
-					if Modules[1].Coins >= Modules[5][Index + 1].Cost.Coins then 
-						Events[3].PurchaseZone:InvokeServer();
-						_G.MAX_ZONE += 1
-						if _G.FARM_MAX then _G.ZONE_TO_FARM = tostring(_G.MAX_ZONE) end
-						if Index == table.getn(Modules[5])-1 then 
-							_G.PURCHASE_DOORS = nil;
-							if _G.PURCHASE_TELEPORTS == nil then return end;
-						end;
-					end;
-				end;
+-- 	task.defer(function()
+-- 		while task.wait(1) do
+-- 			for Index=2, table.getn(Modules[5])-1 do
+-- 				if _G.PURCHASE_DOORS and Workspace.Worlds["Zone"..Index]:FindFirstChild("PurchaseNewZone") then
+-- 					if Modules[1].Coins >= Modules[5][Index + 1].Cost.Coins then 
+-- 						Events[3].PurchaseZone:InvokeServer();
+-- 						_G.MAX_ZONE += 1
+-- 						if _G.FARM_MAX then _G.ZONE_TO_FARM = tostring(_G.MAX_ZONE) end
+-- 						if Index == table.getn(Modules[5])-1 then 
+-- 							_G.PURCHASE_DOORS = nil;
+-- 							if _G.PURCHASE_TELEPORTS == nil then return end;
+-- 						end;
+-- 					end;
+-- 				end;
 				
-				if _G.PURCHASE_TELEPORTS and TeleportButtons[Index]:FindFirstChild("Cost") then
-					if Modules[1].Gems >= Modules[5][Index].TeleportCost.Gems then 
-						Events[3].PurchaseTeleport:InvokeServer(Index);
-						if Index == table.getn(Modules[5])-1 then 
-							_G.PURCHASE_TELEPORTS = nil;
-							if _G.PURCHASE_DOORS == nil then return; end;
-						end;
-					end;
-				end;
-			end;
-		end;
-	end);
+-- 				if _G.PURCHASE_TELEPORTS and TeleportButtons[Index]:FindFirstChild("Cost") then
+-- 					if Modules[1].Gems >= Modules[5][Index].TeleportCost.Gems then 
+-- 						Events[3].PurchaseTeleport:InvokeServer(Index);
+-- 						if Index == table.getn(Modules[5])-1 then 
+-- 							_G.PURCHASE_TELEPORTS = nil;
+-- 							if _G.PURCHASE_DOORS == nil then return; end;
+-- 						end;
+-- 					end;
+-- 				end;
+-- 			end;
+-- 		end;
+-- 	end);
 end;
 
 autosInit()
@@ -492,14 +495,14 @@ Events[5].Event:Connect(function()
 	task.wait(2)
 
 		-- (2) Store current variable data
-	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
+	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
 	for ID,_ in next, Modules[1].EquippedItems.Weapons do table.insert(EquippedWeapons, ID) end
 	
 		-- (3) Equip best weapons for Dungeon
 	EquipBest("Weapon")
 	
 		-- (4) Disable potentially inflicting variables
-	_G.ACTIVE, _G.FARM_MAX, _G.FARM_BOSS, _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
+	_G.ACTIVE, _G.FARM_MAX, FARM_BOSS, _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
 	task.wait(4)
 	
 		-- (5) Teleport user to dungeon loading zone
@@ -524,16 +527,17 @@ Events[5].Event:Connect(function()
 	HumanoidRootPart.Anchored = false
 	
 	   -- (10) re-assign variables
-	_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
+	_G.FARM_MAX, _G.ZONE_TO_FARM, FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
 	AtDungeon = false;
 end);
 
 -- Auto Egg Hatching
 local EggClocking = (os.time() + 3)%10;
 Events[4].Event:Connect(function()
-	if _G.FARM_EGGS == false or os.time()%10 ~= EggClocking then return end;
+	if os.time()%10 ~= EggClocking then return; end;
 	EggClocking = (EggClocking + 3)%10;
 	
+	if _G.FARM_EGGS == false then return; end;
 	if Modules[1].Gamepasses["40355989"] == nil then 
 		return Events[2]:InvokeServer(_G.EGG, "Hatch");
 	end;
@@ -550,12 +554,12 @@ NewTime = hookfunction(os.time, function()
 end);
 
 local function CheckZone()
-	if CurrentZone ~= "Other" and CurrentZone ~= _G.ZONE_TO_FARM then  -- "CurrentZone" is current zone
-		HumanoidRootPart.CFrame = Teleports[tonumber(_G.ZONE_TO_FARM)];
-		HumanoidRootPart.Anchored = true;
-		task.wait(1);
-		HumanoidRootPart.Anchored = false;
-	end;
+	if CurrentZone ~= "Other" and CurrentZone ~= _G.ZONE_TO_FARM then -- "CurrentZone" is current zone
+    	HumanoidRootPart.CFrame = Teleports[tonumber(_G.ZONE_TO_FARM)];
+    	HumanoidRootPart.Anchored = true
+    	task.wait(1)
+    	HumanoidRootPart.Anchored = false
+    end;
 end
 
 local function GetMobs(Mobs)
@@ -585,7 +589,7 @@ task.defer(function()
 	local Mobs,Humanoid = {},nil;
 
     while task.wait() do
-		while (_G.ACTIVE and AwayFromBoss) == false do task.wait() end;
+		while (_G.ACTIVE and AwayFromBoss) == false do task.wait(); end;
 		CheckZone();
 		
         for _,Mob in ipairs(GetMobs(Mobs)) do 
@@ -593,7 +597,7 @@ task.defer(function()
 			elseif Mob.PrimaryPart~=nil and Mob.Humanoid.Health>0 then
 			    Humanoid=Mob.Humanoid;
 			    HumanoidRootPart.CFrame = Mob.WorldPivot;
-                while Humanoid.Health>0 and _G.ACTIVE and AwayFromBoss and task.wait() do	
+                while Humanoid.Health ~= 0 and _G.ACTIVE and AwayFromBoss and task.wait() do	
         			HumanoidRootPart.CFrame = Mob.WorldPivot;
             	end;
             end;
