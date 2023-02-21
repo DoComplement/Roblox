@@ -254,8 +254,7 @@ Main[5][4] = function(Tag, Index)
 		return true;
 	end;
 	
-	if Main[8][10] == false then return; end; -- Check Enchanted
-	for _,_ in next, rawget(v, "Enchants") or {} do return true; end; -- non-empty table => Enchanted
+	return Main[8][10] and next(rawget(v, "Enchants") or {})~=nil; -- Check Enchanted, non-empty table => Enchanted
 end;
 
 -- Enhance Item
