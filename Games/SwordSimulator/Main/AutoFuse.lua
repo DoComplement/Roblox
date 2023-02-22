@@ -104,8 +104,8 @@ local SaveData = { -- AutoSave Data
 		[2] = true; -- FuseFrame Visibility
 	};
 	["Toggles"] = {
-		["AutoLoad"] = false;
-		["AutoSave"] = false;
+		["AutoLoad"] = true;
+		["AutoSave"] = true;
 		["ResetText"] = true;
 		["GemsToggle"] = false;
 		["PrintToggle"] = false;
