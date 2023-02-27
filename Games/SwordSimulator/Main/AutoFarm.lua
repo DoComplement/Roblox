@@ -94,11 +94,11 @@ _G.FARM_DUNGEON = true;
 _G.JOIN_DUNGEON = true; -- may only want to use in private servers
 
 _G.FARM_TARGET = true;
+_G.FARM_BOSS = true;
 _G.FARM_EGGS = true;
 _G.FARM_MAX = true;
 _G.ACTIVE = true;
 
-getgenv().FARM_BOSS=true;
 local AwayFromBoss=true;
 local AtDungeon=false;
 
@@ -154,10 +154,10 @@ end);
 
 local function FarmBoss(Mob, Humanoid)    
 	while Humanoid.Health>0 do -- repeating if any toggle is disabled before defeating the boss
-		while (_G.ACTIVE and FARM_BOSS and AwayFromBoss) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
+		while (_G.ACTIVE and _G.FARM_BOSS and AwayFromBoss) == false do task.wait(math.random()); end; -- wait until all toggles are enabled
 		AwayFromBoss = false;
 		HumanoidRootPart.CFrame = Mob.WorldPivot;
-    	while Humanoid.Health>0 and _G.ACTIVE and FARM_BOSS and task.wait() do	
+    	while Humanoid.Health>0 and _G.ACTIVE and _G.FARM_BOSS and task.wait() do	
     		HumanoidRootPart.CFrame = Mob.WorldPivot;
     	end;
 		AwayFromBoss = true;
@@ -495,14 +495,14 @@ Events[5].Event:Connect(function()
 	task.wait(2)
 
 		-- (2) Store current variable data
-	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
+	local Currents,EquippedWeapons = {_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE, HumanoidRootPart.CFrame}, {}
 	for ID,_ in next, Modules[1].EquippedItems.Weapons do table.insert(EquippedWeapons, ID) end
 	
 		-- (3) Equip best weapons for Dungeon
 	EquipBest("Weapon")
 	
 		-- (4) Disable potentially inflicting variables
-	_G.ACTIVE, _G.FARM_MAX, FARM_BOSS, _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
+	_G.ACTIVE, _G.FARM_MAX, _G.FARM_BOSS, _G.FARM_TARGET, _G.ZONE_TO_FARM = false, false, false, false, "Other"
 	task.wait(4)
 	
 		-- (5) Teleport user to dungeon loading zone
@@ -527,7 +527,7 @@ Events[5].Event:Connect(function()
 	HumanoidRootPart.Anchored = false
 	
 	   -- (10) re-assign variables
-	_G.FARM_MAX, _G.ZONE_TO_FARM, FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
+	_G.FARM_MAX, _G.ZONE_TO_FARM, _G.FARM_BOSS, _G.FARM_TARGET, _G.INDEX_RANDOMLY, _G.ACTIVE = unpack(Currents);
 	AtDungeon = false;
 end);
 
@@ -597,7 +597,7 @@ task.defer(function()
 			elseif Mob.PrimaryPart~=nil and Mob.Humanoid.Health>0 then
 			    Humanoid=Mob.Humanoid;
 			    HumanoidRootPart.CFrame = Mob.WorldPivot;
-                while Humanoid.Health ~= 0 and _G.ACTIVE and AwayFromBoss and task.wait() do	
+                while Humanoid.Health>0 and _G.ACTIVE and AwayFromBoss and task.wait() do	
         			HumanoidRootPart.CFrame = Mob.WorldPivot;
             	end;
             end;
