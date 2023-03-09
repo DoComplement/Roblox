@@ -1,29 +1,24 @@
-local CreateInstance
-CreateInstance = hookfunction(Instance.new, function(ObjectType, Properties)
-	if checkcaller() and type(Properties) == "table" then
-		local Instance = CreateInstance(ObjectType)
-		for Attribute, Value in next, Properties do
-			Instance[Attribute] = Value
-		end
-		return Instance
-	else
-		return CreateInstance(ObjectType, Properties) 
-	end
+local function CreateInstance(ObjectType, Properties)
+	local Instance = CreateInstance(ObjectType);
+	for Attribute, Value in next, Properties do
+		Instance[Attribute] = Value;
+	end;
+	return Instance;
 end)
 
-local ScreenGui = Instance.new("ScreenGui", {
+local ScreenGui = CreateInstance("ScreenGui", {
 	Parent = game:GetService("CoreGui"),
 	Name = "ColorPicker",
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 });
-local Frame = Instance.new("Frame", {
+local Frame = CreateInstance("Frame", {
 	Parent = ScreenGui,
 	BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 	Position = UDim2.new(0.0690362304, 0, 0.115960099, 0),
 	Size = UDim2.new(0, 241, 0, 105)
 });
 
-local Button = Instance.new("TextButton", {
+local Button = CreateInstance("TextButton", {
 	Name = "Button",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 150),
@@ -36,11 +31,11 @@ local Button = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-Instance.new("UICorner", {
+CreateInstance("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Button
 });
-local Keep = Instance.new("TextButton", {
+local Keep = CreateInstance("TextButton", {
 	Name = "Keep",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
@@ -54,11 +49,11 @@ local Keep = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-Instance.new("UICorner", {
+CreateInstance("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Keep
 });
-local Next = Instance.new("TextButton", {
+local Next = CreateInstance("TextButton", {
 	Name = "Next",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
@@ -72,7 +67,7 @@ local Next = Instance.new("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-Instance.new("UICorner", {
+CreateInstance("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Next
 });
@@ -80,7 +75,7 @@ Instance.new("UICorner", {
 local Filename = "ColorPicks_"..tostring(math.random(1e+3, 1e+4))..".lua";
 writefile(Filename, "return {");
 
-local Changed,Index = Instance.new("BindableEvent").Event,nil;
+local Changed,Index = CreateInstance("BindableEvent").Event,nil;
 local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua"))();
 
 task.defer(function()
