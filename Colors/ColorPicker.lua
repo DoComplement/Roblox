@@ -76,36 +76,32 @@ Instance.new("UICorner", {
 	CornerRadius = UDim.new(1, 0),
 	Parent = Next
 });
-local Filename = "ColorPicks_"..tostring(math.random(1e+6, 1e+7))..".lua";
+
+local Filename = "ColorPicks_"..tostring(math.random(1e+3, 1e+4))..".lua";
 writefile(Filename, "return {");
-local Changed = false;
-local Index = 1;
+
+local Changed,Index = Instance.new("BindableEvent").Event,nil;
 local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua"))();
 
-local t,c1,c2
-t = task.defer(function()
-	for _,Color in ipairs(Colors) do
-		Button.BackgroundColor3 = Color3.new(unpack(Color));
-		Button.Text = tostring(BrickColor.new(Button.BackgroundColor3));
-		Changed = true;
-		while Changed do task.wait() end
-		if Button.Text == "Hot pink" then ScreenGui:Destroy() end
-	end
+task.defer(function()
+	for idx,Color in ipairs(Colors) do
+		Index=idx;
+		Button.BackgroundColor3 = Color;
+		Button.Text = BrickColor.new(Color).Name;
+		Changed:Wait();
+	end;
+	ScreenGui:Destroy();
 end);
 
-local function PickColor()
-	appendfile(Filename, "\n\t["..Index.."] = {"..tostring(Button.BackgroundColor3).."},\t-- "..tostring(BrickColor.new(Button.BackgroundColor3)))
-	Changed = false;
-	Index += 1;
-	if Button.Text == "Hot pink" then ScreenGui:Destroy() end
-end
-
-c1 = Next.MouseButton1Down:Connect(function() Changed = false end);
-c2 = Keep.MouseButton1Down:Connect(PickColor);
+local c1,c2 = nil,nil;
+c1 = Next.MouseButton1Down:Connect(function() Changed:Fire() end);
+c2 = Keep.MouseButton1Down:Connect(function()
+	appendfile(Filename, "\n\t["..Index.."] = Color3.new("..tostring(Button.BackgroundColor3)..");\t-- "..Button.Text));
+	Changed:Fire();
+end);
 ScreenGui.Destroying:Once(function()
 	appendfile(Filename, "\n};");
-	task.cancel(t);
-	c1:Disconnect();
-	c2:Disconnect();
+	c1=c1:Disconnect();
+	c2=c2:Disconnect();
 end)
 
