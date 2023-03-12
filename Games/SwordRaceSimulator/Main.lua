@@ -21,33 +21,34 @@ if game.PlaceId~=12172698927 or LOADED~=nil then return end;
 getgenv().LOADED=true;
 if game:IsLoaded()==false then game.Loaded:Wait() end;
 
-local LocalPlayer = game:GetService("Players").LocalPlayer;
+local LocalPlayer,FAST_REJOIN = game:GetService("Players").LocalPlayer,false;
 local HRP = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart"); -- can infinite yield
 
-local Launch = Workspace.WorldMain:WaitForChild("Walls").Launch.CFrame;
--- local Gate = game.ReplicatedStorage:FindFirstChild("Gate") or Workspace.WorldMain.Door.Gate;
--- Gate.AncestryChanged:Wait(); --etc
+do -- Initiating fast rejoin race
+	local Launch = Workspace.WorldMain:WaitForChild("Walls").Launch.CFrame;
+	-- local Gate = game.ReplicatedStorage:FindFirstChild("Gate") or Workspace.WorldMain.Door.Gate;
+	-- Gate.AncestryChanged:Wait(); --etc
+	
+	local Running,StateChanged = Enum.HumanoidStateType.Running,nil;
+	StateChanged=LocalPlayer.Character.Humanoid.StateChanged:Connect(function(old)
+		if FAST_REJOIN and old==Running then
+			HRP.CFrame=Launch;
+			FAST_REJOIN=false;
+		end;
+	end);
 
-local FAST_FARM=false;
-local Running,StateChanged = Enum.HumanoidStateType.Running,nil;
-StateChanged=LocalPlayer.Character.Humanoid.StateChanged:Connect(function(old)
-    if FAST_FARM and old==Running then
-        HRP.CFrame=Launch;
-        FAST_FARM=false;
-    end;
-end);
-
-LocalPlayer.CharacterAdded:Connect(function(Character)
-	Character:GetPropertyChangedSignal("PrimaryPart"):Wait();
-	HRP = Character.PrimaryPart;
-	StateChanged:Disconnect();
-	StateChanged=Character.Humanoid.StateChanged:Connect(function(old)
-        if FAST_FARM and old==Landed then
-            HRP.CFrame=Launch;
-            FAST_FARM=false;
-        end;
-    end);
-end);
+	LocalPlayer.CharacterAdded:Connect(function(Character)
+		Character:GetPropertyChangedSignal("PrimaryPart"):Wait();
+		HRP = Character.PrimaryPart;
+		StateChanged:Disconnect();
+		StateChanged=Character.Humanoid.StateChanged:Connect(function(old)
+			if FAST_REJOIN and old==Landed then
+				HRP.CFrame=Launch;
+				FAST_REJOIN=false;
+			end;
+		end);
+	end);
+end;
 
 local wait = task.wait;
 local UI = LocalPlayer.PlayerGui.MainUI.UI;
@@ -243,7 +244,7 @@ do -- Prevent Server from create orbs via Namecall
     	    if Self==CreateOrbs then
     	        return nil;
     	    elseif Self==EndRace then
-    	        FAST_FARM=true;
+    	        FAST_REJOIN=true;
             end;
     	end;
     	return NewNamecall(Self,...);
