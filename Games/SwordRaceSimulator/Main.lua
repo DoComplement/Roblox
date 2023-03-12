@@ -21,8 +21,8 @@ if game.PlaceId~=12172698927 or LOADED~=nil then return end;
 getgenv().LOADED=true;
 if game:IsLoaded()==false then 
     game.Loaded:Wait();
-    game.ReplicatedFirst.Loaded:Wait();
-    game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Reward006:GetPropertyChangedSignal("Text"):Wait();
+    game.ReplicatedFirst.Loaded.Event:Wait();
+    game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Rewards006.Time.text:GetPropertyChangedSignal("Text"):Wait();
 end;
 
 local LocalPlayer,FAST_REJOIN = game:GetService("Players").LocalPlayer,false;
