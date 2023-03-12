@@ -19,7 +19,11 @@ InvokeServer(Summontime)FireServer(SummonBoss); -- SummonBoss
 
 if game.PlaceId~=12172698927 or LOADED~=nil then return end;
 getgenv().LOADED=true;
-if game:IsLoaded()==false then game.Loaded:Wait() end;
+if game:IsLoaded()==false then 
+    game.Loaded:Wait();
+    game.ReplicatedFirst.Loaded:Wait();
+    game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Reward006:GetPropertyChangedSignal("Text"):Wait();
+end;
 
 local LocalPlayer,FAST_REJOIN = game:GetService("Players").LocalPlayer,false;
 local HRP = (LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart"); -- can infinite yield
