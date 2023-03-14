@@ -21,9 +21,8 @@ if game.PlaceId~=12172698927 or LOADED~=nil then return end;
 getgenv().LOADED=true;
 if game:IsLoaded()==false then 
     game.Loaded:Wait();
-    game.ReplicatedFirst.Loaded.Event:Wait();
-    game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Rewards006.Time.text:GetPropertyChangedSignal("Text"):Wait();
-	getconnections(game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.LeftMenu.AutoRun.Main.Activated)[1].Function(); -- Auto Run
+    game.ReplicatedFirst.Loaded:Wait();
+    game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Reward006:GetPropertyChangedSignal("Text"):Wait();
 end;
 
 local LocalPlayer,FAST_REJOIN = game:GetService("Players").LocalPlayer,false;
@@ -35,8 +34,8 @@ do -- Initiating fast rejoin race
 	-- Gate.AncestryChanged:Wait(); --etc
 	
 	local Running,StateChanged = Enum.HumanoidStateType.Running,nil;
-	StateChanged=LocalPlayer.Character.Humanoid.StateChanged:Connect(function(old,new)
-		if FAST_REJOIN and (old==Running or new==Running) then
+	StateChanged=LocalPlayer.Character.Humanoid.StateChanged:Connect(function(old)
+		if FAST_REJOIN and old==Running then
 			HRP.CFrame=Launch;
 			FAST_REJOIN=false;
 		end;
@@ -56,7 +55,6 @@ do -- Initiating fast rejoin race
 end;
 
 local wait = task.wait;
-local insert,find,remove = table.insert,table.find,table.remove;
 local UI = LocalPlayer.PlayerGui.MainUI.UI;
 local Coins = LocalPlayer.leaderstats.Coins;
 local Remotes = game.ReplicatedStorage.Remotes;
@@ -64,9 +62,10 @@ local CreateOrbs = Remotes.RE_CreateObrs;
 local FireServer = CreateOrbs.FireServer;
 -- local JoinRace = Remotes.RF_JoinRace; -- args=nil
 
+getconnections(UI.LeftMenu.AutoRun.Main.Activated)[1].Function();
+
 do -- Auto Playtime Rewards
 	local ClaimReward = Remotes.RE_ClaimReward;
-		
 	for idx,Reward in ipairs(UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List:GetChildren()) do
 		if idx==1 or Reward.Time.text.Text:sub(8)=="Claimed" then
 			continue;
@@ -118,7 +117,6 @@ do -- Auto Upgrades (needs to be fixed/optimized)
 	local Upgrade,UpgradeSignal = Remotes.RE_Upgrade,nil;
 	local Config = require(game.ReplicatedStorage.Modules.LocalConfig.UpgradeConfig);
 	local List = UI.CenterMenu.Upgrade.Shop.ScrollingFrame.Boosts.List;
-		
 	local function CheckUpgrades()
 		for idx,Option in ipairs(List:GetChildren()) do
 			if idx~=1 and Option.Max.Value~='' and Coins.Value>=Config[Option.Name][Option.Max.Value].Price then
@@ -132,11 +130,10 @@ end;
 
 do -- Auto Teleport to best zone (after immediate rebirth)
     local Teleport = Remotes.RE_Teleport;
-		
     for idx,Zone in ipairs(UI.CenterMenu.Teleport.List:GetChildren()) do
         if idx~=1 and Zone.Frame.TextLabel.Text=="?????" then
             Zone.Frame.TextLabel:GetPropertyChangedSignal("Text"):Once(function()
-            	FireServer(Teleport,Zone.Name);
+               FireServer(Teleport,Zone.Name);
             end)
         end;
     end;
@@ -217,6 +214,25 @@ There is still an error with setting the CFrame of orbs to the CFrame of the Loc
 : Test cases where this error occurs and watch the output of a remote spy w.r.t the orb names
 ]]
 
+-- Teleport Orb to LocalPlayer until it is defeated
+local function ConnectOrb(Orb)
+	if Orb.PrimaryPart==nil then
+		Orb:GetPropertyChangedSignal("PrimaryPart"):Wait();
+	end;
+	
+	while wait() and Orb.PrimaryPart~=nil do
+		Orb.PrimaryPart.CFrame=HRP.CFrame;
+	end;
+end;
+
+-- Converts a table of instances to a table of Instance Names
+local function GetChildrenByName(Children)
+	for idx,child in ipairs(Children) do
+		Children[idx]=child.Name;
+	end;
+	return Children;
+end;
+
 -- Prevents game from setting UI to transparent
 local NewNIdx=nil;NewNIdx=hookmetamethod(game,"__newindex",newcclosure(function(Self,...)
 	if checkcaller()==false and Self==UI then
@@ -247,38 +263,24 @@ local Hook=nil;Hook=hookfunction(FireServer,newcclosure(function(Remote,...)
 	return Hook(Remote,...);
 end));
 
--- Teleport Orb to LocalPlayer until it is defeated
-local Orbs = {};
-local function ConnectOrb(Orb)
-	insert(Orbs,Orb.Name);
-	if Orb.PrimaryPart==nil then
-		Orb:GetPropertyChangedSignal("PrimaryPart"):Wait();
-	end;
-	
-	while wait() and Orb.PrimaryPart~=nil do
-		Orb.PrimaryPart.CFrame=HRP.CFrame;
-	end;
-end;
-	
 Workspace.Orbs.ChildAdded:Connect(ConnectOrb);
 Workspace.Orbs.ChildRemoved:Connect(function(orb)
-	remove(Orbs,find(Orbs,orb.Name));
 	if orb:FindFirstChild('1')~=nil then -- orb is VIP
 		FireServer(CreateOrbs,false,true);
 	else	
 		FireServer(CreateOrbs,true,false);
 	end;
 end);
-	
+
 -- Initialize slimes
 if #(Workspace.Orbs:GetChildren())<50 then
 	local VIP_COUNT,NORMAL_COUNT = 30,20;
 	for _,Orb in ipairs(Workspace.Orbs:GetChildren()) do
 		task.defer(ConnectOrb,Orb);
 		if Orb:FindFirstChild('1')~=nil then
-			VIP_COUNT -= 1;
+			VIP_COUNT-=1;
 		else
-			NORMAL_COUNT -= 1;
+			NORMAL_COUNT-=1;
 		end;
 	end;
 	
@@ -289,13 +291,18 @@ if #(Workspace.Orbs:GetChildren())<50 then
 		FireServer(CreateOrbs,false,true);
 	end;
 end;
-	
+
+--[[
+getgenv().FARM_ORBS=true;
+getgenv().SPAWN_ORBS=true;
+]]
+
 -- Swing Orbs
 task.defer(function()
 	local Swing = Remotes.RE_Swing;
-			
-	while wait() do
-		FireServer(Swing, Orbs)
+	local DELAY = 0; -- for future modification ig
+	while wait(DELAY) do
+		FireServer(Swing, GetChildrenByName(Workspace.Orbs:GetChildren()))
 	end;
 end);
 
@@ -305,35 +312,37 @@ for _,signal in ipairs(getconnections(LocalPlayer.Idled)) do
 end;
 
 -- initialize zone data table
-local Zones = {zones={}};
-for id,details in next,require(game.ReplicatedStorage.Modules.LocalConfig.WorldConfig) do
-	Zones.zones[details.WorldName]=id;
-	Zones[id]={};
-end;
+local Zones = (function(Zones)
+    for id,details in next,require(game.ReplicatedStorage.Modules.LocalConfig.WorldConfig) do
+        Zones.zones[details.WorldName]=id;
+        Zones[id]={};
+    end;
+    return Zones;
+end)({zones={}});
 
 do -- format zone data
-    local floor,conversion = math.floor,{
+    local floor,conversion=math.floor,{
         [1]={4,1,''};
         [2]={7,1e+3,'k'};
         [3]={10,1e+6,'m'};
         [4]={13,1e+9,'b'};
         [5]={16,1e+12,"Qa"};
     };
-    local function Abbreviate(num,len)
+    local function Abbreviate(num)
         local len=tostring(floor(num)):len();
         for _,d in ipairs(conversion) do
             if len<d[1] then
-                return ((num/d[2]..d[3]):gsub("%.000",''));
+                return ((num/d[2]..d[3]):gsub("%.0+",''));
             end;
         end;
     end;
     
     for Egg,Data in next,require(game.ReplicatedStorage.Modules.LocalConfig.DrawConfig) do
         if Data.Type==1 then
-            insert(Zones[Data.WorldIds],{
+            table.insert(Zones[Data.WorldIds],{
                 [1]=Egg;
                 [2]=Data.Price;
-                [3]=Abbreviate(Data.Price,tostring(floor(Data.Price)):len());
+                [3]=Abbreviate(Data.Price);
             });
         end;
     end;
