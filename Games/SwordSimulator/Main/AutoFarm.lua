@@ -18,10 +18,7 @@ local CreateInstance = function(ObjectType, Properties)
 	return Instance
 end;
 
-local Services = {
-    [1] = game:GetService("Players");
-    [2] = game:GetService("GroupService");
-};
+local Players = game:GetService("Players");
 
 -- Reference Variables for Auto Daily Rewards
 local DailyRewards = {
@@ -29,10 +26,10 @@ local DailyRewards = {
     [2] = game:GetService("CollectionService"):GetTagged("RankRewardZone")[1].Countdown.CountdownUI.Frame.Countdown;
 }
 
-local HumanoidRootPart = (Services[1].LocalPlayer.Character or Services[1].LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart");
+local HumanoidRootPart = (Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()):WaitForChild("HumanoidRootPart");
 HumanoidRootPart.CanTouch=false;
 
-Services[1].LocalPlayer.CharacterAdded:Connect(function(Character)
+Players.LocalPlayer.CharacterAdded:Connect(function(Character)
 	HumanoidRootPart = Character:WaitForChild("HumanoidRootPart");
 end);
 
@@ -40,7 +37,7 @@ end);
 local Folders = {
     [1] = Workspace.Mobs; -- Workspace.Mobs
 	[2] = game.ReplicatedStorage.Saturn.Modules.GameDependent; -- ReplicatedStorage.Saturn.Modules.GameDependent
-	[3] = Services[1].LocalPlayer.PlayerGui; -- Players.LocalPlayer.PlayerGui
+	[3] = Players.LocalPlayer.PlayerGui; -- Players.LocalPlayer.PlayerGui
 }
 
 -- Frequently-Used Remote Events
@@ -64,7 +61,7 @@ local Modules = {
     [3] = require(Folders[2].WeaponsModule); -- Weapons Module
     [4] = require(Folders[2].BoostsCalculator); -- Boosts Calculators
     [5] = require(Folders[2].Zones); -- Zones
-    [6] = Services[1].LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler; -- game script
+    [6] = Players.LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler; -- game script
 }
 
 --[[
@@ -313,22 +310,13 @@ local function EquipBest(Category, Event)
     end;
 end;
 
-local function inGroup(GroupID)
-	for _,Group in ipairs(Services[2]:GetGroupsAsync(Services[1].LocalPlayer.UserId)) do
-		if GroupID == Group.Id then
-			return true;
-		end;
-	end;
-	return false;
-end;
-
 local function ClaimDailyRewards()
 	if DailyRewards[1].Text == "Ready" then
 		wait(2);
-		if inGroup(11109344) == false then
+		if Players.LocalPlayer:IsInGroup(11109344) == false then
 			print("Not in Tachyon Roblox Group, so group rewards can not be claimed.");
 			print("Group rewards will be claimed if you join mid-game.");
-			repeat wait(1) until inGroup(11109344); -- stack-up problem here
+			repeat wait(1) until Players.LocalPlayer:IsInGroup(11109344); -- stack-up problem here
 		end;
 		InvokeServer(Events[4].ClaimGroupDailyReward);
 		if _G.PRINT_REWARDS_DATA then print("Claimed Group Rewards") end;
@@ -636,13 +624,13 @@ end);
 
 -- Anti AFK
 if getconnections~=nil then
-    for _,v in next, getconnections(Services[1].LocalPlayer.Idled) do
+    for _,v in next, getconnections(Players.LocalPlayer.Idled) do
         v:Disable();
     end;
 else
-    local Mouse = Services[1].LocalPlayer:GetMouse();
+    local Mouse = Players.LocalPlayer:GetMouse();
     local VirtualUser = game:GetService("VirtualUser");
-    Services[1].LocalPlayer.Idled:Connect(function()	
+    Players.LocalPlayer.Idled:Connect(function()	
     	wait(math.random(5, 45));
     	
     	VirtualUser:CaptureController();
