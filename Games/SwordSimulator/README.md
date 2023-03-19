@@ -2,7 +2,7 @@
 This repository is the access point to the Sword Simulator kitty scripts created by Activities12 on V3rmillion
 
 ## Features
-- Fastest Auto-Farm
+- Most Efficient Auto-Farm
 - Auto Dungeons
 - Auto Egg Hatching
 - Auto Item Fuse
