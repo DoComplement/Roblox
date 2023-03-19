@@ -1,7 +1,7 @@
 local rand = {};
 
-local remove,concat,random, = table.remove,table.concat,math.random;
-local create,split = table.create,string.split;
+local remove,concat = table.remove,table.concat;
+local split,random = string.split,math.random;
 
 function rand:Linear(sz)
 	local tbl={};
@@ -11,13 +11,14 @@ end;
 
 function rand:Sequence(sz)
 	local ref = rand:Linear(sz);
+	local seq = {};
 	for i=1,sz do
 		seq[i] = remove(ref, random(#ref));
 	end;
 	return seq;
 end;
 
--- must be string or array (dictionary)
+-- must be string or array
 function rand:Randomize(ent, trunc)
 	if(type(ent)=="string")then ent=split(ent,'') end;
 	local tbl={};
@@ -36,7 +37,7 @@ function rand:randString(sz)
 	assert(sz>0,"Invalid string size, must be greater than 0.");
 	AlphaBET = rand:Randomize(AlphaBET);
 	local str = {};
-	for i=1,sz do str[i] = AlphaBET[random(64)]; end;
+	for i=1,sz do str[i]=AlphaBET[random(64)]; end;
 	return concat(str);
 end;
 
