@@ -1,38 +1,43 @@
 local rand = {};
 
-function rand:Linear(Length)
-	local Table = table.create(Length, 1);
-	for i = 2, Length do Table[i] = i end;
-	return Table;
+local remove,concat,random, = table.remove,table.concat,math.random;
+local create,split = table.create,string.split;
+
+function rand:Linear(sz)
+	local tbl={};
+	for i=1,sz do tbl[i]=i end;
+	return tbl;
 end;
 
-function rand:Sequence(Length)
-	local Sequence = table.create(Length, '');
-	local referenceTable = rand:Linear(Length);
-	for i=1,Length do
-		Sequence[i] = table.remove(referenceTable, math.random(1, table.getn(referenceTable)));
+function rand:Sequence(sz)
+	local ref = rand:Linear(sz);
+	for i=1,sz do
+		seq[i] = remove(ref, random(#ref));
 	end;
-	return Sequence;
+	return seq;
 end;
 
 -- must be string or array (dictionary)
-function rand:Randomize(Entity, Concat)
-	if type(Entity) == "string" then Entity = Entity:split('') end;
-	local Table = table.create(table.getn(Entity), '');
-	for Idx, randIdx in ipairs(rand:Sequence(table.getn(Entity))) do
-		Table[Idx] = Entity[randIdx];
+function rand:Randomize(ent, trunc)
+	if(type(ent)=="string")then ent=split(ent,'') end;
+	local tbl={};
+	for idx,randIdx in ipairs(rand:Sequence(#ent)) do
+		tbl[idx] = ent[randIdx];
 	end;
-	return (Concat and table.concat(Table)) or Table;
+	if trunc then
+		return concat(tbl);
+	end;
+	return tbl;
 end;
 
-rand.AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
+local AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
-function rand:randString(Length)
-	assert(Length > 0);
-	rand.AlphaBET = rand:Randomize(rand.AlphaBET);
+function rand:randString(sz)
+	assert(sz>0,"Invalid string size, must be greater than 0.");
+	AlphaBET = rand:Randomize(AlphaBET);
 	local str = {};
-	for i=1,Length do str[i] = rand.AlphaBET[math.random(1, 64)]; end;
-	return table.concat(str);
+	for i=1,sz do str[i] = AlphaBET[random(64)]; end;
+	return concat(str);
 end;
 
 return rand;
