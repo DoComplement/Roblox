@@ -1,5 +1,6 @@
-if game.PlaceId ~= 7026949294 then return end;
-if game:IsLoaded() == false then game.Loaded:Wait() end;
+if(game.PlaceId~=7026949294 or getgenv()["@Esz#O8k(9]1HBol~S8C"]~=nil)then return end;
+getgenv()["@Esz#O8k(9]1HBol~S8C"]=true;
+if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 -- Consolidate Instance & Toggle Button CreateInstance and Connect calls using a file containing unique info (Name, DataType, Parent, Connecting Function, Arguments, etc.)
 -- Perhaps modify CreateInstance to take a function as the third parameter to return an instance and connection
@@ -23,17 +24,18 @@ local CreateInstance = function(ObjectType, Properties)
 	return Instance;
 end;
 
+local wait = task.wait;
 local LocalPlayer = game:GetService("Players").LocalPlayer;
 local UserInputService = game:GetService("UserInputService");
 local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 
 local PlayerData = require(game.ReplicatedStorage.Saturn.Modules.Client["PlayerData - Client"]);
-if PlayerData.Replica.Data == nil then PlayerData.Loaded:Wait() end; -- wait until data is loaded
+if(PlayerData.Replica.Data==nil)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
 
 local Gems = LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount;
 local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua"))();
-assert(Colors ~= nil and  pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua", "nil return from HttpGet"))), "Error loading http-script");
+assert(Colors~=nil and  pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua", "nil return from HttpGet"))), "Error loading http-script");
 
 local UDIM_CORNER = UDim.new(1,0);
 local COLORS = {
@@ -264,46 +266,46 @@ end;
 
 -- Fuse Items
 Main[5][3] = function(List, Item, Category, Unchanged)
-	if Item.Level ~= 3 then -- Antimatter has different logic
+	if(Item.Level~=3)then -- Antimatter has different logic
 		InvokeServer(Main[6][1],Category,List[3]); -- Fuse Items Remote
-		if Main[8][7] then print(3, Item.Base, "fused to 1", Main[2][Item.Level]); end;
+		if(Main[8][7])then print(3, Item.Base, "fused to 1", Main[2][Item.Level])end;
 		return false;
-	elseif Main[5][2](Category,0) < PlayerData.CraftingSlots then
+	elseif(Main[5][2](Category,0)<PlayerData.CraftingSlots)then
 		InvokeServer(Main[6][2],Category,List[3]);	-- Antimatter Conversion Remote
-		if Main[8][7] then print(List[2], Item.Base, "fused to 1 Antimatter"); end;
+		if(Main[8][7])then print(List[2], Item.Base, "fused to 1 Antimatter")end;
 	end;
 	return Unchanged;
 end;
 
 -- Check Ignore Toggles
 Main[5][4] = function(Tag, Index)
-	if (Main[8][9] or Main[8][10] or Main[8][11]) == false then return;	end;
+	if(not(Main[8][9]or Main[8][10]or Main[8][11]))then return end;
 	
-	if Main[8][9] and ((Index == 2 and rawget(PlayerData.EquippedItems.Weapons, Tag) ~= nil) or table.find(PlayerData.EquippedItems.Pets, Tag) ~= nil) then -- Check Equipped
+	if(Main[8][9]and((Index==2 and PlayerData.EquippedItems.Weapons[Tag]~=nil)or table.find(PlayerData.EquippedItems.Pets,Tag)~=nil))then -- Check Equipped
 		return true;
 	end;
 	
-	if Main[8][11] and SaveData["Elements"][rawget(PlayerData[Main[9][Index]][Tag], "Element")] then -- Check Elemented
+	if(Main[8][11]and SaveData.Elements[PlayerData[Main[9][Index]][Tag].Element]~=nil)then -- Check Elemented
 		return true;
 	end;
 	
-	return Main[8][10] and next(rawget(PlayerData[Main[9][Index]][Tag], "Enchants") or {}) ~= nil; -- Check Enchanted
+	return(Main[8][10]and next(PlayerData[Main[9][Index]][Tag].Enchants or{})~=nil); -- Check Enchanted
 end;
 
 -- Enhance Item
 Main[5][5] = function(Table, Index, Unchanged, List)
 	for Tag,Item in next, PlayerData[Main[9][Index]] do
-		if Main[1][Item.Level] == false or Table[Item.Base] == nil or Main[5][4](Tag, Index) then -- Item Validation
+		if not Main[1][Item.Level]or Table[Item.Base]==nil or Main[5][4](Tag, Index)then -- Item Validation
 			continue; 
 		end;
 		
 		List = Table[Item.Base][Item.Level]; -- ease-of-access		
-		if List[1] == false then continue end; -- validate enabled
+		if not List[1]then continue end; -- validate enabled
 		
 		List[2] += 1;
 		List[3][List[2]] = Tag; -- set Tag
-		if List[2] >= #List[3] then 
-			Unchanged = Main[5][3](List, Item, Main[9][Index], Unchanged);	-- Fuse Items
+		if List[2]>=#List[3]then 
+			Unchanged = Main[5][3](List,Item,Main[9][Index],Unchanged);	-- Fuse Items
 			List[2] = 0;
 		end;
 	end;
@@ -315,22 +317,23 @@ end;
 -- General Settings/Information Frame Toggle
 Main[5][6] = function(Frame1, Frame2, Button1, Button2)
 	return function()
-		if Frame1.Visible then return; end;
+		if(not Frame1.Visible)then 
 		
-		Button1.BackgroundTransparency = 0;
-		Button2.BackgroundTransparency = 0.5;
-		
-		Frame2.Visible = false;
-		Frame1.Visible = true;	
+			Button1.BackgroundTransparency = 0;
+			Button2.BackgroundTransparency = 0.5;
+			
+			Frame2.Visible = false;
+			Frame1.Visible = true;
+		end;
 	end;
 end;
 
 -- Toggle GUI Visible
 Main[5][7] = function(Input)
-	if Input.UserInputType.Value == 8 and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
-		if Input.KeyCode.Value ==  109 then
+	if Input.UserInputType.Value==8 and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)then 
+		if Input.KeyCode.Value==109 then
 			Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
-		elseif Input.KeyCode.Value == 103 then
+		elseif Input.KeyCode.Value==103 then
 			Instances.ItemFrame.Visible = not Instances.ItemFrame.Visible;
 			Instances.SettingsMain.Visible = false;
 		end;
@@ -339,8 +342,8 @@ end;
 
 -- FocusLost function
 Main[5][8] = function()
-	task.wait(3);
-	if Instances ~= nil and TextBox:IsFocused()==false and Main[8][5] then
+	wait(3);
+	if(Instances~=nil and not TextBox:IsFocused()and Main[8][5])then
 		TextBox.Text = "Search";
 	end;
 end;
@@ -348,7 +351,7 @@ end;
 -- General Remove Pets/Weapons function
 Main[5][9] = function(Index)
 	return function()
-		for Item in next, Main[3][Index] do
+		for Item in next,Main[3][Index]do
 			Instances.FuseScroller[Item:lower()]:Destroy();
 		end;
 	end;
@@ -358,19 +361,19 @@ end;
 Main[5][10] = function(Index, Frame)
 	return function()
 		SaveData["Visible"][Index] = Frame.Visible;
-		if Main[8][4] then Main[5][11]() end;
+		if(Main[8][4])then Main[5][11]()end;
 	end;
 end;
 
 -- Save Data function
 Main[5][11] = function()
-	writefile(Main[9][3], "-- AutoSave Data, "..os.date().."\n\n"..t2s(SaveData));
+	writefile(Main[9][3],"-- AutoSave Data, "..os.date().."\n\n"..t2s(SaveData));
 end;
 
 -- Check Toggles from Gem Signal
 Main[5][12] = function(Index)
 	for _,Table in next, Main[3][Index] do
-		if (Table[1][1] or Table[1][2] or Table[1][3]) then return true end;
+		if(Table[1][1]or Table[1][2]or Table[1][3])then return true end;
 	end;
 	return false;
 end;
@@ -379,7 +382,7 @@ end;
 Main[5][13] = function(Index)
 	if table.find(Main[1], true)~=nil and Main[5][12](Index) then
 		Main[8][Index] = false;
-		repeat Main[5][5](Main[3][Index], Index, true) until Main[8][Index];	-- Enhance Items function
+		repeat Main[5][5](Main[3][Index],Index,true)until Main[8][Index];	-- Enhance Items function
 	end;
 end;
 
@@ -389,9 +392,9 @@ Main[5][14] = function()
 	Main[1][1] = PlayerData.Gems >= 10000;	-- toggle for normal fusing
 	Main[1][2] = PlayerData.Gems >= 200000;	-- toggle for enhance fusing
 
-	if Main[8][6] then -- checks Gems Toggle
-		if Main[8][1] then Main[5][13](1); end;	-- if Pets toggle is inactive, check Pets
-		if Main[8][2] then Main[5][13](2); end;	-- if Weapons toggle is inactive, check Weapons
+	if(Main[8][6])then -- checks Gems Toggle
+		if(Main[8][1])then Main[5][13](1)end;	-- if Pets toggle is inactive, check Pets
+		if(Main[8][2])then Main[5][13](2)end;	-- if Weapons toggle is inactive, check Weapons
 	end;
 end;
 
@@ -403,18 +406,18 @@ Main[5][15] = function(FuseButton, List, Type, Index)
 		
 		SaveData["Items"][FuseButton.Parent.Name:lower()][1][Index] = Value; -- Update AutoSave Data
 		List[1],FuseButton.BackgroundColor3 = Value,Main[11][1][Value]; -- Update respective Item List and Button Color
-		if Main[8][4] then Main[5][11]() end; -- Update Save File
+		if(Main[8][4])then Main[5][11]()end; -- Update Save File
 		
-		if Value == false then return end;
-		if Main[8][Type] == false then	-- if active
-			if Main[10][Type] then return; end;	-- if a signal is already in queue
+		if(not Value)then return end;
+		if(not Main[8][Type])then	-- if active
+			if Main[10][Type]then return end;	-- if a signal is already in queue
 			Main[10][Type] = true;	-- indicate signal is in queue
-			while Main[8][Type] == false do task.wait() end; -- wait until inactive
+			while(not Main[8][Type])do wait()end; -- wait until inactive
 		end;
 		
 		Main[8][Type] = false; -- set inactive to false
-		Main[10][Type] = false; -- indicate no signal is in queue
-		repeat Main[5][5](Main[3][Type], Type, true) until Main[8][Type];	-- calling enhance items function
+		Main[10][Type]= false; -- indicate no signal is in queue
+		repeat Main[5][5](Main[3][Type],Type,true)until Main[8][Type];	-- calling enhance items function
 	end;
 end;
 
@@ -425,20 +428,20 @@ Main[5][16] = function(QuantityButton, Antimatter, List)
 		Data = SaveData["Items"][Antimatter.Parent.Name:lower()];
 		Quantity = #List[3]-1;
 		
-		if Quantity == 0 then 
+		if(Quantity==0)then 
 			Quantity = 8
 			for idx=1,8 do
-				List[3][idx]='';
+				List[3][idx] = '';
 			end;
 		else
-			List[3][Quantity+1]=nil;
+			List[3][Quantity+1] = nil;
 		end;
 		
 		List[1],Data[1][3] = false,false;
 		Antimatter.BackgroundColor3 = COLORS[3]; -- Red
 		
 		QuantityButton.Text,Data[2] = Quantity,Quantity;
-		if Main[8][4] then Main[5][11](); end;
+		if(Main[8][4])then Main[5][11]()end;
 	end;
 end;
 
@@ -448,14 +451,14 @@ Main[5][17] = function(Signals, ItemButton)
 	SaveData["Items"][ItemButton.Text:lower()] = nil; -- set to nil before updating
 	ItemButton.Value.Value = true;
 	
-	if Main[10][3] == 1 then
+	if(Main[10][3]==1)then
 		Main[10][3] = 0;
 		Instances.FuseFrame.Visible = false;
 	else
 		Main[10][3] -= 1;
 	end
 	
-	if Main[8][4] then Main[5][11]() end;
+	if(Main[8][4])then Main[5][11]()end;
 end;
 
 -- CreateFrame function
@@ -491,8 +494,8 @@ end;
 
 -- Load Data function
 Main[5][20] = function()
-	if isfile(Main[9][3]) == false then
-		if isfolder("SwordSim AutoFuseData") == false then
+	if(not isfile(Main[9][3]))then
+		if(not isfolder("SwordSim AutoFuseData"))then
 			makefolder("SwordSim AutoFuseData");
 		end;
 		Instances.ItemFrame.Visible = true;
@@ -503,8 +506,8 @@ Main[5][20] = function()
 	end;
 	
 	local Success,Temp = pcall(loadstring(readfile(Main[9][3])));
-	assert(Success and type(Temp) == "table", "Error! loadstring function failed (expected a table) to read data in file: workspace/"..Main[9][3]);
-	if Temp["Toggles"] == nil or Temp["Toggles"]["AutoLoad"] ~= true then return; end; -- if AutoLoad is nil or disabled
+	assert(Success and type(Temp)=="table", "Error! loadstring function failed (expected a table) to read data in file: workspace/"..Main[9][3]);
+	if(Temp["Toggles"]==nil or not Temp["Toggles"]["AutoLoad"])then return end; -- if AutoLoad is nil or disabled
 	
 	local Reference,Value = {
 		["AutoLoad"] = 3;
@@ -521,15 +524,15 @@ Main[5][20] = function()
 	-- Validate and Load Toggle Data
 	Main[10][4] = 0;
 	for Name,Table in next, SaveData do
-		if Temp[Name] == nil or Name == "Items" then continue; end;
-		assert(type(Temp[Name]) == "table", "Error! Invalid data type encountered (should be table) in save data when referencing \""..Name..'\"');
+		if(Temp[Name]==nil or Name=="Items")then continue end;
+		assert(type(Temp[Name])=="table", "Error! Invalid data type encountered (should be table) in save data when referencing \""..Name..'\"');
 		for Index,_ in next, Table do
-			Value = type(Temp[Name][Index]) == "boolean" and Temp[Name][Index];
+			Value = type(Temp[Name][Index])=="boolean" and Temp[Name][Index];
 			Table[Index] = Value;
-			if Name == "Visible" then continue; end;
-			if Name == "Elements" then
+			if(Name=="Visible")then continue end;
+			if(Name=="Elements")then
 				Instances[Index.."ToggleButton"].ImageTransparency = Main[11][2][Value];
-				if Value == false then continue; end;
+				if(not Value)then continue end;
 				Main[10][4] += 1; -- Count enabled, ignored elements
 			else
 				Main[8][Reference[Index]] = Value;
@@ -543,27 +546,27 @@ Main[5][20] = function()
 	Value = SaveData["Visible"][2];
 	
 	-- Disable ignoring elements if zero elements are being ignored
-	if Main[10][4] == 0 and Main[8][11] then
+	if(Main[10][4]==0 and Main[8][11])then
 		Instances.IgnoreElementedButton.BackgroundColor3 = COLORS[3];
 		Main[8][11] = false;
 	end;
 	
 	-- Validate and Load Item Data
-	if type(Temp["Items"]) ~= "table" then return end;
+	if(type(Temp["Items"])~="table")then return end;
 	local DataFrame,BoolToggles = nil,nil;
-	for Name,Data in next, Temp["Items"] do
+	for Name,Data in next,Temp["Items"]do
 	
 		assert(Instances.ItemScroller:WaitForChild(Name:lower()) ~= nil, "Error! Invalid item in save file: "..Name); -- Validate item name
-		assert(type(Data) == "table" and type(Data[1]) == "table", "Error! Invalid data format (should be a table) for main or main[1] of Item: "..Name); -- Validate referenced data is a table of size 2
-		if type(Data[2]) ~= "number" or Data[2] <= 0 or Data[2] >= 9 then -- Validate Antimatter Fuse Quantity and Data Type
+		assert(type(Data)=="table" and type(Data[1])=="table", "Error! Invalid data format (should be a table) for main or main[1] of Item: "..Name); -- Validate referenced data is a table of size 2
+		if(type(Data[2])~="number" or Data[2]<=0 or Data[2]>=9)then -- Validate Antimatter Fuse Quantity and Data Type
 			Data[2] = 8;
 			Data[1][3] = false;
 		end;
 		
 		BoolToggles = {
-			[1] = type(Data[1][1]) == "boolean" and Data[1][1]; 
-			[2] = type(Data[1][2]) == "boolean" and Data[1][2]; 
-			[3] = type(Data[1][3]) == "boolean" and Data[1][3];
+			[1] = (type(Data[1][1])=="boolean" and Data[1][1]); 
+			[2] = (type(Data[1][2])=="boolean" and Data[1][2]); 
+			[3] = (type(Data[1][3])=="boolean" and Data[1][3]);
 		};
 		
 		-- Make Button in Fuse Frame (will save if enabled)
@@ -579,7 +582,7 @@ Main[5][20] = function()
 	
 	Instances.FuseFrame.Visible = Value; -- calling the bindable event will have opened the fuseframe, so re-set the value
 	
-	if DataFrame ~= nil and SaveData["Toggles"]["LoadFuse"] then 
+	if(DataFrame~=nil and SaveData["Toggles"]["LoadFuse"])then 
 		Main[5][13](1); -- calling pet enhancement function
 		Main[5][13](2); -- calling weapon enhancement function
 	end;
@@ -590,10 +593,8 @@ Main[5][21] = function()
 	local Value = not Main[8][5];
 	Main[8][5],SaveData["Toggles"]["ResetText"] = Value,Value;
 	Instances.ResetTextButton.BackgroundColor3 = Main[11][1][Value];
-	if Main[8][4] then Main[5][11](); end;
-	
-	if Value == false then return; end;
-	TextBox.Text = "Search";
+	if(Main[8][4])then Main[5][11]()end;
+	if(Value)then TextBox.Text = "Search" end;
 end;
 
 -- General Logic Button Toggle
@@ -602,7 +603,7 @@ Main[5][22] = function(Index, Name)
 		local Value = not Main[8][Index];
 		Main[8][Index],SaveData["Toggles"][Name] = Value,Value;
 		Instances[Name.."Button"].BackgroundColor3 = Main[11][1][Value];
-		if Main[8][4] or Index == 4 then Main[5][11](); end;
+		if(Main[8][4]or Index==4)then Main[5][11]()end;
 	end;
 end;
 
@@ -610,23 +611,23 @@ end;
 Main[5][23] = function(Index)
 	return function()
 		-- if Notification is invisible or Enhancement is active
-		if (Main[7][Index].Visible and Main[8][Index]) == false then return; end;
+		if(not(Main[7][Index].Visible and Main[8][Index]))then return end;
 		
 		local Amount = Main[7][Index].Amount.Text;
-		task.wait(); -- allow time for text to potentially change
+		wait(); -- allow time for text to potentially change
 		
 		-- if enhancing is inactive and text is unchanged
-		if Main[7][Index].Amount.Text ~= Amount then return; end;
+		if(Main[7][Index].Amount.Text~=Amount)then return end;
 		
 		Main[8][Index] = false; -- set inactive = false
-		repeat Main[5][5](Main[3][Index], Index, true) until Main[8][Index]; -- repeat until iactive = true
+		repeat Main[5][5](Main[3][Index],Index,true)until Main[8][Index]; -- repeat until iactive = true
 	end;
 end;
 
 -- Toggle Element button
 Main[5][24] = function(Element, Button)
 	return function()
-		if Button.ImageTransparency == 0.5 then
+		if(Button.ImageTransparency==0.5)then
 		    SaveData["Elements"][Element] = true
 			Button.ImageTransparency = 0;
 			Main[10][4] += 1;
@@ -637,19 +638,19 @@ Main[5][24] = function(Element, Button)
 		end;
 		
 		-- Disable if zero Elements are being ignored
-		if Main[10][4] == 0 and Main[8][11] then 
+		if(Main[10][4]==0 and Main[8][11])then 
 			Instances.IgnoreElementedButton.BackgroundColor3 = COLORS[3];
 			SaveData["Toggles"]["IgnoreElemented"] = false;
 			Main[8][11] = false;
 		end;
 		
-		if Main[8][4] then Main[5][11](); end;
+		if(Main[8][4])then Main[5][11]()end;
 	end;
 end;
 
 -- Toggle IgnoreElemented Button
 Main[5][25] = function()
-	if Main[10][4] == 0 then
+	if(Main[10][4]==0)then
 		Instances.IgnoreElementedButton.BackgroundColor3 = COLORS[3];
 		Main[8][11] = false;
 		return;
@@ -659,20 +660,20 @@ Main[5][25] = function()
 	Instances.IgnoreElementedButton.BackgroundColor3 = Main[11][1][Value];
 	Main[8][11] = Value;
 	
-	if Main[8][4] then Main[5][11](); end;
+	if(Main[8][4])then Main[5][11](); end;
 end;
 
 -- MakeTextChangedSignal Function
 Main[5][26] = function(ItemButton)
     return TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 		
-		if TextBox.Text == "Search" or TextBox.Text == "" then
+		if(TextBox.Text=="Search" or TextBox.Text=="")then
 			ItemButton.Visible = ItemButton.Value.Value;
 			return;
 		end;
 
 		-- if the text input matches somewhere in the name of ItemButton, then the Button will remain visible
-		ItemButton.Visible = ItemButton.Value.Value and ItemButton.Name:match(TextBox.Text:lower())~=nil;
+		ItemButton.Visible = (ItemButton.Value.Value and ItemButton.Name:match(TextBox.Text:lower())~=nil);
 	end);
 end;
 
@@ -708,7 +709,7 @@ Main[5][27] = function(ItemButton, Index)
 			};
 			[2] = Q;
 		};
-		if Main[8][4] then Main[5][11]() end; -- Save if enabled
+		if(Main[8][4])then Main[5][11]() end; -- Save if enabled
 	end;
 end;
 
@@ -725,8 +726,8 @@ Main[5][28] = function(Name, Index)
 end;
 
 -- Make ItemButtons for each Pet and Weapon
-for _,Pet 	 in ipairs(game.ReplicatedStorage.Storage.Pets:GetChildren())    do Main[5][28](Pet.Name,	 1) end;
-for _,Weapon in ipairs(game.ReplicatedStorage.Storage.Weapons:GetChildren()) do Main[5][28](Weapon.Name, 2) end;
+for _,Pet 	 in ipairs(game.ReplicatedStorage.Storage.Pets:GetChildren())   do Main[5][28](Pet.Name,	 1)end;
+for _,Weapon in ipairs(game.ReplicatedStorage.Storage.Weapons:GetChildren())do Main[5][28](Weapon.Name, 2)end;
 
 table.insert(Main[4], TextBox.FocusLost:Connect(Main[5][8]));	-- Called when the Focus of the TextBox is lost
 table.insert(Main[4], UserInputService.InputBegan:Connect(Main[5][7]));	-- Called when any Roblox Input Module Device is Interacted with
@@ -758,47 +759,47 @@ table.insert(Main[4], Instances.IgnoreEnchantedButton.MouseButton1Click:Connect(
 table.insert(Main[4], Instances.IgnoreElementedButton.MouseButton1Click:Connect(Main[5][25])); -- Called when IgnoreElemented button is clicked
 
 local Template = "rbxthumb://type=Asset&id=%i&w=150&h=150";
-for Aura,Data in next, require(game.ReplicatedStorage.Saturn.Modules.GameDependent.Elements) do
+for Aura,Data in next,require(game.ReplicatedStorage.Saturn.Modules.GameDependent.Elements)do
     Instances[Aura.."ToggleButton"] = CreateInstance("ImageButton", {Name = Aura.."ToggleButton", Parent = Instances.Elements, BackgroundColor3 = COLORS[1], BackgroundTransparency = 0, BorderSizePixel = 0, Size = UDIM2[11], Image = Template:format(Data.Image)});
     table.insert(Main[4], Instances[Aura.."ToggleButton"].MouseButton1Click:Connect(Main[5][24](Aura, Instances[Aura.."ToggleButton"])));
 end;
 Template = nil;
 
-table.insert(Main[4], Instances.Close.MouseButton1Click:Once(function() Instances.MainGui:Destroy() end)); -- Called when Close button is pressed
+table.insert(Main[4],Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end)); -- Called when Close button is pressed
 
 -- Loop for checking if items are finished upgrading to Antimatter 
 -- Improvement: Check the antimatter frame to see if there are any weapons/pets in the collection frame
-table.insert(Main[4], BindableEvents.Second.Event:Connect(function()
-	if Main[8][1] then Main[5][2]("Pets",0) end; -- attempt to retrieve any antimatter pets
-	if Main[8][2] then Main[5][2]("Weapons",0) end; -- attempt to retrieve any antimatter weapons
+table.insert(Main[4],BindableEvents.Second.Event:Connect(function()
+	if(Main[8][1])then Main[5][2]("Pets",0)end; -- attempt to retrieve any antimatter pets
+	if(Main[8][2])then Main[5][2]("Weapons",0)end; -- attempt to retrieve any antimatter weapons
 end));
 
 local Time = nil;Time = hookfunction(os.time, function()
-	if BindableEvents ~= nil and getcallingscript() == DungeonHandler then Fire(BindableEvents.Second) end; -- called once every second
+	if(BindableEvents~=nil and getcallingscript()==DungeonHandler)then 
+		Fire(BindableEvents.Second); -- called once every second
+	end;
 	return Time();
 end);
 
 -- Deallocate Memory
 Instances.MainGui.Destroying:Once(function()
-	if Main[8][4] then 
+	if(Main[8][4])then 
 		Main[5][11]();
 		Main[8][4] = false; -- disable any future save attempts
 	end;
 	
-	for _,Connection in ipairs(Main[4]) do Connection:Disconnect() end;
+	for _,Connection in ipairs(Main[4])do Connection:Disconnect()end;
 	
 	Instances.FuseGui:Destroy();
 	Instances.SettingsGui:Destroy();
 	
-	Main,Instances,BindableEvents = nil,nil,nil;
+	Main,Instances,BindableEvents,getgenv()["@Esz#O8k(9]1HBol~S8C"] = nil,nil,nil,nil;
 end);
 
 Main[5][20](); -- Load Saved Data
 
 -- Deallocate not used local variables
 
-for idx=22,12,-1 do
-	UDIM2[idx]=nil;
-end;
+for idx=22,12,-1 do UDIM2[idx]=nil end;
 COLORS[5],COLORS[6] = nil,nil;
 Main[5][26],Main[5][27],Main[5][28] = nil,nil,nil;
