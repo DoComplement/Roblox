@@ -17,13 +17,13 @@ local function Sequence(sz)
 end;
 
 -- must be string or array
-local function Randomize(ent, trunc)
+local function Randomize(ent,conc)
 	if(type(ent)=="string")then ent = split(ent,'')end;
 	local tbl={};
 	for idx,randIdx in ipairs(Sequence(#ent))do
 		tbl[idx] = ent[randIdx];
 	end;
-	if(trunc)then
+	if(conc)then
 		return concat(tbl);
 	end;
 	return tbl;
@@ -31,9 +31,12 @@ end;
 
 local AlphaBET = Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
-local function getAlphabet(rand)
+local function getAlphabet(conc,rand)
 	if(rand)then
-		return Randomize(AlphaBET); -- will not randomize the local alphabet
+		return Randomize(AlphaBET,conc); -- will not randomize the local alphabet
+	end;
+	if(conc)then
+		return concat(AlphaBET);
 	end;
 	return AlphaBET;
 end;
