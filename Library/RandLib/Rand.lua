@@ -1,16 +1,14 @@
-local rand = {};
-
 local remove,concat = table.remove,table.concat;
 local split,random = string.split,math.random;
 
-function rand:Linear(sz)
+local function Linear(sz)
 	local tbl={};
 	for i=1,sz do tbl[i]=i end;
 	return tbl;
 end;
 
-function rand:Sequence(sz)
-	local ref = rand:Linear(sz);
+local function Sequence(sz)
+	local ref = Linear(sz);
 	local seq = {};
 	for i=1,sz do
 		seq[i] = remove(ref, random(#ref));
@@ -19,26 +17,31 @@ function rand:Sequence(sz)
 end;
 
 -- must be string or array
-function rand:Randomize(ent, trunc)
-	if(type(ent)=="string")then ent=split(ent,'') end;
+local function Randomize(ent, trunc)
+	if(type(ent)=="string")then ent = split(ent,'')end;
 	local tbl={};
-	for idx,randIdx in ipairs(rand:Sequence(#ent)) do
+	for idx,randIdx in ipairs(Sequence(#ent))do
 		tbl[idx] = ent[randIdx];
 	end;
-	if trunc then
+	if(trunc)then
 		return concat(tbl);
 	end;
 	return tbl;
 end;
 
-local AlphaBET = rand:Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
+local AlphaBET = Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
-function rand:randString(sz)
+local function randStr(sz)
 	assert(sz>0,"Invalid string size, must be greater than 0.");
-	AlphaBET = rand:Randomize(AlphaBET);
+	AlphaBET = Randomize(AlphaBET);
 	local str = {};
-	for i=1,sz do str[i]=AlphaBET[random(64)]; end;
+	for i=1,sz do str[i] = AlphaBET[random(64)] end;
 	return concat(str);
 end;
 
-return rand;
+return {
+	linear = Linear;
+	sequence = Sequence;
+	randomize = Randomie;
+	randStr = randStr;
+};
