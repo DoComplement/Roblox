@@ -31,6 +31,13 @@ end;
 
 local AlphaBET = Randomize("AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789_ ");
 
+local function getAlphabet(rand)
+	if(rand)then
+		return Randomize(AlphaBET); -- will not randomize the local alphabet
+	end;
+	return AlphaBET;
+end;
+
 local function randStr(sz)
 	assert(sz>0,"Invalid string size, must be greater than 0.");
 	AlphaBET = Randomize(AlphaBET);
@@ -44,4 +51,5 @@ return {
 	sequence = Sequence;
 	randomize = Randomie;
 	randStr = randStr;
+	Alphabet = getAlphabet;
 };
