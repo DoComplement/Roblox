@@ -1,5 +1,3 @@
-local match,format,gsub = string.match,string.format,string.gsub;
-local floor = math.floor;
 local consts = {
 	[1] = {1,''};
 	[2] = {1e-3,'K'};
@@ -18,9 +16,23 @@ local consts = {
 	[15] = {1e-42,"Qu"};
 }; -- and so on
 
+local floor,log10 = math.floor,math.log10;
+local function abbFast(num)
+	local idx = c[1 + floor(log10(num)/3)];
+	return((floor(num*idx[1]*10)/10)..idx[2]);
+end;
+
+-- includes resolution option (factor of 10)
+local function abbFastRes(num,res)
+	local idx = c[1 + floor(log10(num)/3)];
+	return((floor(num*idx[1]*res)/res)..idx[2]);
+end;
+
+
+local format,gsub = string.format,string.gsub
 -- gives the option to remove trailing zeros
-local function Abbreviate1(num,rem)
-	local idx = c[1 + floor(math.log10(num)/3)];
+local function abbSlow(num,rem)
+	local idx = c[1 + floor(log10(num)/3)];
 
 	num = format("%.3f",num*idx[1]); -- truncate, will round
 	if(rem)then -- remove trailing zeros
@@ -32,50 +44,35 @@ local function Abbreviate1(num,rem)
 	return(num..idx[2]);
 end;
 
--- does not remove trailing zeros
-local function Abbreviate2(num)
-	local idx = c[1 + floor(math.log10(num)/3)];
-	return(format("%.3f",num*idx[1])..idx[2]); -- truncate
-end;
+local sub,find = string.sub,string.find;
+-- without rouding
+local function abbSlowish(num,rem)
+	local idx = c[1 + floor(log10(num)/3)];
 
--- contains a resolution option (can be added to the other two as desired)
--- the input format of "res" is arbitrary, but must stay consistent in the function (or add error checking)
-local function Abbreviate3(num,res)
-    if(not res or type(res)~="number"or res<0)then 
-        res = "%.3f";
-    else
-        res = "%."..floor(res)..'f';
-    end;
-    
-	local idx = c[1 + floor(math.log10(num)/3)];
-	return(format(res,num*idx[1])..idx[2]); -- truncate
-end;
-
--- method without rounding from string.format
-local function Abbreviate4(num,idx)
-	idx = c[1 + floor(math.log10(num)/3)];
 	num = tostring(num*idx[1]);
-	return(num:sub(1,1 + (num:find('%.')))..idx[2]);
-end;
-
--- same as about, including a resolution
-local function Abbreviate5(num,res,len)
-	if(not res or type(res)~="number"or res<0)then res = 3 end;
-	
-	local idx = c[1 + floor(math.log10(num)/3)];
-	num = tostring(num*idx[1]);
-	return(num:sub(1,res + (num:find('%.')))..idx[2]);
-end;
-
--- same as above but removes trailing zeros (WITHOUT OPTION!!!)
-local function Abbreviate6(num,res,len)
-	if(not res or type(res)~="number"or res<0)then res = 3 end;
-	local idx = c[1 + floor(math.log10(num)/3)];
-	
-	num = tostring(num*idx[1]);
-	num = num:sub(1,res + (num:find('%.')))..idx[2]);
-	if((num - floor(num))==0)then
-		return(floor(num)..idx[2]);
+	num = sub(num,1,1 + find(num,"%.")); -- resolution of 1
+	if(rem)then -- remove trailing zeros
+		if((num - floor(num))==0)then
+			return(floor(num)..idx[2]);
+		end;
+		return(gsub(num,"0+$",'')..idx[2]);
 	end;
-	return(gsub(num,"0+$",'')..idx[2]);
+	return(num..idx[2]);
 end;
+
+-- same as above with resolution option (no error checking)
+local function abbSlowisher(num,rem,res)
+	local idx = c[1 + floor(log10(num)/3)];
+
+	num = tostring(num*idx[1]);
+	num = sub(num,1,res + find(num,"%.")); -- resolution of res
+	if(rem)then -- remove trailing zeros
+		if((num - floor(num))==0)then
+			return(floor(num)..idx[2]);
+		end;
+		return(gsub(num,"0+$",'')..idx[2]);
+	end;
+	return(num..idx[2]);
+end;
+
+
