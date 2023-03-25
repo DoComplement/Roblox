@@ -17,8 +17,14 @@ local consts = {
 }; -- and so on
 
 local floor,log10 = math.floor,math.log10;
-local function abbFast(num)
+local function unsigAbbFast(num)
 	local idx = c[1 + floor(log10(num)/3)];
+	return((floor(num*idx[1]*10)/10)..idx[2]);
+end;
+
+local abs = math.abs;
+local function sigAbbFast(num)
+	local idx = c[1 + floor(log10(abs(num))/3)];
 	return((floor(num*idx[1]*10)/10)..idx[2]);
 end;
 
