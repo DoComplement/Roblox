@@ -17,9 +17,9 @@ InvokeServer(Summontime)FireServer(SummonBoss); -- SummonBoss
 
 ]]
 
-if game.PlaceId~=12172698927 or LOADED~=nil then return end;
-getgenv().LOADED=true;
-if game:IsLoaded()==false then 
+if(game.PlaceId~=12172698927 or getgenv()["KM;x8Azo1oziq#zMJKxG"]~=nil)then return end;
+getgenv()["KM;x8Azo1oziq#zMJKxG"] = true;
+if(not game:IsLoaded())then 
     game.Loaded:Wait();
     game.ReplicatedFirst.Loaded:Wait();
     game:GetService("Players").LocalPlayer.PlayerGui.MainUI.UI.CenterMenu.Rewards.Reward.ScrollingFrame.Rewards.List.Reward006:GetPropertyChangedSignal("Text"):Wait();
