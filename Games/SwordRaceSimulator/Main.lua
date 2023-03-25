@@ -57,7 +57,7 @@ end;
 local wait = task.wait;
 local UI = LocalPlayer.PlayerGui.MainUI.UI;
 local Coins = LocalPlayer.leaderstats.Coins;
-local Remotes = game.ReplicatedStorage.Remotes;
+local Remotes = game:GetService("ReplicatedStorage").Remotes;
 local CreateOrbs = Remotes.RE_CreateObrs;
 local FireServer = CreateOrbs.FireServer;
 -- local JoinRace = Remotes.RF_JoinRace; -- args=nil
@@ -191,22 +191,23 @@ do -- Auto Equip Best Weapon
     end);
 end;
 
-do -- Auto Claim Daily Reward
+task.defer(function() -- Auto Claim Daily Reward
     local Dot = UI.RightMenu.Small.Daily.Dot;
-    
-    for idx,Reward in ipairs(UI.CenterMenu.DailyLogin.Rewards:GetChildren()) do
-        if idx==1 or Reward.Claim.text.Text=="Claimed" then
-            continue;
-        elseif UI.RightMenu.Small.Daily.Dot.Visible then
-            FireServer(Remotes.RE_ClaimDaily,idx-1);
-        else
-            Dot:GetPropertyChangedSignal("Visible"):Once(function()
-                FireServer(Remotes.RE_ClaimDaily,idx-1);
-            end)
-        end;
-        break;
-    end;
-end;
+    if(Dot.Visible)then
+		for idx,Reward in ipairs(UI.CenterMenu.DailyLogin.Rewards:GetChildren())do
+			if(idx==1 or Reward.Claim.text.Text=="Claimed")then continue;
+			elseif(Reward.Claim.text.Text=="Claim!")then
+				FireServer(Remotes.RE_ClaimDaily,idx-1);
+				task.wait(1);
+			else
+				Dot:GetPropertyChangedSignal("Visible"):Once(function()
+					FireServer(Remotes.RE_ClaimDaily,idx-1);
+				end);
+				break;
+			end;
+		end;
+	end;
+end)
 --[[
 There is still an error with setting the CFrame of orbs to the CFrame of the LocalPlayer PrimaryPart
 -> The Model is teleported, but the orb will not be removed...
@@ -216,26 +217,26 @@ There is still an error with setting the CFrame of orbs to the CFrame of the Loc
 
 -- Teleport Orb to LocalPlayer until it is defeated
 local function ConnectOrb(Orb)
-	if Orb.PrimaryPart==nil then
+	if(not Orb.PrimaryPart)then
 		Orb:GetPropertyChangedSignal("PrimaryPart"):Wait();
 	end;
 	
-	while wait() and Orb.PrimaryPart~=nil do
-		Orb.PrimaryPart.CFrame=HRP.CFrame;
+	while(wait()and Orb.PrimaryPart~=nil)do
+		Orb.PrimaryPart.CFrame = HRP.CFrame;
 	end;
 end;
 
 -- Converts a table of instances to a table of Instance Names
 local function GetChildrenByName(Children)
-	for idx,child in ipairs(Children) do
-		Children[idx]=child.Name;
+	for idx,child in ipairs(Children)do
+		Children[idx] = child.Name;
 	end;
 	return Children;
 end;
 
 -- Prevents game from setting UI to transparent
 local NewNIdx=nil;NewNIdx=hookmetamethod(game,"__newindex",newcclosure(function(Self,...)
-	if checkcaller()==false and Self==UI then
+	if(not checkcaller()and Self==UI)then
 		return true;
 	end;
 	return NewNIdx(Self,...)
@@ -244,7 +245,7 @@ end));
 do -- Prevent Server from create orbs via Namecall
     local EndRace = Remotes.RE_RaceEnd; 
     local NewNamecall=nil;NewNamecall=hookmetamethod(game,"__namecall",newcclosure(function(Self,...)
-    	if checkcaller()==false and getnamecallmethod()=="FireServer" then
+    	if(not checkcaller()and getnamecallmethod()=="FireServer")then
     	    if Self==CreateOrbs then
     	        return nil;
     	    elseif Self==EndRace then
@@ -257,7 +258,7 @@ end;
 
 -- Prevent Server from create orbs via Function call (even though this will never occur, yeet)
 local Hook=nil;Hook=hookfunction(FireServer,newcclosure(function(Remote,...)
-	if checkcaller()==false and Remote==CreateOrbs then
+	if(not checkcaller()and Remote==CreateOrbs)then
 		return nil;
 	end;
 	return Hook(Remote,...);
@@ -265,7 +266,7 @@ end));
 
 Workspace.Orbs.ChildAdded:Connect(ConnectOrb);
 Workspace.Orbs.ChildRemoved:Connect(function(orb)
-	if orb:FindFirstChild('1')~=nil then -- orb is VIP
+	if(orb:FindFirstChild('1')~=nil)then -- orb is VIP
 		FireServer(CreateOrbs,false,true);
 	else	
 		FireServer(CreateOrbs,true,false);
@@ -275,9 +276,9 @@ end);
 -- Initialize slimes
 if #(Workspace.Orbs:GetChildren())<50 then
 	local VIP_COUNT,NORMAL_COUNT = 30,20;
-	for _,Orb in ipairs(Workspace.Orbs:GetChildren()) do
+	for _,Orb in ipairs(Workspace.Orbs:GetChildren())do
 		task.defer(ConnectOrb,Orb);
-		if Orb:FindFirstChild('1')~=nil then
+		if(Orb:FindFirstChild('1')~=nil)then
 			VIP_COUNT-=1;
 		else
 			NORMAL_COUNT-=1;
@@ -301,7 +302,7 @@ getgenv().SPAWN_ORBS=true;
 task.defer(function()
 	local Swing = Remotes.RE_Swing;
 	local DELAY = 0; -- for future modification ig
-	while wait(DELAY) do
+	while(wait(DELAY))do
 		FireServer(Swing, GetChildrenByName(Workspace.Orbs:GetChildren()))
 	end;
 end);
@@ -337,7 +338,7 @@ do -- format zone data
 	end;
     
     for Egg,Data in next,require(game.ReplicatedStorage.Modules.LocalConfig.DrawConfig) do
-        if Data.Type==1 then
+        if(Data.Type==1)then -- payment currency is not robux
             table.insert(Zones[Data.WorldIds],{
                 [1]=Egg;
                 [2]=Data.Price;
