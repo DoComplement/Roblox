@@ -321,26 +321,19 @@ local Zones = (function(Zones)
 end)({zones={}});
 
 do -- format zone data
-    local floor,conversion = math.floor,{
+    local conversion = {
         [1]={1,''};
-        [2]={1e+3,'k'};
-        [3]={1e+6,'m'};
-        [4]={1e+9,'b'};
-        [5]={1e+12,"Qa"};
+        [2]={1e-3,'k'};
+        [3]={1e-6,'m'};
+        [4]={1e-9,'b'};
+        [5]={1e-12,"Qa"};
     };
-    local function Abbreviate(num,res)
-		local len = tostring(floor(num));
-		if(not string.match(len,'e'))then
-			len = conversion[1 + floor((#len - 1)/3)];
-		else
-			len = conversion[1 + floor(string.match(len,"+(%d+)"))/3];
-		end;
-
-		num = string.format("%.3f",num*len[1]); -- truncate
-		if((num - floor(num))==0)then -- remove trailing zeros
-			return(floor(num)..len[2]);
-		end;
-		return(num:gsub("0+$",'')..len[2]);
+		
+	local floor,log10,abs = math.floor,math.log10,math.abs;
+    local function Abbreviate(num,idx)
+		idx = conversion[1 + floor(log10(abs(num))/3)];
+		if(idx~=nil)then return((floor(num*idx[1]*1000)/1000)..idx[2])end;
+		return(num);
 	end;
     
     for Egg,Data in next,require(game.ReplicatedStorage.Modules.LocalConfig.DrawConfig) do
