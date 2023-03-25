@@ -52,7 +52,7 @@ end;
 return {
 	linear = Linear;
 	sequence = Sequence;
-	randomize = Randomie;
+	randomize = Randomize;
 	randStr = randStr;
 	Alphabet = getAlphabet;
 };
