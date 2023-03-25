@@ -21,13 +21,13 @@ local consts = {
 -- gives the option to remove trailing zeros
 local function Abbreviate1(num,rem)
 	local len = tostring(floor(num));
-	if(not match(len,'e'))then
-		len = c[1 + floor((#len - 1)/3)];
+	if(not match(len,'e'))then -- faster than looping through consts
+		len = consts[1 + floor((#len - 1)/3)];
 	else
-		len = c[1 + floor(match(len,"+(%d+)"))/3];
+		len = consts[1 + floor(match(len,"+(%d+)"))/3];
 	end;
 
-	num = format("%.3f",num*len[1]); -- truncate
+	num = format("%.3f",num*len[1]); -- truncate, will round
 	if(rem)then -- remove trailing zeros
 		if((num - floor(num))==0)then
 			return(floor(num)..len[2]);
@@ -41,9 +41,9 @@ end;
 local function Abbreviate2(num)
 	local len = tostring(floor(num));
 	if(not match(len,'e'))then
-		len = c[1 + floor((#len - 1)/3)];
+		len = consts[1 + floor((#len - 1)/3)];
 	else
-		len = c[1 + floor(match(len,"+(%d+)"))/3];
+		len = consts[1 + floor(match(len,"+(%d+)"))/3];
 	end;
 
 	return(format("%.3f",num*len[1])..len[2]); -- truncate
@@ -60,10 +60,57 @@ local function Abbreviate3(num,res)
     
 	local len = tostring(floor(num));
 	if(not match(len,'e'))then
-		len = c[1 + floor((#len - 1)/3)];
+		len = consts[1 + floor((#len - 1)/3)];
 	else
-		len = c[1 + floor(match(len,"+(%d+)"))/3];
+		len = consts[1 + floor(match(len,"+(%d+)"))/3];
 	end;
 
 	return(format(res,num*len[1])..len[2]); -- truncate
+end;
+
+-- method without rounding from string.format
+local function Abbreviate4(num,len)
+	num = tostring(floor(num));
+	if(not match(num,'e'))then
+		len = consts[1 + floor((#num - 1)/3)];
+	else
+		len = consts[1 + floor(match(num,"+(%d+)"))/3];
+	end;
+	
+	num = tostring(num*len[1]);
+	return(num:sub(1,1 + (num:find('%.')))..len[2]);
+end;
+
+-- same as about, including a resolution
+local function Abbreviate5(num,res,len)
+	if(not res or type(res)~="number"or res<0)then res = 3 end;
+	
+	num = tostring(floor(num));
+	if(not match(num,'e'))then
+		len = consts[1 + floor((#num - 1)/3)];
+	else
+		len = consts[1 + floor(match(num,"+(%d+)"))/3];
+	end;
+	
+	num = tostring(num*len[1]);
+	return(num:sub(1,res + (num:find('%.')))..len[2]);
+end;
+
+-- same as above but removes trailing zeros (WITHOUT OPTION!!!)
+local function Abbreviate6(num,res,len)
+	if(not res or type(res)~="number"or res<0)then res = 3 end;
+	
+	num = tostring(floor(num));
+	if(not match(num,'e'))then
+		len = consts[1 + floor((#num - 1)/3)];
+	else
+		len = consts[1 + floor(match(num,"+(%d+)"))/3];
+	end;
+	
+	num = tostring(num*len[1]);
+	num = num:sub(1,res + (num:find('%.')))..len[2]);
+	if((num - floor(num))==0)then
+		return(floor(num)..len[2]);
+	end;
+	return(gsub(num,"0+$",'')..len[2]);
 end;
