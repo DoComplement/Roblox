@@ -18,14 +18,11 @@ local function Sauce(O)
 	end;
 end;
 
-task.defer(function()
-	for _,Orb in ipairs(Workspace.__THINGS.Orbs:GetChildren()) do
-		Sauce(Orb);
-	end;
-	for _,Lootbag in ipairs(Workspace.__THINGS.Lootbags:GetChildren()) do
-		Sauce(Lootbag);
-	end;
-end);
-
-Workspace.__THINGS.Orbs.ChildAdded:Connect(Sauce)
-Workspace.__THINGS.Lootbags.ChildAdded:Connect(Sauce)
+Workspace.__THINGS.Orbs.ChildAdded:Connect(Sauce);
+Workspace.__THINGS.Lootbags.ChildAdded:Connect(Sauce);
+for _,Orb in ipairs(Workspace.__THINGS.Orbs:GetChildren()) do
+	Sauce(Orb);
+end;
+for _,Lootbag in ipairs(Workspace.__THINGS.Lootbags:GetChildren()) do
+	Sauce(Lootbag);
+end;
