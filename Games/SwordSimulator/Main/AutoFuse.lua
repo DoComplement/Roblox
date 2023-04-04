@@ -1,15 +1,15 @@
-if(game.PlaceId~=7026949294 or getgenv()["@Esz#O8k(9]1HBol~S8C"]~=nil)then return end;
-getgenv()["@Esz#O8k(9]1HBol~S8C"]=true;
+if(getgenv()["@Esz#O8k(9]1HBol~S8C"]~=nil or not table.find({7026949294,11127874647},game.PlaceId))then return end;
+getgenv()["@Esz#O8k(9]1HBol~S8C"] = true;
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 -- Consolidate Instance & Toggle Button CreateInstance and Connect calls using a file containing unique info (Name, DataType, Parent, Connecting Function, Arguments, etc.)
 -- Perhaps modify CreateInstance to take a function as the third parameter to return an instance and connection
---[[
-	CreateInstance(OT, P, F)
-		...
-		return Instance, Instance.MouseButton1Click:Connect(F);
-	end;
-]]
+
+-- CreateInstance(OT, P, F)
+	-- ...
+	-- return Instance, Instance.MouseButton1Click:Connect(F);
+-- end;
+
 
 -- Create an Antimatter Queue Frame with an AutoCollect toggle (to remove the Retrieve Queue function)
 -- Look into a way of checking the queue via an in-game function, or a signal rather than having a thread that counts down until an item is ready to be grabbed
@@ -18,26 +18,27 @@ if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 local CreateInstance = function(ObjectType, Properties)
 	local Instance = Instance.new(ObjectType);
-	for Attribute, Value in next, Properties do
-		Instance[Attribute] = Value;
+	for Property, Value in next,Properties do
+		Instance[Property] = Value;
 	end;
 	return Instance;
 end;
 
-local wait = task.wait;
+local wait,lower = task.wait,string.lower;
 local LocalPlayer = game:GetService("Players").LocalPlayer;
 local UserInputService = game:GetService("UserInputService");
 local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 
 local PlayerData = require(game.ReplicatedStorage.Saturn.Modules.Client["PlayerData - Client"]);
-if(PlayerData.Replica.Data==nil)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
+if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
 
 local Gems = LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount;
-local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua"))();
-assert(Colors~=nil and  pcall(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua", "nil return from HttpGet"))), "Error loading http-script");
+local Colors = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
+assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua")), "Error loading TableToString")();
 
 local UDIM_CORNER = UDim.new(1,0);
+local FONT = Enum.Font.GothamMedium;
 local COLORS = {
 	[1] = Color3.fromHex("ffffff"); -- White
 	[2] = Color3.fromHex("000000"); -- Black
@@ -181,17 +182,17 @@ CreateInstance("UIListLayout", {Parent = Instances.ItemScroller, HorizontalAlign
 Instances.FuseGui = CreateInstance("ScreenGui", {Name = "FuseGui", ResetOnSpawn = false, ZIndexBehavior = Enum.ZIndexBehavior.Sibling})syn.protect_gui(Instances.FuseGui)Instances.FuseGui.Parent = game:GetService("CoreGui");
 Instances.FuseFrame = CreateInstance("Frame", {Active = true, Selectable = true, Draggable = true, Visible = false, Parent = Instances.FuseGui, BackgroundColor3 = COLORS[1], Position = UDim2.new(0.7, 0, 0.65, 0), Size = UDim2.new(0, 522, 0, 180)});
 Instances.FuseScroller = CreateInstance("ScrollingFrame", {Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[1], CanvasSize = UDIM2[22], AutomaticCanvasSize = 'Y', ScrollingDirection = 'Y', ScrollBarThickness = 0, Position = UDim2.new(0.023, 0, 0.195, 0), Size = UDim2.new(0, 500, 0, 135),BottomImage = "", MidImage = "", TopImage = ""});
-Instances.All = CreateInstance("TextButton", {Name = "All", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.904, 0, 0.015, 0), Size = UDim2.new(0, 45, 0, 30), ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "All", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.Pets = CreateInstance("TextButton", {Name = "Pets", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.796, 0, 0.015, 0), Size = UDim2.new(0, 55, 0, 30), ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Pets", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.Weapons = CreateInstance("TextButton", {Name = "Weapons", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.66, 0, 0.015, 0), Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Weapons", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.All = CreateInstance("TextButton", {Name = "All", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.904, 0, 0.015, 0), Size = UDim2.new(0, 45, 0, 30), ZIndex = 2, Font = FONT, Text = "All", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.Pets = CreateInstance("TextButton", {Name = "Pets", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.796, 0, 0.015, 0), Size = UDim2.new(0, 55, 0, 30), ZIndex = 2, Font = FONT, Text = "Pets", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.Weapons = CreateInstance("TextButton", {Name = "Weapons", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDim2.new(0.66, 0, 0.015, 0), Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Weapons", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
 CreateInstance("TextLabel", {Name = "Label", Parent = Instances.FuseFrame, BackgroundColor3 = COLORS[1], BackgroundTransparency = 1, Position = UDim2.new(0.53, 0, 0.045, 0), Size = UDim2.new(0, 72, 0, 20), Font = Enum.Font.Gotham, Text = "Remove:", TextColor3 = COLORS[2], TextSize = 13});
 CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Instances.All})CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Instances.Pets})CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Instances.Weapons});
 CreateInstance("UIListLayout", {Parent = Instances.FuseScroller, HorizontalAlignment = Enum.HorizontalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 5)});
 
 Instances.SettingsGui = CreateInstance("ScreenGui", {Name = "SettingsGui", ResetOnSpawn = false, ZIndexBehavior = Enum.ZIndexBehavior.Sibling});syn.protect_gui(Instances.SettingsGui);Instances.SettingsGui.Parent = game:GetService("CoreGui");
 Instances.SettingsMain = CreateInstance("Frame", {Parent = Instances.SettingsGui, Selectable = true, Active = true, Draggable = true, BackgroundColor3 = COLORS[1], Position = UDim2.new(0.64, 80, 0.23, 120), Size = UDim2.new(0, 218, 0, 255), Visible = false});
-Instances.Information = CreateInstance("TextButton", {Name = "Information", Parent = Instances.SettingsMain, BackgroundColor3 = COLORS[6], Size = UDIM2[18], Font = Enum.Font.GothamMedium, Text = "Information", TextColor3 = COLORS[1], TextSize = 14});
-Instances.Settings = CreateInstance("TextButton", {Name = "Settings", Parent = Instances.SettingsMain, BackgroundColor3 = COLORS[6], BackgroundTransparency = 0.5, Position = UDim2.new(0.5, 0, 0, 0), Size = UDIM2[18], Font = Enum.Font.GothamMedium, Text = "Settings", TextColor3 = COLORS[1], TextSize = 14});
+Instances.Information = CreateInstance("TextButton", {Name = "Information", Parent = Instances.SettingsMain, BackgroundColor3 = COLORS[6], Size = UDIM2[18], Font = FONT, Text = "Information", TextColor3 = COLORS[1], TextSize = 14});
+Instances.Settings = CreateInstance("TextButton", {Name = "Settings", Parent = Instances.SettingsMain, BackgroundColor3 = COLORS[6], BackgroundTransparency = 0.5, Position = UDim2.new(0.5, 0, 0, 0), Size = UDIM2[18], Font = FONT, Text = "Settings", TextColor3 = COLORS[1], TextSize = 14});
 
 Instances.InformationFrame = CreateInstance("Frame", {Name = "InformationFrame", Parent = Instances.SettingsMain, BackgroundColor3 = COLORS[1], Position = UDIM2[19], Size = UDIM2[20]});
 CreateInstance("TextLabel", {Name = "Label1", Parent = Instances.InformationFrame, BackgroundColor3 = COLORS[1], Position = UDim2.new(0.007, 1, 0.01, 0), Size = UDim2.new(0, 206, 0, 52), Font = Enum.Font.SourceSans, Text = "Click the buttons in the search frame with the names of items you want to have fused automatically.", TextColor3 = COLORS[2], TextSize = 14, TextWrapped = true});
@@ -211,15 +212,15 @@ Instances.IgnoreEquippedFrame = CreateInstance("Frame", {Name = "IgnoreEquippedF
 Instances.IgnoreEnchantedFrame = CreateInstance("Frame", {Name = "IgnoreEnchantedFrame", Parent = Instances.SettingsFrame, BackgroundColor3 = COLORS[1], Size = UDIM2[13]});
 Instances.IgnoreElemented = CreateInstance("Frame", {Name = "IgnoreElemented", Parent = Instances.SettingsFrame, BackgroundColor3 = COLORS[1], Position = UDim2.new(0, 0, 0.5, 0), Size = UDim2.new(0, 210, 0, 111)});
 Instances.IgnoreElementedFrame = CreateInstance("Frame", {Name = "IgnoreElementedFrame", Parent = Instances.IgnoreElemented, BackgroundColor3 = COLORS[1], Size = UDIM2[13]});
-Instances.IgnoreElementedButton = CreateInstance("TextButton", {Name = "IgnoreElementedButton", Parent = Instances.IgnoreElementedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Ignore Elemented", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
-Instances.IgnoreEnchantedButton = CreateInstance("TextButton", {Name = "IgnoreEnchantedButton", Parent = Instances.IgnoreEnchantedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Ignore Enchanted", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
-Instances.IgnoreEquippedButton = CreateInstance("TextButton", {Name = "IgnoreEquippedButton", Parent = Instances.IgnoreEquippedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Ignore Equipped", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
-Instances.LoadFuseButton = CreateInstance("TextButton", {Name = "LoadFuseButton", Parent = Instances.LoadFuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "LoadFuse", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.AutoLoadButton = CreateInstance("TextButton", {Name = "AutoLoadButton", Parent = Instances.AutoLoadFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "AutoLoad", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.AutoSaveButton = CreateInstance("TextButton", {Name = "AutoSaveButton", Parent = Instances.AutoSaveFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "AutoSave", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.ResetTextButton = CreateInstance("TextButton", {Name = "ResetTextButton", Parent = Instances.ResetTextFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "ResetText", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.GemsToggleButton = CreateInstance("TextButton", {Name = "GemsToggleButton", Parent = Instances.GemsToggleFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Gems", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-Instances.PrintToggleButton = CreateInstance("TextButton", {Name = "PrintToggleButton", Parent = Instances.PrintToggleFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Print", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.IgnoreElementedButton = CreateInstance("TextButton", {Name = "IgnoreElementedButton", Parent = Instances.IgnoreElementedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Ignore Elemented", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
+Instances.IgnoreEnchantedButton = CreateInstance("TextButton", {Name = "IgnoreEnchantedButton", Parent = Instances.IgnoreEnchantedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Ignore Enchanted", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
+Instances.IgnoreEquippedButton = CreateInstance("TextButton", {Name = "IgnoreEquippedButton", Parent = Instances.IgnoreEquippedFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Ignore Equipped", TextColor3 = COLORS[1], TextSize = 12, TextWrapped = true});
+Instances.LoadFuseButton = CreateInstance("TextButton", {Name = "LoadFuseButton", Parent = Instances.LoadFuseFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "LoadFuse", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.AutoLoadButton = CreateInstance("TextButton", {Name = "AutoLoadButton", Parent = Instances.AutoLoadFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "AutoLoad", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.AutoSaveButton = CreateInstance("TextButton", {Name = "AutoSaveButton", Parent = Instances.AutoSaveFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "AutoSave", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.ResetTextButton = CreateInstance("TextButton", {Name = "ResetTextButton", Parent = Instances.ResetTextFrame, BackgroundColor3 = COLORS[4], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "ResetText", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.GemsToggleButton = CreateInstance("TextButton", {Name = "GemsToggleButton", Parent = Instances.GemsToggleFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Gems", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
+Instances.PrintToggleButton = CreateInstance("TextButton", {Name = "PrintToggleButton", Parent = Instances.PrintToggleFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[14], Size = UDIM2[12], ZIndex = 2, Font = FONT, Text = "Print", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
 
 Instances.Elements = CreateInstance("Frame", {Name = "Elements", Parent = Instances.IgnoreElemented , BackgroundColor3 = COLORS[1], BackgroundTransparency = 1, BorderSizePixel = 0, Position = UDim2.new(0, 0, 0.378, 0), Size = UDim2.new(0, 210, 0, 68)});
 
@@ -295,12 +296,12 @@ end;
 -- Enhance Item
 Main[5][5] = function(Table, Index, Unchanged, List)
 	for Tag,Item in next, PlayerData[Main[9][Index]] do
-		if not Main[1][Item.Level]or Table[Item.Base]==nil or Main[5][4](Tag, Index)then -- Item Validation
+		if(not Main[1][Item.Level]or not Table[Item.Base]or Main[5][4](Tag, Index))then -- Item Validation, lack of "not"-distrubution is required
 			continue; 
 		end;
 		
 		List = Table[Item.Base][Item.Level]; -- ease-of-access		
-		if not List[1]then continue end; -- validate enabled
+		if(not List[1])then continue end; -- validate enabled
 		
 		List[2] += 1;
 		List[3][List[2]] = Tag; -- set Tag
@@ -330,13 +331,13 @@ end;
 
 -- Toggle GUI Visible
 Main[5][7] = function(Input)
-	if Input.UserInputType.Value==8 and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)then 
-		if Input.KeyCode.Value==109 then
-			Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
-		elseif Input.KeyCode.Value==103 then
-			Instances.ItemFrame.Visible = not Instances.ItemFrame.Visible;
-			Instances.SettingsMain.Visible = false;
-		end;
+	if(Input.UserInputType.Value~=8 or not UserInputService:IsKeyDown(Enum.KeyCode.LeftControl))then 
+		return;
+	elseif(Input.KeyCode.Value==109)then
+		Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
+	elseif(Input.KeyCode.Value==103)then
+		Instances.ItemFrame.Visible = not Instances.ItemFrame.Visible;
+		Instances.SettingsMain.Visible = false;
 	end;
 end;
 
@@ -352,7 +353,7 @@ end;
 Main[5][9] = function(Index)
 	return function()
 		for Item in next,Main[3][Index]do
-			Instances.FuseScroller[Item:lower()]:Destroy();
+			Instances.FuseScroller[lower(Item)]:Destroy();
 		end;
 	end;
 end;
@@ -404,7 +405,7 @@ Main[5][15] = function(FuseButton, List, Type, Index)
 	return function()
 		Value = not List[1];
 		
-		SaveData["Items"][FuseButton.Parent.Name:lower()][1][Index] = Value; -- Update AutoSave Data
+		SaveData["Items"][lower(FuseButton.Parent.Name)][1][Index] = Value; -- Update AutoSave Data
 		List[1],FuseButton.BackgroundColor3 = Value,Main[11][1][Value]; -- Update respective Item List and Button Color
 		if(Main[8][4])then Main[5][11]()end; -- Update Save File
 		
@@ -425,7 +426,7 @@ end;
 Main[5][16] = function(QuantityButton, Antimatter, List)
 	local Data,Quantity = nil,nil;
 	return function()
-		Data = SaveData["Items"][Antimatter.Parent.Name:lower()];
+		Data = SaveData["Items"][lower(Antimatter.Parent.Name)];
 		Quantity = #List[3]-1;
 		
 		if(Quantity==0)then 
@@ -448,7 +449,7 @@ end;
 -- DeallocateFrame function
 Main[5][17] = function(Signals, ItemButton)
 	for _,Connection in ipairs(Signals) do Connection:Disconnect() end;
-	SaveData["Items"][ItemButton.Text:lower()] = nil; -- set to nil before updating
+	SaveData["Items"][lower(ItemButton.Text)] = nil; -- set to nil before updating
 	ItemButton.Value.Value = true;
 	
 	if(Main[10][3]==1)then
@@ -465,13 +466,13 @@ end;
 Main[5][18] = function(ItemButton, Index, List)
 	Main[10][3] += 1;
 	local Objects = {};
-	Objects.ItemFrame = CreateInstance("Frame", {Name = ItemButton.Name, Parent = Instances.FuseScroller, BackgroundTransparency = 1, BackgroundColor3 = COLORS[1], Size = UDIM2[2]});
-	Objects.Item = CreateInstance("TextButton", {Name = "Item", Parent = Objects.ItemFrame, BackgroundColor3 = Colors[math.random(1, 153)], BorderSizePixel = 0, Position = UDIM2[3], Size = UDIM2[4], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = ItemButton.Text, TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-	Objects.Evolve = CreateInstance("TextButton", {Name = "Evolve", Parent = Objects.ItemFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[5], Size = UDIM2[1], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Evolved", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-	Objects.Omega = CreateInstance("TextButton", {Name = "Omega", Parent = Objects.ItemFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[6], Size = UDIM2[1], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Omega", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-	Objects.Antimatter = CreateInstance("TextButton", {Name = "Antimatter", Parent = Objects.ItemFrame, BackgroundColor3 = COLORS[3], BorderSizePixel = 0, Position = UDIM2[7], Size = UDIM2[8], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "Antimatter", TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-	Objects.FuseQuantity = CreateInstance("TextButton", {Name = "FuseQuantity", Parent = Objects.ItemFrame, BackgroundColor3 = COLORS[1], BorderSizePixel = 0, Position = UDIM2[9], Size = UDIM2[10], ZIndex = 2, Font = Enum.Font.GothamMedium, Text = "8", TextColor3 = COLORS[2], TextScaled = true, TextSize = 13, TextWrapped = true});
-	CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Objects.Item})CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Objects.Evolve})CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Objects.Omega})CreateInstance("UICorner", {CornerRadius = UDIM_CORNER, Parent = Objects.Antimatter})Instance.new("UICorner", Objects.FuseQuantity);
+	Objects.ItemFrame = CreateInstance("Frame",{Name=ItemButton.Name,Parent=Instances.FuseScroller,BackgroundTransparency=1,BackgroundColor3=COLORS[1],Size=UDIM2[2]});
+	Objects.Item = CreateInstance("TextButton",{Name="Item",Parent=Objects.ItemFrame,BackgroundColor3=Colors[math.random(153)],BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONT,Text=ItemButton.Text,TextColor3=COLORS[1],TextSize=13,TextWrapped=true});
+	Objects.Evolve = CreateInstance("TextButton",{Name="Evolve",Parent=Objects.ItemFrame,BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[5],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Evolved",TextColor3=COLORS[1],TextSize=13,TextWrapped=true});
+	Objects.Omega = CreateInstance("TextButton",{Name="Omega",Parent=Objects.ItemFrame,BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[6],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Omega",TextColor3=COLORS[1],TextSize=13,TextWrapped=true});
+	Objects.Antimatter=CreateInstance("TextButton",{Name="Antimatter",Parent=Objects.ItemFrame,BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[7],Size=UDIM2[8],ZIndex=2,Font=FONT,Text="Antimatter",TextColor3=COLORS[1],TextSize=13,TextWrapped=true});
+	Objects.FuseQuantity=CreateInstance("TextButton",{Name="FuseQuantity",Parent=Objects.ItemFrame,BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONT,Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true});
+	CreateInstance("UICorner",{CornerRadius=UDIM_CORNER,Parent=Objects.Item})CreateInstance("UICorner",{CornerRadius=UDIM_CORNER,Parent=Objects.Evolve})CreateInstance("UICorner",{CornerRadius=UDIM_CORNER,Parent=Objects.Omega})CreateInstance("UICorner",{CornerRadius=UDIM_CORNER,Parent=Objects.Antimatter})Instance.new("UICorner",Objects.FuseQuantity);
 
 	local Signals = {
 		[1] = Objects.Evolve.MouseButton1Click:Connect(Main[5][15](Objects.Evolve, List[1], Index, 1));
@@ -485,8 +486,9 @@ end
 
 -- RemoveAll function
 Main[5][19] = function()
-	local Order = Instances.FuseScroller.UIListLayout;Order.Parent = nil;
-	for _,Frame in ipairs(Instances.FuseScroller:GetChildren()) do
+	local Order = Instances.FuseScroller.UIListLayout;
+	Order.Parent = nil;
+	for _,Frame in ipairs(Instances.FuseScroller:GetChildren())do
 		Frame:Destroy();
 	end;
 	Order.Parent = Instances.FuseScroller;
@@ -505,9 +507,8 @@ Main[5][20] = function()
 		return;
 	end;
 	
-	local Success,Temp = pcall(loadstring(readfile(Main[9][3])));
-	assert(Success and type(Temp)=="table", "Error! loadstring function failed (expected a table) to read data in file: workspace/"..Main[9][3]);
-	if(Temp["Toggles"]==nil or not Temp["Toggles"]["AutoLoad"])then return end; -- if AutoLoad is nil or disabled
+	local Data = assert(loadstring(readfile(Main[9][3])),"Error, table expected from data fetch: workspace/"..Main[9][3])();
+	if(not(Data["Toggles"]or Data["Toggles"]["AutoLoad"]))then return end; -- if AutoLoad is nil or disabled
 	
 	local Reference,Value = {
 		["AutoLoad"] = 3;
@@ -523,18 +524,16 @@ Main[5][20] = function()
 	
 	-- Validate and Load Toggle Data
 	Main[10][4] = 0;
-	for Name,Table in next, SaveData do
-		if(Temp[Name]==nil or Name=="Items")then continue end;
-		assert(type(Temp[Name])=="table", "Error! Invalid data type encountered (should be table) in save data when referencing \""..Name..'\"');
-		for Index,_ in next, Table do
-			Value = type(Temp[Name][Index])=="boolean" and Temp[Name][Index];
+	for Name,Table in next,SaveData do
+		if(not Data[Name]or Name=="Items")then continue end;
+		assert(type(Data[Name])=="table", "Error, table expected when reading \""..Name.."\" in fetched data");
+		for Index in next,Table do
+			Value = type(Data[Name][Index])=="boolean"and Data[Name][Index];
 			Table[Index] = Value;
-			if(Name=="Visible")then continue end;
 			if(Name=="Elements")then
 				Instances[Index.."ToggleButton"].ImageTransparency = Main[11][2][Value];
-				if(not Value)then continue end;
-				Main[10][4] += 1; -- Count enabled, ignored elements
-			else
+				if(Value)then Main[10][4] += 1 end; -- Count enabled, ignored elements
+			elseif(Name~="Visible")then
 				Main[8][Reference[Index]] = Value;
 				Instances[Index.."Button"].BackgroundColor3 = Main[11][1][Value];
 			end;
@@ -552,29 +551,29 @@ Main[5][20] = function()
 	end;
 	
 	-- Validate and Load Item Data
-	if(type(Temp["Items"])~="table")then return end;
+	if(type(Data["Items"])~="table")then return end;
 	local DataFrame,BoolToggles = nil,nil;
-	for Name,Data in next,Temp["Items"]do
+	for Name,Info in next,Data["Items"]do
 	
-		assert(Instances.ItemScroller:WaitForChild(Name:lower()) ~= nil, "Error! Invalid item in save file: "..Name); -- Validate item name
-		assert(type(Data)=="table" and type(Data[1])=="table", "Error! Invalid data format (should be a table) for main or main[1] of Item: "..Name); -- Validate referenced data is a table of size 2
-		if(type(Data[2])~="number" or Data[2]<=0 or Data[2]>=9)then -- Validate Antimatter Fuse Quantity and Data Type
-			Data[2] = 8;
-			Data[1][3] = false;
+		assert(Instances.ItemScroller[lower(Name)]~=nil, "Error, invalid item in \"Items\": "..Name); -- Validate item name
+		assert(type(Info)=="table" and type(Info[1])=="table", "Error, table expected in \"Items\" when referencing: "..Name); -- Validate referenced data is a table of size 2
+		if(type(Info[2])~="number" or Info[2]<=0 or Info[2]>=9)then -- Validate Antimatter Fuse Quantity and Data Type
+			Info[2] = 8;
+			Info[1][3] = false;
 		end;
 		
 		BoolToggles = {
-			[1] = (type(Data[1][1])=="boolean" and Data[1][1]); 
-			[2] = (type(Data[1][2])=="boolean" and Data[1][2]); 
-			[3] = (type(Data[1][3])=="boolean" and Data[1][3]);
+			[1] = (type(Info[1][1])=="boolean" and Info[1][1]); 
+			[2] = (type(Info[1][2])=="boolean" and Info[1][2]); 
+			[3] = (type(Info[1][3])=="boolean" and Info[1][3]);
 		};
 		
 		-- Make Button in Fuse Frame (will save if enabled)
-		Fire(BindableEvents[Name:lower()],Data[2],unpack(BoolToggles)); 
+		Fire(BindableEvents[lower(Name)],Info[2],unpack(BoolToggles)); 
 		
 		-- set button color accordingly
-		DataFrame = Instances.FuseScroller:WaitForChild(Name:lower());
-		DataFrame:WaitForChild("FuseQuantity").Text = Data[2];
+		DataFrame = Instances.FuseScroller[lower(Name)];
+		DataFrame.FuseQuantity.Text = Info[2];
 		DataFrame.Evolve.BackgroundColor3 = Main[11][1][BoolToggles[1]];
 		DataFrame.Omega.BackgroundColor3 = Main[11][1][BoolToggles[2]];
 		DataFrame.Antimatter.BackgroundColor3 = Main[11][1][BoolToggles[3]];
@@ -663,18 +662,20 @@ Main[5][25] = function()
 	if(Main[8][4])then Main[5][11](); end;
 end;
 
--- MakeTextChangedSignal Function
-Main[5][26] = function(ItemButton)
-    return TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-		
-		if(TextBox.Text=="Search" or TextBox.Text=="")then
-			ItemButton.Visible = ItemButton.Value.Value;
-			return;
-		end;
+do	-- MakeTextChangedSignal Function
+	local match = string.match;
+	Main[5][26] = function(ItemButton)
+		return TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+			
+			if(TextBox.Text=="Search" or TextBox.Text=="")then
+				ItemButton.Visible = ItemButton.Value.Value;
+				return;
+			end;
 
-		-- if the text input matches somewhere in the name of ItemButton, then the Button will remain visible
-		ItemButton.Visible = (ItemButton.Value.Value and ItemButton.Name:match(TextBox.Text:lower())~=nil);
-	end);
+			-- if the text input matches somewhere in the name of ItemButton, then the Button will remain visible
+			ItemButton.Visible = (ItemButton.Value.Value and match(ItemButton.Name,lower(TextBox.Text))~=nil);
+		end);
+	end;
 end;
 
 -- MakeClickedSignal Function
@@ -715,14 +716,14 @@ end;
 
 -- MakeButton Function
 Main[5][28] = function(Name, Index)
-    local ItemButton = CreateInstance("TextButton", {Name = Name:lower(), Parent = Instances.ItemScroller, BackgroundColor3 = COLORS[5], BorderSizePixel = 0, Size = UDIM2[4],AutomaticSize = 'X', ZIndex = 2, Font = Enum.Font.GothamMedium, Text = Name, TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true});
-    Instance.new("UICorner", ItemButton); 
-	table.insert(Main[4], CreateInstance("BoolValue", {Parent = ItemButton, Name = "Value", Value = true}):GetPropertyChangedSignal("Value"):Connect(function() ItemButton.Visible = ItemButton.Value.Value end));
+    local ItemButton = CreateInstance("TextButton",{Name=lower(Name),Parent=Instances.ItemScroller,BackgroundColor3=COLORS[5],BorderSizePixel=0,Size=UDIM2[4],AutomaticSize='X',ZIndex=2,Font=FONT,Text=Name,TextColor3=COLORS[1],TextSize=13,TextWrapped=true});
+	Instance.new("UICorner", ItemButton); 
+	table.insert(Main[4], CreateInstance("BoolValue",{Parent=ItemButton,Name="Value",Value=true}):GetPropertyChangedSignal("Value"):Connect(function()ItemButton.Visible = ItemButton.Value.Value end));
     table.insert(Main[4], Main[5][26](ItemButton));
 	
 	BindableEvents[ItemButton.Name] = Instance.new("BindableEvent");
 	table.insert(Main[4], BindableEvents[ItemButton.Name].Event:Connect(Main[5][27](ItemButton, Index)));
-	table.insert(Main[4], ItemButton.MouseButton1Click:Connect(function() Fire(BindableEvents[ItemButton.Name],8,false,false,false) end));
+	table.insert(Main[4], ItemButton.MouseButton1Click:Connect(function()Fire(BindableEvents[ItemButton.Name],8,false,false,false)end));
 end;
 
 -- Make ItemButtons for each Pet and Weapon
@@ -758,12 +759,13 @@ table.insert(Main[4], Instances.IgnoreEquippedButton.MouseButton1Click:Connect(M
 table.insert(Main[4], Instances.IgnoreEnchantedButton.MouseButton1Click:Connect(Main[5][22](10, "IgnoreEnchanted"))); -- Called when IgnoreEnchanted button is clicked
 table.insert(Main[4], Instances.IgnoreElementedButton.MouseButton1Click:Connect(Main[5][25])); -- Called when IgnoreElemented button is clicked
 
-local Template = "rbxthumb://type=Asset&id=%i&w=150&h=150";
-for Aura,Data in next,require(game.ReplicatedStorage.Saturn.Modules.GameDependent.Elements)do
-    Instances[Aura.."ToggleButton"] = CreateInstance("ImageButton", {Name = Aura.."ToggleButton", Parent = Instances.Elements, BackgroundColor3 = COLORS[1], BackgroundTransparency = 0, BorderSizePixel = 0, Size = UDIM2[11], Image = Template:format(Data.Image)});
-    table.insert(Main[4], Instances[Aura.."ToggleButton"].MouseButton1Click:Connect(Main[5][24](Aura, Instances[Aura.."ToggleButton"])));
+do 
+	local Template = "rbxthumb://type=Asset&id=%i&w=150&h=150";
+	for Aura,Data in next,require(game.ReplicatedStorage.Saturn.Modules.GameDependent.Elements)do
+		Instances[Aura.."ToggleButton"] = CreateInstance("ImageButton", {Name = Aura.."ToggleButton", Parent = Instances.Elements, BackgroundColor3 = COLORS[1], BackgroundTransparency = 0, BorderSizePixel = 0, Size = UDIM2[11], Image = Template:format(Data.Image)});
+		table.insert(Main[4], Instances[Aura.."ToggleButton"].MouseButton1Click:Connect(Main[5][24](Aura, Instances[Aura.."ToggleButton"])));
+	end;
 end;
-Template = nil;
 
 table.insert(Main[4],Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end)); -- Called when Close button is pressed
 
@@ -799,7 +801,6 @@ end);
 Main[5][20](); -- Load Saved Data
 
 -- Deallocate not used local variables
-
-for idx=22,12,-1 do UDIM2[idx]=nil end;
+for idx=12,22 do UDIM2[idx] = nil end;
 COLORS[5],COLORS[6] = nil,nil;
 Main[5][26],Main[5][27],Main[5][28] = nil,nil,nil;
