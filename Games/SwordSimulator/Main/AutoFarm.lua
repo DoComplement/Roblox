@@ -1,4 +1,4 @@
-if(game.PlaceId~=11127874647 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end; 
+if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end; 
 getgenv()["QRfuSEK*VSAbxd;1ob*w"] = true;
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 
@@ -444,7 +444,7 @@ do	-- rand class
 	local rand = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua")))();
 	randomize = rand.randomize;
 
-	HitDetector = Instance.("Part",Workspace);
+	HitDetector = Instance.new("Part",Workspace);
 	HitDetector.Name = rand.randStr(math.random(15, 22));
 	HitDetector.Shape = "Ball";
 	HitDetector.Size = Vector3.new(15, 15, 15);
