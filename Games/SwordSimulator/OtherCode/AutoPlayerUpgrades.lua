@@ -19,35 +19,32 @@ local function GetCost(Number, Symbol)
 	return tonumber(Number)*Conversion[Symbol];
 end;
 
-local Signal;
+local Signal = nil;
 local function Upgrade()
-    if table.getn(Types) == 0 then
-       Signal:Disconnect();
-       Signal = nil;
+    if(#Types == 0)then
+       	Signal = Signal:Disconnect();
+		return;
     end;
-	for _,Upgrade in ipairs(Types) do
+	for _,Upgrade in ipairs(Types)do
 		local Cost = Upgrades[Upgrade].Frame.Cost;
 		while Cost.Text ~= "XX" and PlayerData.Gems >= GetCost(Cost.Text:gmatch("(%d+)(.)")()) do
-			local Text = Cost.Text;
 			UpgradeRemote:FireServer(Upgrade);
-			while Cost.Text == Text do task.wait(); end;
+			Cost:GetPropertyChangedSignal("Text"):Wait();
 		end;
 	end;
 end;
 
 -- Initializing
-for Index,Upgrade in ipairs(Upgrades:GetChildren()) do
-    if Index ~= 1 and Upgrade.Frame.Cost.Text ~= "XX" then
-		table.insert(Types, Upgrade.Name);
-		local Cost,Connection = Upgrade.Frame.Cost
-		Connection = Cost:GetPropertyChangedSignal("Text"):Connect(function()
-			if Cost.Text == "XX" then
-				table.remove(Types, Index - 1);
-				Connection:Disconnect();
-				Connection = nil;
-			end;
-		end);
-    end;
+for idx,Upgrade in ipairs(Upgrades:GetChildren()) do
+    if Index == 1 or Upgrade.Frame.Cost.Text == "XX" then continue end;
+	Types[idx - 1] = Upgrade.Name;
+	local Cost,Connection = Upgrade.Frame.Cost, nil;
+	Connection = Cost:GetPropertyChangedSignal("Text"):Connect(function()
+		if Cost.Text == "XX" then
+			table.remove(Types, idx - 1);
+			Connection = Connection:Disconnect();
+		end;
+	end);
 end;
 
 Signal = Game:GetService("Players").LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount:GetPropertyChangedSignal("Text"):Connect(Upgrade);
