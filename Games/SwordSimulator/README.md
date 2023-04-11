@@ -1,6 +1,11 @@
 # Sword Simulator Exploit Script
 This repository is the access point to the Sword Simulator kitty scripts created by Activities12 on V3rmillion
 
+## Get PlayerData
+```
+local pd = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]).Replica.Data.Main;
+```
+
 ## Features
 - Most Efficient Auto-Farm
 - Auto Dungeons
