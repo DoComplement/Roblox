@@ -34,10 +34,10 @@ end;
 local rootPart = LocalPlayer.Character.PrimaryPart;
 rootPart.CanQuery = false;
 	
-getgenv().TASK = "Autumn Zone Boss"; -- change if desired
-if(LocalPlayer.UserId~= [==[ your UserId here ]==] )then
-	-- change getgenv().TASK for alts
-end;
+getgenv.TASK = ({
+	[ [==[ UserId ]==] ] = "Autumn Zone Boss"; -- temp
+	[ [==[ alt UserId ]==] ] = ...;
+})[LocalPlayer.UserId];
 
 local function Teleport()
 	rootPart.CFrame = TempCFrames[TASK];
