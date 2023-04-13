@@ -1,7 +1,8 @@
-if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end; 
+if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end;
 getgenv()["QRfuSEK*VSAbxd;1ob*w"] = true;
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 
+if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%w+)]])=="MatchMade")then return end;	-- if game is not private
 
 -- 1) De-nest the branching and looping into separate functions
 -- 2) consolidate the variables, functions, connections, threads, etc. into a arrays
@@ -56,13 +57,19 @@ local FireServer = Events[1].FireServer;
 local InvokeServer = Events[2].InvokeServer;
 
 -- Module Scripts
+-- Module Scripts
 local Modules = {
-    [1] = require(Folders[2].Parent.Client["PlayerData - Client"]).Replica.Data.Main; -- Player Data
     [2] = require(Folders[2].Storage.PetsModule); -- Pets Module
     [3] = require(Folders[2].WeaponsModule); -- Weapons Module
     [4] = require(Folders[2].BoostsCalculator); -- Boosts Calculators
     [5] = require(Folders[2].Zones); -- Zones
 };
+
+do
+	local playerData = require(Folders[2].Parent.Client["PlayerData - Client"]);
+	if(not playerData.Replica.Data)then playerData.Loaded:Wait()end;
+	Modules[1] = playerData.Replica.Data.Main;
+end;
 
 -- local Globals = {}
 -- local Signals = {}
@@ -332,6 +339,9 @@ end;
 -- See to enhancing the modules in here (removing autosInit)
 -- Also see to consolidating the local variables 
 task.defer(function()
+	if(LocalPlayer.PlayerGui:FindFirstChild("LoadingScreenUi")~=nil)then
+		LocalPlayer.PlayerGui.LoadingScreenUi.Destroying:Wait();
+	end;
     -- Initializing automatic playtime rewards
     for _,Reward in ipairs(getChildren(Folders[3].Rewards.Main.Frame))do
 		if(Reward.Name=="UIGridLayout")then continue;
@@ -439,7 +449,7 @@ end);
 
 local HitDetector,randomize = nil,nil;
 do	-- rand class
-	local rand = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua")))();
+	local rand = assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/RandLib/Rand.lua")))();
 	randomize = rand.randomize;
 
 	HitDetector = Instance.new("Part",Workspace);
@@ -628,7 +638,7 @@ game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(func
 	if not UI or UI.Text ~= "Disconnected" then return end;
 	
 	print("User has Disconnected. Waiting until connection has been re-established");
-	repeat wait(1) until game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/null") == '\n';
+	repeat wait(1) until game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/null") == '\n';
 	print("Connection has been established!");
 	
 	wait(8);
