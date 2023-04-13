@@ -1,9 +1,10 @@
 -- Place the AutoFuse.lua script and this script in the autoexec file of the executor
 if(game.PlaceId~=7026949294 or game:IsLoaded())then return end;
 
+local RECONNECT = nil;
 -- reconnect when disconnected
 task.defer(function()
-	game:WaitForChild("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
+	RECONNECT = game:WaitForChild("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
 		task.wait(3);
 		UI = UI:FindFirstChild("ErrorTitle", true);
 		if(not UI or UI.Text~="Disconnected")then return end;
@@ -17,14 +18,18 @@ task.defer(function()
 	end);
 end);
 
+game.Loaded:Wait();
+if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%a+)]])=="Specific")then -- if game is private
+	RECONNECT = RECONNECT:Disconnect();
+	return;
+end;
+
 local TempCFrames = {	-- may change/add CFrames to what is desired
 	["Autumn Zone Boss"] = CFrame.new(3508.42798, 36.5313873, 12369.9121, -0.945489943, -9.52416528e-08, 0.325651348, -1.07699051e-07, 1, -2.02262811e-08, -0.325651348, -5.41960858e-08, -0.945489943);
 	["Autumn Egg 2"] = CFrame.new(3527.39844, 30.7223492, 12150.4932, -0.308820128, -9.9491011e-08, 0.951120436, -4.06626661e-08, 1, 9.14012119e-08, -0.951120436, -1.04485594e-08, -0.308820128);
 	["Event Egg"] = CFrame.new(74.7213516, 25.8495693, -106.706306, 0.286026955, -2.58336925e-08, 0.958221555, 9.23232193e-08, 1, -5.98229799e-10, -0.958221555, 8.86372078e-08, 0.286026955);
 	["Christmas Zone 2 Egg 2"] = CFrame.new(436.19455, 970.498596, -1271.03406, -0.564071655, 0, 0.82572329, 0, 1, 0, -0.82572329, 0, -0.564071655);
 };
-
-game.Loaded:Wait();
 
 local LocalPlayer = game:GetService("Players").LocalPlayer;
 if(not(LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()).PrimaryPart)then
