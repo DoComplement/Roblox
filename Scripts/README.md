@@ -6,6 +6,9 @@
   - 1e+9 -> 1B
   - etc;
 
+## Check Server Type
+- returns a boolean value to indicate whether the server connected to the active roblox game of the executed script is private
+
 ## ClearDevConsole
 - clears all the messages currently in the dev console upon execution
 - messages after each clear will reappear every time the dev console is re-opened
