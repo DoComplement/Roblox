@@ -535,9 +535,12 @@ do
 					
 	local function checkHatch(hatched)
 		if(not hatched)then return(nil)end;
+		local rarity = nil;
 		for _,dat in ipairs(hatched)do
-			if(_G.PRINT_HATCH_DATA and not dat[3]and Modules[3][dat[1]].Rarity=="Secret")then
-				print("Hatched Secret",dat[1]);
+			if(dat[3]or not _G.PRINT_HATCH_DATA)then continue end;
+			rarity = Modules[3][dat[1]].Rarity;
+			if(rarity=="Secret"or rarity=="Mythical")then
+				print("Hatched",rarity,dat[1]);
 			end;
 		end;
 	end;
