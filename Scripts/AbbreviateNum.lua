@@ -18,21 +18,21 @@ local consts = {
 
 local floor,log10 = math.floor,math.log10;
 local function unsigAbbFast(num,idx)
-	idx = c[1 + floor(log10(num)/3)];
+	idx = consts[1 + floor(log10(num)/3)];
 	if(idx~=nil)then return((floor(num*idx[1]*10)/10)..idx[2])end;
 	return(num);
 end;
 
 local abs = math.abs;
 local function sigAbbFast(num)
-	idx = c[1 + floor(log10(abs(num))/3)];
+	idx = consts[1 + floor(log10(abs(num))/3)];
 	if(idx~=nil)then return((floor(num*idx[1]*10)/10)..idx[2])end;
 	return(num);
 end;
 
 -- includes resolution option (factor of 10)
 local function abbFastRes(num,res)
-	idx = c[1 + floor(log10(num)/3)];
+	idx = consts[1 + floor(log10(num)/3)];
 	if(idx~=nil)then return((floor(num*idx[1]*res)/res)..idx[2])end;
 	return(num);
 end;
@@ -41,7 +41,7 @@ end;
 local format,gsub = string.format,string.gsub
 -- gives the option to remove trailing zeros
 local function abbSlow(num,rem)
-	local idx = c[1 + floor(log10(num)/3)];
+	local idx = consts[1 + floor(log10(num)/3)];
 
 	num = format("%.3f",num*idx[1]); -- truncate, will round
 	if(rem)then -- remove trailing zeros
@@ -56,7 +56,7 @@ end;
 local sub,find = string.sub,string.find;
 -- without rouding
 local function abbSlowish(num,rem)
-	local idx = c[1 + floor(log10(num)/3)];
+	local idx = consts[1 + floor(log10(num)/3)];
 
 	num = tostring(num*idx[1]);
 	num = sub(num,1,1 + find(num,"%.")); -- resolution of 1
@@ -71,7 +71,7 @@ end;
 
 -- same as above with resolution option (no error checking)
 local function abbSlowisher(num,rem,res)
-	local idx = c[1 + floor(log10(num)/3)];
+	local idx = consts[1 + floor(log10(num)/3)];
 
 	num = tostring(num*idx[1]);
 	num = sub(num,1,res + find(num,"%.")); -- resolution of res
