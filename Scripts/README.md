@@ -1,7 +1,29 @@
-# Scripts
+# Stuff
+
+## AbbreviateNum
+- Abbreviates a number into a cut-off decimal-size format: (depending on the format provided)
+  - 1.01e+7 -> 10.01M
+  - 1e+9 -> 1B
+  - etc;
+
+## ClearDevConsole
+- clears all the messages currently in the dev console upon execution
+- messages after each clear will reappear every time the dev console is re-opened
+- the function can be bound to a keybind to clear the console on some command as well as setting the command to F9 so the console always opens cleared
 
 ## EventSpy  
 - simple event spy TEMPLATE (!!!) without any special print-formatting
+
+
+## Hookfunction Solution (credit goes to 0866 on v3rmillion)
+- hooks functions with upvalue errors upon normal hookfunction attempts (arg#2, too many upvalues error)
+- doesn't update the original function
+  -> allows for repeated, unique hooking and unhooking (hooking with nil)
+  ```
+  -- this, here, method only works with functions that can be indexed via a table or instance (or whatever else)
+  local func = table.func_name;
+  table.func_name = function(...) --[[ new function goes here ]] end;
+  ```
 
 ## StudyProtectedTable  (because I don't know a better way to get the indices)          
 - Finds the hidden indices of the a protected table whose indices return nil from a forced call    
@@ -10,16 +32,6 @@
   - may break some (hopefully) inconsequential in-game functions while actively spying  
   - (To do) Implement a function input & corresponding output hook for found functions in the table (fix the hookfunction solution)
   - Other stuff   
-
-## Hookfunction Solution (credit goes to 0866 on v3rmillion)
-- hooks functions with upvalue errors upon normal hookfunction attempts (arg#2, too many upvalues error)
-- doesn't update the original function
-  -> allows for repeated, unique hooking and unhooking (hooking with nil)
-  
-## ClearDevConsole
-- clears all the messages currently in the dev console upon execution
-- messages after each clear will reappear every time the dev console is re-opened
-- the function can be bound to a keybind to clear the console on some command as well as setting the command to F9 so the console always opens cleared
 
 ## SimulateJump
 - simulates a single jump upon execution
