@@ -8,5 +8,5 @@ end;
 
 -- method 2
 local function isPrivateServer()
-    return assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%w+)]])=="Specific";
+    return assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%a+)]])=="Specific";
 end;
