@@ -217,7 +217,7 @@ Folders[3].MessagesUI.Frame.ChildAdded:Connect(function(Label)
 			Label.Visible = false;
 		end;
         if(_G.PRINT_WEAPON_DATA and Modules[3][Label.ViewportFrame:FindFirstChildOfClass("Model").Name].Rarity=="Mythical")then 
-			print(Label.Text);
+			print(Label.TextLabel.Text);
         end;
     elseif(_G.PRINT_DUNGEON_DATA and Label.Name=="TextLabel"and ElementInventory[Label.Text:match("Obtained (.+) Aura")]~=nil)then 
 		print(Label.Text);
@@ -226,7 +226,7 @@ end);
 
 local function GetMinValueIndex(vals, min, idx)
 	for cnt,val in ipairs(vals)do
-		if(val~=-1 and val<Min)then
+		if(val~=-1 and val<min)then
 			idx,min = cnt,val;
 		end;
 	end;
