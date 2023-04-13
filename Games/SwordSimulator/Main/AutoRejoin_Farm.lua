@@ -73,14 +73,39 @@ if(not TASK:match("Egg"))then
 else	
 	local EggEvent = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase;
 	local InvokeServer = EggEvent.InvokeServer;
+	local WeaponsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.WeaponsModule)
 	local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 	local Bvent = Instance.new("BindableEvent");
+	
+	local HatchType = "Hatch3";
+	if(not game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId,40355989))then
+		HatchType = "Hatch";
+		local GP_Purchased = nil;
+		GP_Purchased = game:GetService("MarketplaceService").PromptGamePassPurchaseFinished:Connect(function(player,gamePassId,wasPurchased)
+			if(player==LocalPlayer and wasPurchased and gamePassId==40355989)then
+				HatchType = "Hatch3";
+				GP_Purchased = GP_Purchased:Disconnect();
+			end;
+		end);
+	end;
+	
+	local function checkHatch(hatched)
+		if(not hatched)then return(nil)end;
+		local rarity = nil;
+		for _,dat in ipairs(hatched)do
+			if(dat[3])then continue end;
+			rarity = WeaponsModule[dat[1]].Rarity;
+			if(rarity=="Secret"or rarity=="Mythical")then
+				print("Hatched",rarity,dat[1]);
+			end;
+		end;
+	end;
 
 	local counter = (os.time() + 3)%10;
 	Bvent.Event:Connect(function() 
 		if(os.time()%10~=counter)then return end;
 		counter = (counter + 3)%10;
-		InvokeServer(EggEvent, TASK, "Hatch3");
+		checkHatch(InvokeServer(EggEvent, TASK, HatchType));
 	end);
 
 	local f = nil;f = hookfunction(os.time, function()
