@@ -23,7 +23,7 @@ local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.C
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
 
-local Colors = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
+local COLOR_PICKS = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
 assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua")), "Error loading TableToString")();
 
 local UDIM_CORNER = UDim.new(1,0);
@@ -468,7 +468,7 @@ Main[5][18] = function(ItemButton, Index, List)
 	Main[10][3] += 1;
 	local Objects = {};
 	Objects.ItemFrame = setVals("Frame",{Name=ItemButton.Name,BackgroundTransparency=1,BackgroundColor3=COLORS[1],Size=UDIM2[2]},Instances.FuseScroller);
-	Objects.Item = setVals("TextButton",{Name="Item",BackgroundColor3=Colors[math.random(153)],BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONT,Text=ItemButton.Text,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
+	Objects.Item = setVals("TextButton",{Name="Item",BackgroundColor3=COLOR_PICKS[math.random(153)],BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONT,Text=ItemButton.Text,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	Objects.Evolve = setVals("TextButton",{Name="Evolve",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[5],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Evolved",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	Objects.Omega = setVals("TextButton",{Name="Omega",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[6],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Omega",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	Objects.Antimatter=setVals("TextButton",{Name="Antimatter",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[7],Size=UDIM2[8],ZIndex=2,Font=FONT,Text="Antimatter",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
