@@ -93,6 +93,7 @@ _G.IGNORE_ITEM_MESSAGES = true;
 _G.PRINT_REWARDS_DATA = false;
 _G.PRINT_DUNGEON_DATA = true;
 _G.PRINT_WEAPON_DATA = true;
+_G.PRINT_HATCH_DATA = true;
 
 _G.INDEX_RANDOMLY = false;
 _G.FARM_DUNGEON = true;
@@ -534,6 +535,15 @@ do
 			end;
 		end);
 	end;
+					
+	local function checkHatch(hatched)
+		if(not hatched)then return(nil)end;
+		for _,dat in ipairs(hatched)do
+			if(_G.PRINT_HATCH_DATA and not dat[3]and Modules[3][dat[1]].Rarity=="Secret")then
+				print("Hatched Secret",dat[1]);
+			end;
+		end;
+	end;
 
 	-- Auto Egg Hatching
 	local autoEgg = Instance.new("BindableEvent");
@@ -542,9 +552,7 @@ do
 		if(os.time()%10~=EggClocking)then return end;
 		EggClocking = (EggClocking + 3)%10;
 		
-		if(_G.FARM_EGGS)then
-			InvokeServer(Events[3],_G.EGG,HatchType);
-		end;
+		if(_G.FARM_EGGS)then checkHatch(InvokeServer(Events[3],_G.EGG,HatchType))end;
 	end);
 
 	local DungeonHandler,NewTime = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
@@ -576,7 +584,7 @@ local function GetMobs(Mobs)
 
 	if _G.FARM_TARGET then
 		for _,Mob in ipairs(TempMobs)do
-			if(Mob.Name==_G.TARGET and Mob.PrimaryPart~=nil)then
+			if(Mob.PrimaryPart~=nil and Mob.Name==_G.TARGET)then
 				Mobs[Mob] = Mob.Humanoid;
 			end;
 		end;
@@ -630,13 +638,4 @@ end);
 -- Anti AFK
 for _,v in ipairs(getconnections(LocalPlayer.Idled))do
 	v:Disable();
-end;
-
-do
-    local ErrorMessage = Enum.MessageType.MessageError;
-    game:GetService("LogService").MessageOut:Connect(function(msg,msg_type)
-        if(msg_type==ErrorMessage and msg=="not enough memory")then
-            game:GetService("TeleportService"):Teleport(game.PlaceId);
-        end;
-    end);
 end;
