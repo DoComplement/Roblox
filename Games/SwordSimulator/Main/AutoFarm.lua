@@ -216,38 +216,36 @@ Folders[3].MessagesUI.Frame.ChildAdded:Connect(function(Label)
         if(_G.IGNORE_ITEM_MESSAGES and wait())then 
 			Label.Visible = false;
 		end;
-        if(_G.PRINT_WEAPON_DATA)then
-            local WeaponName = Label.ViewportFrame:FindFirstChildOfClass("Model").Name;
-            if(Modules[3][WeaponName].Rarity=="Mythical")then 
-                print("Obtained Mythical",WeaponName);
-            end;
+        if(_G.PRINT_WEAPON_DATA and Modules[3][Label.ViewportFrame:FindFirstChildOfClass("Model").Name].Rarity=="Mythical")then 
+			print(Label.Text);
         end;
     elseif(_G.PRINT_DUNGEON_DATA and Label.Name=="TextLabel"and ElementInventory[Label.Text:match("Obtained (.+) Aura")]~=nil)then 
 		print(Label.Text);
 	end;
 end);
 
-local function GetMinValueIndex(Values, Min, Index)
-	for Count,Value in ipairs(Values)do
-		if(Value~=-1 and Value<Min)then
-			Index,Min = Count,Value;
+local function GetMinValueIndex(vals, min, idx)
+	for cnt,val in ipairs(vals)do
+		if(val~=-1 and val<Min)then
+			idx,min = cnt,val;
 		end;
 	end;
-	return Index;
+	return idx;
 end;
 
 -- EquipBest Modules 
-local function SortItems(Items, Values, Power, ID, Index)
-	for Iter=1,Index do
-		if(Values[Iter]~=-1 and(Power==-1 or Values[Iter]<Power))then
-			if(Values[Index]~=-1 and(Power==-1 or Values[Index]<Values[Iter]))then 
-				Values[Index],Items[Index] = Values[Iter],Items[Iter];
+local function SortItems(items, vals, pow, id, idx)
+	for iter = 1,idx do
+		if(vals[iter]==-1)then continue;
+		elseif(pow==-1 or vals[iter]<pow)then
+			if(pow==-1 or vals[idx]<vals[iter])then 
+				vals[idx],items[idx] = vals[iter],items[iter];
 			end;
-			Values[Iter],Items[Iter] = Power,ID;
-			return(GetMinValueIndex(Values,Values[Index],Index));
+			vals[iter],items[iter] = pow,id;
+			return(GetMinValueIndex(vals,vals[idx],idx));
 		end;
 	end;
-	return(Index);
+	return idx;
 end;
 
 -- Current Events = {
@@ -257,17 +255,16 @@ end;
 -- }
 local function GetItemPower(ID, Item, Data, Calculator, Event)
 	if(Data.Vanity~=nil)then
-		if(IgnoreVanity)then return(nil)end;
+		if(IgnoreVanity or Data.Vanity.Boost<1)then return(nil)end;
 		return -1;
-	else 
-		local Tags = Data["Tags"];
-		if(Event~=nil and(Tags==nil or Tags[1]~=Event))then return end;
-			
-		-- calculates relative power of item read (Temp is invalid for Pet Category, Power is invalid for Weapon Category)
-		local Power,Temp = Calculator(ID,Item);
-		if(Temp>0)then return(Temp)end;
-		return(Power);
 	end;
+	
+	if(Event~=nil and(not Data.Tags or Data.Tags[1]~=Event))then return(nil)end;
+
+	-- calculates relative power of item read (Temp is invalid for Pet Category, Power is invalid for Weapon Category)
+	local Power,Temp = Calculator(ID,Item);
+	if(Temp>0)then return(Temp)end;
+	return(Power);
 end;
 
 -- simplify the function by removing IgnoreVanity (will remove the -1 powers from the sort)
