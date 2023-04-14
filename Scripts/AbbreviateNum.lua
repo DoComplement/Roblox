@@ -32,7 +32,7 @@ end;
 
 -- includes resolution option (factor of 10)
 local function abbFastRes(num,res,idx)
-	if(not res or res<=0)then res = 10 end;
+	if(type(res)~="number" or res<=0)then res = 10 end;
 	idx = consts[1 + floor(log10(num)/3)];
 	if(not idx)then return(num)end;
 	return (floor(num*idx[1]*res)/res)..idx[2];
