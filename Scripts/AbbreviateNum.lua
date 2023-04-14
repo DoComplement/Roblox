@@ -19,22 +19,23 @@ local consts = {
 local floor,log10 = math.floor,math.log10;
 local function unsigAbbFast(num,idx)
 	idx = consts[1 + floor(log10(num)/3)];
-	if(idx~=nil)then return((floor(num*idx[1]*10)/10)..idx[2])end;
-	return(num);
+	if(not idx)then return(num)end;
+	return(floor(num*idx[1]*10)/10)..idx[2];
 end;
 
 local abs = math.abs;
 local function sigAbbFast(num)
 	idx = consts[1 + floor(log10(abs(num))/3)];
-	if(idx~=nil)then return((floor(num*idx[1]*10)/10)..idx[2])end;
-	return(num);
+	if(not idx)then return(num)end;
+	return(floor(num*idx[1]*10)/10)..idx[2];
 end;
 
 -- includes resolution option (factor of 10)
-local function abbFastRes(num,res)
+local function abbFastRes(num,res,idx)
+	if(not res or res<=0)then res = 10 end;
 	idx = consts[1 + floor(log10(num)/3)];
-	if(idx~=nil)then return((floor(num*idx[1]*res)/res)..idx[2])end;
-	return(num);
+	if(not idx)then return(num)end;
+	return (floor(num*idx[1]*res)/res)..idx[2];
 end;
 
 
