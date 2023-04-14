@@ -42,6 +42,7 @@ rootPart.CanQuery = false;
 getgenv.TASK = ({
 	[ [==[ UserId ]==] ] = "Autumn Zone Boss"; -- temp
 	[ [==[ alt UserId ]==] ] = ...;
+	...
 })[LocalPlayer.UserId];
 
 local function Teleport()
@@ -78,7 +79,6 @@ if(not TASK:match("Egg"))then
 else	
 	local EggEvent = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase;
 	local InvokeServer = EggEvent.InvokeServer;
-	local WeaponsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.WeaponsModule)
 	local DungeonHandler = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 	local Bvent = Instance.new("BindableEvent");
 	
@@ -94,12 +94,18 @@ else
 		end);
 	end;
 	
+	local WeaponsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.WeaponsModule);
+	local PetsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.Storage.PetsModule);
 	local function checkHatch(hatched)
 		if(not hatched)then return(nil)end;
 		local rarity = nil;
 		for _,dat in ipairs(hatched)do
-			if(dat[3])then continue end;
-			rarity = WeaponsModule[dat[1]].Rarity;
+			if(dat[3])then continue;
+			elseif(not dat[2].Weapon)then
+				rarity = PetsModule[dat[1]].Rarity;
+			else
+				rarity = WeaponsModule[dat[1]].Rarity;
+			end;
 			if(rarity=="Secret"or rarity=="Mythical")then
 				print("Hatched",rarity,dat[1]);
 			end;
