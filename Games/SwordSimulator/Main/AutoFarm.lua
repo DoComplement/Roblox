@@ -2,7 +2,7 @@ if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then retur
 getgenv()["QRfuSEK*VSAbxd;1ob*w"] = true;
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 
-if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%w+)]])=="MatchMade")then return end;	-- if game is not private
+if(not assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match("Specific_PrivateGame"))then return end;	-- if game is not private
 
 -- 1) De-nest the branching and looping into separate functions
 -- 2) consolidate the variables, functions, connections, threads, etc. into a arrays
