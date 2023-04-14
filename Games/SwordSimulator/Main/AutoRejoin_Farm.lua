@@ -19,7 +19,7 @@ task.defer(function()
 end);
 
 game.Loaded:Wait();
-if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match([[\"JoinType\":\"(%a+)]])=="Specific")then -- if game is private
+if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match("Specific_PrivateGame"))then -- if game is private
 	RECONNECT = RECONNECT:Disconnect();
 	return;
 end;
