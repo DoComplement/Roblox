@@ -547,8 +547,12 @@ do
 		if(not hatched)then return(nil)end;
 		local rarity = nil;
 		for _,dat in ipairs(hatched)do
-			if(dat[3]or not _G.PRINT_HATCH_DATA)then continue end;
-			rarity = Modules[3][dat[1]].Rarity;
+			if(dat[3]or not _G.PRINT_HATCH_DATA)then continue;
+			elseif(not dat[2].Weapon)then	-- if hatched item is a pet
+				rarity = Modules[2][dat[1]].Rarity;
+			else
+				rarity = Modules[3][dat[1]].Rarity;
+			end;
 			if(rarity=="Secret"or rarity=="Mythical")then
 				print("Hatched",rarity,dat[1]);
 			end;
