@@ -11,5 +11,5 @@ writefile("rbx_api.dat",game:HttpGetAsync(string.format("http://setup.roblox.com
 local Version = game:HttpGetAsync("http://setup.roblox.com/versionQTStudio");
 local Dump = "http://setup.roblox.com/%s-API-Dump.json";
 
-writefile("rbx_api.dat",game:HttpGet(string.format(Dump, Version)));
+writefile("rbx_api.dat",game:HttpGetAsync(string.format(Dump, Version)));
 ```
