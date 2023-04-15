@@ -1,16 +1,12 @@
-local api = game:GetService("HttpService"):JSONDecode(readfile("rbx_api.dat"));
-local find = table.find;
+local api = game:HttpGetAsync(string.format("http://setup.roblox.com/%s-API-Dump.json", game:HttpGetAsync("http://setup.roblox.com/versionQTStudio")));
 local functions,events = {},{};
-local f,e = 1,1;
 
 for _,mems in ipairs(api.Classes)do
     for _,dat in ipairs(mems.Members)do
-        if(dat.MemberType=="Function"and not find(functions,dat.Name))then
-            functions[f] = dat.Name;
-            f += 1;
-        elseif(dat.MemberType=="Event"and not find(events,dat.Name))then
-            events[e] = dat.Name;
-            e += 1;
+        if(dat.MemberType=="Function"and not table.find(functions,dat.Name))then
+            functions[#functions + 1] = dat.Name;
+        elseif(dat.MemberType=="Event"and not table.find(events,dat.Name))then
+            events[#events + 1] = dat.Name;
         end;
     end;
 end;
