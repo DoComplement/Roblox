@@ -1,26 +1,25 @@
-local function CreateInstance(ObjectType, Properties)
-	local Instance = CreateInstance(ObjectType);
-	for Attribute, Value in next, Properties do
-		Instance[Attribute] = Value;
+local function setVals(class, props, parent)
+	local inst = Instance.new(class);
+	for prop,val in next,props do
+		inst[prop] = val;
 	end;
-	return Instance;
+	inst.Parent = parent;
+	return inst;
 end)
 
-local ScreenGui = CreateInstance("ScreenGui", {
-	Parent = game:GetService("CoreGui"),
+local ScreenGui = setVals("ScreenGui",{
 	Name = "ColorPicker",
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-});
-local Frame = CreateInstance("Frame", {
-	Parent = ScreenGui,
+},game:GetService("CoreGui"));
+
+local Frame = setVals("Frame", {
 	BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 	Position = UDim2.new(0.0690362304, 0, 0.115960099, 0),
 	Size = UDim2.new(0, 241, 0, 105)
-});
+},game:GetService("CoreGui"));
 
-local Button = CreateInstance("TextButton", {
+local Button = setVals("TextButton", {
 	Name = "Button",
-	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 150),
 	BorderSizePixel = 0,
 	Position = UDim2.new(0.102102205, 0, 0.112744287, 0),
@@ -30,12 +29,9 @@ local Button = CreateInstance("TextButton", {
 	TextColor3 = Color3.fromRGB(255, 255, 255),
 	TextSize = 13.000,
 	TextWrapped = true,
-});
-CreateInstance("UICorner", {
-	CornerRadius = UDim.new(1, 0),
-	Parent = Button
-});
-local Keep = CreateInstance("TextButton", {
+},Frame);
+setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Button);
+local Keep = setVals("TextButton", {
 	Name = "Keep",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
@@ -49,13 +45,9 @@ local Keep = CreateInstance("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-CreateInstance("UICorner", {
-	CornerRadius = UDim.new(1, 0),
-	Parent = Keep
-});
-local Next = CreateInstance("TextButton", {
+setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Keep);
+local Next = setVals("TextButton", {
 	Name = "Next",
-	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
 	BorderSizePixel = 0,
 	Position = UDim2.new(0.523485422, 0, 0.540857196, 0),
@@ -66,21 +58,18 @@ local Next = CreateInstance("TextButton", {
 	TextColor3 = Color3.fromRGB(255, 255, 255),
 	TextSize = 13.000,
 	TextWrapped = true,
-});
-CreateInstance("UICorner", {
-	CornerRadius = UDim.new(1, 0),
-	Parent = Next
-});
+},Frame);
+setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Next);
 
 local Filename = "ColorPicks_"..tostring(math.random(1e+3, 1e+4))..".lua";
 writefile(Filename, "return {");
 
-local Changed,Index = CreateInstance("BindableEvent").Event,nil;
-local Colors = loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua"))();
+local Changed,Index = Instance.new("BindableEvent").Event,nil;
+local Colors = assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua")),"failed to get colors")();
 
 task.defer(function()
 	for idx,Color in ipairs(Colors) do
-		Index=idx;
+		Index = idx;
 		Button.BackgroundColor3 = Color;
 		Button.Text = BrickColor.new(Color).Name;
 		Changed:Wait();
@@ -94,9 +83,10 @@ c2 = Keep.MouseButton1Down:Connect(function()
 	appendfile(Filename, "\n\t["..Index.."] = Color3.new("..tostring(Button.BackgroundColor3)..");\t-- "..Button.Text));
 	Changed:Fire();
 end);
+
 ScreenGui.Destroying:Once(function()
 	appendfile(Filename, "\n};");
-	c1=c1:Disconnect();
-	c2=c2:Disconnect();
+	c1 = c1:Disconnect();
+	c2 = c2:Disconnect();
 end)
 
