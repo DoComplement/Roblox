@@ -90,12 +90,11 @@ local Main = {
 		[11] = true; -- IgnoreElemented Toggle
 	};
 	[9] = { -- String Constants
-		[1] = "Pets",
-		[2] = "Weapons",
-		[3] = "SwordSim AutoFuseData/AutoSave_"..game:GetService("Players").LocalPlayer.UserId..".lua";
+		[1] = "Pets";
+		[2] = "Weapons";
 	};
 	[10] = { -- Queue
-		[1] = false, -- Pet Signal Queue
+		[1] = false; -- Pet Signal Queue
 		[2] = false; -- Weapon Signal Queue
 		[3] = 0; -- Fuse Frame Count
 		[4] = 10; -- Element Enabled Count
@@ -367,8 +366,12 @@ Main[5][10] = function(Index, Frame)
 end;
 
 -- Save Data function
-Main[5][11] = function()
-	writefile(Main[9][3],"-- AutoSave Data, "..os.date().."\n\n"..t2s(SaveData));
+do
+	local header = "-- AutoSave Data, "..game:GetService("Players").LocalPlayer.Name.."\n-- ";
+	local fileName = "SwordSim AutoFuseData/AutoSave_"..game:GetService("Players").LocalPlayer.UserId..".lua";
+	Main[5][11] = function()
+		writefile(fileName,header..os.date().."\n\n"..t2s(SaveData,nil,true));
+	end;
 end;
 
 -- Check Toggles from Gem Signal
