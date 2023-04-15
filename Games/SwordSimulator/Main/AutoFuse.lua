@@ -496,7 +496,8 @@ end;
 
 -- Load Data function
 Main[5][20] = function()
-	if(not isfile(Main[9][3]))then
+	local fileName = "SwordSim AutoFuseData/AutoSave_"..game:GetService("Players").LocalPlayer.UserId..".lua";
+	if(not isfile(fileName))then
 		if(not isfolder("SwordSim AutoFuseData"))then
 			makefolder("SwordSim AutoFuseData");
 		end;
@@ -507,7 +508,7 @@ Main[5][20] = function()
 		return;
 	end;
 	
-	local Data = assert(loadstring(readfile(Main[9][3])),"Error, table expected from data fetch: workspace/"..Main[9][3])();
+	local Data = assert(loadstring(readfile(fileName)),"Error, table expected from data fetch: workspace/"..fileName)();
 	if(not Data["Toggles"]or not Data["Toggles"]["AutoLoad"])then return end; -- if AutoLoad is nil or disabled
 	
 	local Reference,Value = {
