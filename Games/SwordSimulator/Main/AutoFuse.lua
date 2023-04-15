@@ -12,8 +12,8 @@ local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.C
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
 
-local COLOR_PICKS = assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
-assert(loadstring(game:HttpGet("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua")), "Error loading TableToString")();
+local COLOR_PICKS = assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
+assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua")), "Error loading TableToString")();
 
 local UDIM_CORNER = UDim.new(1,0);
 local FONT = Enum.Font.GothamMedium;
