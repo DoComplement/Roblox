@@ -7,7 +7,7 @@ if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 -- Add a frame to IgnoreElementedFrame with buttons for each Element to toggle which Elements will be ignored
 
-local wait,lower,Connect = task.wait,string.lower,game.Changed.Connect;
+local wait,lower,Connect = task.wait,string.lower,game.Changed.Connect; -- a unique "Connect" function is created every time, but they server the same purpose
 local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]);
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
@@ -159,11 +159,8 @@ local function setVals(class, props, parent)
 end;
 
 local function createCorners(parents)
-	local inst = nil;
 	for _,parent in ipairs(parents)do
-		inst = Instance.new("UICorner");
-		inst.CornerRadius = UDIM_CORNER;
-		inst.Parent = parent;
+		Instance.new("UICorner",parent).CornerRadius = UDIM_CORNER;	-- should be fine
 	end;
 end;
 
@@ -656,10 +653,11 @@ Main[5][25] = function()
 	end;
 	
 	local Value = not Main[8][11];
+	SaveData["Toggles"]["IgnoreElemented"] = Value;
 	Instances.IgnoreElementedButton.BackgroundColor3 = Main[11][1][Value];
 	Main[8][11] = Value;
 	
-	if(Main[8][4])then Main[5][11](); end;
+	if(Main[8][4])then Main[5][11]()end;
 end;
 
 do	-- MakeTextChangedSignal Function
