@@ -9,15 +9,7 @@ if(not assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data
 -- 3) find the in-game functions (if existing) that correspond to remote calls (the functions will call the remotes, adding a bit of spoofing)
 -- 4) simplify the GatherBest function by removing the IgnoreVanity argument (and update the code that is influenced by this argument)
 
-
 local wait,getChildren = task.wait,game.GetChildren;
--- local CreateInstance = function(Class,Properties)
-    -- local Instance = Instance.new(Class);
-	-- for Property,Value in next,Properties do
-		-- Instance[Property] = Value;
-	-- end;
-	-- return Instance;
--- end;
 
 -- Reference Variables for Auto Daily Rewards
 local DailyRewards = {
@@ -74,12 +66,8 @@ end;
 -- local Signals = {}
 -- local Routines = {}
 
-local MobsTable,BossTable,Teleports = {},{},{};
-for Zone,Info in ipairs(Modules[5]) do 
-    Teleports[Zone] = CFrame.new(Info.ZoneSpawn);
-end; -- Teleport positions
-
-local ElementInventory = {}
+local MobsTable,BossTable,Teleports,ElementInventory = {},{},{},{};
+for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn)end; -- Teleport positions
 for _,Element in ipairs(getChildren(Folders[2].Elements))do ElementInventory[Element.Name] = 0 end;
 for _,Element in next,Modules[1].AuraInventory do ElementInventory[Element.Base] += 1 end;
 
