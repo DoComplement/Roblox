@@ -58,7 +58,7 @@ if(not TASK:match("Egg"))then
 	local FireServer = HitEvent.FireServer;
 	local Zone = Workspace.Mobs.ChildAdded:Wait();
 
-	local HitDetector = Instance.new("Part", Workspace);
+	local HitDetector = Instance.new("Part");
 	HitDetector.Name = "UnbreakableGobstoppa";
 	HitDetector.Shape = "Ball";
 	HitDetector.Size = Vector3.new(15, 15, 15);
@@ -66,6 +66,7 @@ if(not TASK:match("Egg"))then
 	HitDetector.CanCollide = false;
 	HitDetector.Anchored = false;
 	HitDetector.Locked = false;
+	HitDetector.Parent = Workspace;
 
 	HitDetector.Touched:Connect(function(Hit)
 		if(Hit.Name=="HumanoidRootPart"and Hit.Parent.Parent==Zone and Hit.Parent.Humanoid.Health>0)then
