@@ -7,19 +7,7 @@ if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 -- Add a frame to IgnoreElementedFrame with buttons for each Element to toggle which Elements will be ignored
 
-local function setVals(class, props, parent)
-	local inst = Instance.new(class);
-	for prop,val in next,props do
-		inst[prop] = val;
-	end;
-	inst.Parent = parent;
-	return inst;
-end;
-
 local wait,lower = task.wait,string.lower;
-local UserInputService = game:GetService("UserInputService");
-local DungeonHandler = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
-
 local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]);
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
@@ -161,6 +149,15 @@ BindableEvents.Second = Instance.new("BindableEvent");
 local InvokeServer = Main[6][1].InvokeServer;
 local Fire = BindableEvents.Second.Fire;
 
+local function setVals(class, props, parent)
+	local inst = Instance.new(class);
+	for prop,val in next,props do
+		inst[prop] = val;
+	end;
+	inst.Parent = parent;
+	return inst;
+end;
+
 local function createCorners(parents)
 	local inst = nil;
 	for _,parent in ipairs(parents)do
@@ -181,7 +178,7 @@ elseif(gethui~=nil)then
 	Instances.SettingsGui = setVals("ScreenGui",{Name="SettingsGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},parent);
 end;
 
-Instances.ItemFrame = setVals("Frame",{Parent=Instances.MainGui,Active=true,Selectable=true,Draggable=true,BackgroundColor3=COLORS[1],Position=UDim2.new(0.8,0,0.35,0),Size=UDim2.new(0,235,0,260),Visible=false},Instances.ItemFrame);
+Instances.ItemFrame = setVals("Frame",{Parent=Instances.MainGui,Active=true,Selectable=true,Draggable=true,BackgroundColor3=COLORS[1],Position=UDim2.new(0.8,0,0.35,0),Size=UDim2.new(0,235,0,260),Visible=false},Instances.MainGui);
 Instances.ItemScroller = setVals("ScrollingFrame",{Active=true,BackgroundColor3=COLORS[1],CanvasSize=UDIM2[22],AutomaticCanvasSize='Y',ScrollingDirection='Y',ScrollBarThickness=0,Position=UDim2.new(0.05,0,0.26,0),Size=UDim2.new(0,215,0,186),BottomImage="",MidImage="",TopImage=""},Instances.ItemFrame);
 local TextBox = setVals("TextBox",{BackgroundColor3=COLORS[1],Position=UDim2.new(0.05,0,0.1,0),Size=UDim2.new(0,215,0,30),Font=Enum.Font.SourceSans,Text="Search",TextColor3=COLORS[2],TextSize=14},Instances.ItemFrame);
 Instances.Info = setVals("ImageButton",{BackgroundTransparency=1,Position=UDim2.new(0.01,0,0,0),Size=UDIM2[17],ZIndex=2,Image="rbxassetid://3926305904",ImageColor3=COLORS[6],ImageRectOffset=Vector2.new(4,804),ImageRectSize=Vector2.new(36,36)},Instances.ItemFrame);
@@ -335,6 +332,7 @@ Main[5][6] = function(Frame1, Frame2, Button1, Button2)
 end;
 
 -- Toggle GUI Visible
+local UserInputService = game:GetService("UserInputService");
 Main[5][7] = function(Input)
 	if(Input.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
 		return;
@@ -781,6 +779,7 @@ table.insert(Main[4],BindableEvents.Second.Event:Connect(function()
 	if(Main[8][2])then Main[5][2]("Weapons",0)end; -- attempt to retrieve any antimatter weapons
 end));
 
+local DungeonHandler = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
 local Time = nil;Time = hookfunction(os.time, function()
 	if(BindableEvents~=nil and getcallingscript()==DungeonHandler)then 
 		Fire(BindableEvents.Second); -- called once every second
