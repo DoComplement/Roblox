@@ -7,7 +7,7 @@ if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 -- Add a frame to IgnoreElementedFrame with buttons for each Element to toggle which Elements will be ignored
 
-local wait,lower = task.wait,string.lower;
+local wait,lower,Connect = task.wait,string.lower,game.Changed.Connect;
 local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]);
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
 PlayerData = PlayerData.Replica.Data.Main;
@@ -451,7 +451,7 @@ end;
 
 -- DeallocateFrame function
 Main[5][17] = function(Signals, ItemButton)
-	for _,Connection in ipairs(Signals) do Connection:Disconnect() end;
+	for _,con in ipairs(Signals) do con:Disconnect()end;
 	SaveData["Items"][lower(ItemButton.Text)] = nil; -- set to nil before updating
 	ItemButton.Value.Value = true;
 	
@@ -473,28 +473,25 @@ Main[5][18] = function(ItemButton, Index, List)
 	Objects.Item = setVals("TextButton",{Name="Item",BackgroundColor3=COLOR_PICKS[math.random(153)],BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONT,Text=ItemButton.Text,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	Objects.Evolve = setVals("TextButton",{Name="Evolve",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[5],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Evolved",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	Objects.Omega = setVals("TextButton",{Name="Omega",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[6],Size=UDIM2[1],ZIndex=2,Font=FONT,Text="Omega",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
-	Objects.Antimatter=setVals("TextButton",{Name="Antimatter",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[7],Size=UDIM2[8],ZIndex=2,Font=FONT,Text="Antimatter",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
-	Objects.FuseQuantity=setVals("TextButton",{Name="FuseQuantity",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONT,Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true},Objects.ItemFrame);
+	Objects.Antimatter = setVals("TextButton",{Name="Antimatter",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[7],Size=UDIM2[8],ZIndex=2,Font=FONT,Text="Antimatter",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Objects.ItemFrame);
+	Objects.FuseQuantity = setVals("TextButton",{Name="FuseQuantity",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONT,Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true},Objects.ItemFrame);
 	createCorners({Objects.Item,Objects.Evolve,Objects.Omega,Objects.Antimatter,Objects.FuseQuantity});
 
 	local Signals = {
-		[1] = Objects.Evolve.MouseButton1Click:Connect(Main[5][15](Objects.Evolve, List[1], Index, 1));
-		[2] = Objects.Omega.MouseButton1Click:Connect(Main[5][15](Objects.Omega, List[2], Index, 2));
-		[3] = Objects.Antimatter.MouseButton1Click:Connect(Main[5][15](Objects.Antimatter, List[3], Index, 3));
-		[4] = Objects.FuseQuantity.MouseButton1Click:Connect(Main[5][16](Objects.FuseQuantity, Objects.Antimatter, List[3]));
-		[5] = Objects.Item.MouseButton1Click:Once(function() Objects.ItemFrame:Destroy() end);
+		[1] = Connect(Objects.Evolve.MouseButton1Click,Main[5][15](Objects.Evolve, List[1], Index, 1));
+		[2] = Connect(Objects.Omega.MouseButton1Click,Main[5][15](Objects.Omega, List[2], Index, 2));
+		[3] = Connect(Objects.Antimatter.MouseButton1Click,Main[5][15](Objects.Antimatter, List[3], Index, 3));
+		[4] = Connect(Objects.FuseQuantity.MouseButton1Click,Main[5][16](Objects.FuseQuantity, Objects.Antimatter, List[3]));
+		[5] = Objects.Item.MouseButton1Click:Once(function()Objects.ItemFrame:Destroy()end);
 	};
-	Objects.ItemFrame.Destroying:Once(function() Main[3][Index][ItemButton.Text] = Main[5][17](Signals, ItemButton) end);
+	Objects.ItemFrame.Destroying:Once(function()Main[3][Index][ItemButton.Text] = Main[5][17](Signals, ItemButton)end);
 end
 
 -- RemoveAll function
 Main[5][19] = function()
-	local Order = Instances.FuseScroller.UIListLayout;
-	Order.Parent = nil;
 	for _,Frame in ipairs(Instances.FuseScroller:GetChildren())do
 		Frame:Destroy();
 	end;
-	Order.Parent = Instances.FuseScroller;
 end;
 
 -- Load Data function
@@ -511,7 +508,7 @@ Main[5][20] = function()
 	end;
 	
 	local Data = assert(loadstring(readfile(Main[9][3])),"Error, table expected from data fetch: workspace/"..Main[9][3])();
-	if(not(Data["Toggles"]or Data["Toggles"]["AutoLoad"]))then return end; -- if AutoLoad is nil or disabled
+	if(not Data["Toggles"]or not Data["Toggles"]["AutoLoad"])then return end; -- if AutoLoad is nil or disabled
 	
 	local Reference,Value = {
 		["AutoLoad"] = 3;
@@ -566,9 +563,9 @@ Main[5][20] = function()
 		end;
 		
 		BoolToggles = {
-			[1] = (type(Info[1][1])=="boolean" and Info[1][1]); 
-			[2] = (type(Info[1][2])=="boolean" and Info[1][2]); 
-			[3] = (type(Info[1][3])=="boolean" and Info[1][3]);
+			[1] = (type(Info[1][1])=="boolean"and Info[1][1]); 
+			[2] = (type(Info[1][2])=="boolean"and Info[1][2]); 
+			[3] = (type(Info[1][3])=="boolean"and Info[1][3]);
 		};
 		
 		-- Make Button in Fuse Frame (will save if enabled)
@@ -668,7 +665,7 @@ end;
 do	-- MakeTextChangedSignal Function
 	local match = string.match;
 	Main[5][26] = function(ItemButton)
-		return TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+		return Connect(TextBox:GetPropertyChangedSignal("Text"),function()
 			
 			if(TextBox.Text=="Search" or TextBox.Text=="")then
 				ItemButton.Visible = ItemButton.Value.Value;
@@ -721,52 +718,52 @@ end;
 Main[5][28] = function(Name, Index)
     local ItemButton = setVals("TextButton",{Name=lower(Name),BackgroundColor3=COLORS[5],BorderSizePixel=0,Size=UDIM2[4],AutomaticSize='X',ZIndex=2,Font=FONT,Text=Name,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.ItemScroller);
 	Instance.new("UICorner", ItemButton); 
-	table.insert(Main[4], setVals("BoolValue",{Name="Value",Value=true},ItemButton):GetPropertyChangedSignal("Value"):Connect(function()ItemButton.Visible = ItemButton.Value.Value end));
+	table.insert(Main[4], Connect(setVals("BoolValue",{Name="Value",Value=true},ItemButton):GetPropertyChangedSignal("Value"),function()ItemButton.Visible = ItemButton.Value.Value end));
     table.insert(Main[4], Main[5][26](ItemButton));
 	
 	BindableEvents[ItemButton.Name] = Instance.new("BindableEvent");
-	table.insert(Main[4], BindableEvents[ItemButton.Name].Event:Connect(Main[5][27](ItemButton, Index)));
-	table.insert(Main[4], ItemButton.MouseButton1Click:Connect(function()Fire(BindableEvents[ItemButton.Name],8,false,false,false)end));
+	table.insert(Main[4], Connect(BindableEvents[ItemButton.Name].Event,Main[5][27](ItemButton, Index)));
+	table.insert(Main[4], Connect(ItemButton.MouseButton1Click,function()Fire(BindableEvents[ItemButton.Name],8,false,false,false)end));
 end;
 
 -- Make ItemButtons for each Pet and Weapon
 for _,Pet 	 in ipairs(game:GetService("ReplicatedStorage").Storage.Pets:GetChildren())   do Main[5][28](Pet.Name,	1)end;
 for _,Weapon in ipairs(game:GetService("ReplicatedStorage").Storage.Weapons:GetChildren())do Main[5][28](Weapon.Name, 2)end;
 
-table.insert(Main[4], TextBox.FocusLost:Connect(Main[5][8]));	-- Called when the Focus of the TextBox is lost
-table.insert(Main[4], UserInputService.InputBegan:Connect(Main[5][7]));	-- Called when any Roblox Input Module Device is Interacted with
+table.insert(Main[4], Connect(TextBox.FocusLost,Main[5][8]));	-- Called when the Focus of the TextBox is lost
+table.insert(Main[4], Connect(UserInputService.InputBegan,Main[5][7]));	-- Called when any Roblox Input Module Device is Interacted with
 
-table.insert(Main[4], Instances.Pets.MouseButton1Click:Connect(Main[5][9](1))); -- Called when Pets button is pressed
-table.insert(Main[4], Instances.Weapons.MouseButton1Click:Connect(Main[5][9](2))); -- Called when Weapons button is pressed
-table.insert(Main[4], Instances.All.MouseButton1Click:Connect(Main[5][19]));	-- Called when All button is pressed
+table.insert(Main[4], Connect(Instances.Pets.MouseButton1Click,Main[5][9](1))); -- Called when Pets button is pressed
+table.insert(Main[4], Connect(Instances.Weapons.MouseButton1Click,Main[5][9](2))); -- Called when Weapons button is pressed
+table.insert(Main[4], Connect(Instances.All.MouseButton1Click,Main[5][19]));	-- Called when All button is pressed
 
-table.insert(Main[4], Instances.Info.MouseButton1Click:Connect(function()Instances.SettingsMain.Visible = not Instances.SettingsMain.Visible end));	-- Called when Info button is pressed
-table.insert(Main[4], game:GetService("Players").LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount:GetPropertyChangedSignal("Text"):Connect(Main[5][14]));	-- Called when gems have been changed
+table.insert(Main[4], Connect(Instances.Info.MouseButton1Click,function()Instances.SettingsMain.Visible = not Instances.SettingsMain.Visible end));	-- Called when Info button is pressed
+table.insert(Main[4], Connect(game:GetService("Players").LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount:GetPropertyChangedSignal("Text"),Main[5][14]));	-- Called when gems have been changed
 
-table.insert(Main[4], Instances.Settings.MouseButton1Click:Connect(Main[5][6](Instances.SettingsFrame, Instances.InformationFrame, Instances.Settings, Instances.Information))); -- Called when Setting button is pressed
-table.insert(Main[4], Instances.Information.MouseButton1Click:Connect(Main[5][6](Instances.InformationFrame, Instances.SettingsFrame, Instances.Information, Instances.Settings))); -- Called when Information button is pressed
+table.insert(Main[4], Connect(Instances.Settings.MouseButton1Click,Main[5][6](Instances.SettingsFrame, Instances.InformationFrame, Instances.Settings, Instances.Information))); -- Called when Setting button is pressed
+table.insert(Main[4], Connect(Instances.Information.MouseButton1Click,Main[5][6](Instances.InformationFrame, Instances.SettingsFrame, Instances.Information, Instances.Settings))); -- Called when Information button is pressed
 
-table.insert(Main[4], Main[7][1].Amount:GetPropertyChangedSignal("Text"):Connect(Main[5][23](1)));	-- Called when a new pet has been obtained
-table.insert(Main[4], Main[7][2].Amount:GetPropertyChangedSignal("Text"):Connect(Main[5][23](2)));	-- Called when a new weapon has been obtained
+table.insert(Main[4], Connect(Main[7][1].Amount:GetPropertyChangedSignal("Text"),Main[5][23](1)));	-- Called when a new pet has been obtained
+table.insert(Main[4], Connect(Main[7][2].Amount:GetPropertyChangedSignal("Text"),Main[5][23](2)));	-- Called when a new weapon has been obtained
 
-table.insert(Main[4], Instances.ItemFrame:GetPropertyChangedSignal("Visible"):Connect(Main[5][10](1, Instances.ItemFrame))); -- Called when ItemFrame visibility has changed
-table.insert(Main[4], Instances.FuseFrame:GetPropertyChangedSignal("Visible"):Connect(Main[5][10](2, Instances.FuseFrame))); -- Called when FuseFrame visibility has changed
+table.insert(Main[4], Connect(Instances.ItemFrame:GetPropertyChangedSignal("Visible"),Main[5][10](1, Instances.ItemFrame))); -- Called when ItemFrame visibility has changed
+table.insert(Main[4], Connect(Instances.FuseFrame:GetPropertyChangedSignal("Visible"),Main[5][10](2, Instances.FuseFrame))); -- Called when FuseFrame visibility has changed
 
-table.insert(Main[4], Instances.ResetTextButton.MouseButton1Click:Connect(Main[5][21])); -- Called when ResetText button is clicked
-table.insert(Main[4], Instances.AutoLoadButton.MouseButton1Click:Connect(Main[5][22](3, "AutoLoad"))); -- Called when AutoLoad button is clicked
-table.insert(Main[4], Instances.AutoSaveButton.MouseButton1Click:Connect(Main[5][22](4, "AutoSave"))); -- Called when AutoSave button is clicked
-table.insert(Main[4], Instances.LoadFuseButton.MouseButton1Click:Connect(Main[5][22](8, "LoadFuse"))); -- Called when LoadFuse button is clicked
-table.insert(Main[4], Instances.GemsToggleButton.MouseButton1Click:Connect(Main[5][22](6, "GemsToggle"))); -- Called when Gems button is clicked
-table.insert(Main[4], Instances.PrintToggleButton.MouseButton1Click:Connect(Main[5][22](7, "PrintToggle"))); -- Called when Print button is clicked
-table.insert(Main[4], Instances.IgnoreEquippedButton.MouseButton1Click:Connect(Main[5][22](9, "IgnoreEquipped")));-- Called when IgnoreEquipped button is clicked
-table.insert(Main[4], Instances.IgnoreEnchantedButton.MouseButton1Click:Connect(Main[5][22](10, "IgnoreEnchanted"))); -- Called when IgnoreEnchanted button is clicked
-table.insert(Main[4], Instances.IgnoreElementedButton.MouseButton1Click:Connect(Main[5][25])); -- Called when IgnoreElemented button is clicked
+table.insert(Main[4], Connect(Instances.ResetTextButton.MouseButton1Click,Main[5][21])); -- Called when ResetText button is clicked
+table.insert(Main[4], Connect(Instances.AutoLoadButton.MouseButton1Click,Main[5][22](3, "AutoLoad"))); -- Called when AutoLoad button is clicked
+table.insert(Main[4], Connect(Instances.AutoSaveButton.MouseButton1Click,Main[5][22](4, "AutoSave"))); -- Called when AutoSave button is clicked
+table.insert(Main[4], Connect(Instances.LoadFuseButton.MouseButton1Click,Main[5][22](8, "LoadFuse"))); -- Called when LoadFuse button is clicked
+table.insert(Main[4], Connect(Instances.GemsToggleButton.MouseButton1Click,Main[5][22](6, "GemsToggle"))); -- Called when Gems button is clicked
+table.insert(Main[4], Connect(Instances.PrintToggleButton.MouseButton1Click,Main[5][22](7, "PrintToggle"))); -- Called when Print button is clicked
+table.insert(Main[4], Connect(Instances.IgnoreEquippedButton.MouseButton1Click,Main[5][22](9, "IgnoreEquipped")));-- Called when IgnoreEquipped button is clicked
+table.insert(Main[4], Connect(Instances.IgnoreEnchantedButton.MouseButton1Click,Main[5][22](10, "IgnoreEnchanted"))); -- Called when IgnoreEnchanted button is clicked
+table.insert(Main[4], Connect(Instances.IgnoreElementedButton.MouseButton1Click,Main[5][25])); -- Called when IgnoreElemented button is clicked
 
 do 
 	local Template = "rbxthumb://type=Asset&id=%i&w=150&h=150";
 	for Aura,Data in next,require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.Elements)do
 		Instances[Aura.."ToggleButton"] = setVals("ImageButton",{Name=Aura.."ToggleButton",BackgroundColor3=COLORS[1],BackgroundTransparency=0,BorderSizePixel=0,Size=UDIM2[11],Image=Template:format(Data.Image)},Instances.Elements);
-		table.insert(Main[4], Instances[Aura.."ToggleButton"].MouseButton1Click:Connect(Main[5][24](Aura, Instances[Aura.."ToggleButton"])));
+		table.insert(Main[4], Connect(Instances[Aura.."ToggleButton"].MouseButton1Click,Main[5][24](Aura, Instances[Aura.."ToggleButton"])));
 	end;
 end;
 
@@ -774,7 +771,7 @@ table.insert(Main[4],Instances.Close.MouseButton1Click:Once(function()Instances.
 
 -- Loop for checking if items are finished upgrading to Antimatter 
 -- Improvement: Check the antimatter frame to see if there are any weapons/pets in the collection frame
-table.insert(Main[4],BindableEvents.Second.Event:Connect(function()
+table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
 	if(Main[8][1])then Main[5][2]("Pets",0)end; -- attempt to retrieve any antimatter pets
 	if(Main[8][2])then Main[5][2]("Weapons",0)end; -- attempt to retrieve any antimatter weapons
 end));
