@@ -8,10 +8,11 @@ if(not game:IsLoaded())then game.Loaded:Wait()end;
 -- Add a frame to IgnoreElementedFrame with buttons for each Element to toggle which Elements will be ignored
 
 local function setVals(class, props, parent)
-	local inst = Instance.new(class, parent);
+	local inst = Instance.new(class);
 	for prop,val in next,props do
 		inst[prop] = val;
 	end;
+	inst.Parent = parent;
 	return inst;
 end;
 
@@ -161,8 +162,11 @@ local InvokeServer = Main[6][1].InvokeServer;
 local Fire = BindableEvents.Second.Fire;
 
 local function createCorners(parents)
+	local inst = nil;
 	for _,parent in ipairs(parents)do
-		Instance.new("UICorner",parent).CornerRadius = UDIM_CORNER;
+		inst = Instance.new("UICorner");
+		inst.CornerRadius = UDIM_CORNER;
+		inst.Parent = parent;
 	end;
 end;
 
