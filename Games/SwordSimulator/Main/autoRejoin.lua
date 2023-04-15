@@ -25,10 +25,11 @@ if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):m
 end;
 
 local TempCFrames = {	-- may change/add CFrames to what is desired
-	["Autumn Zone Boss"] = CFrame.new(3508.42798, 36.5313873, 12369.9121, -0.945489943, -9.52416528e-08, 0.325651348, -1.07699051e-07, 1, -2.02262811e-08, -0.325651348, -5.41960858e-08, -0.945489943);
-	["Autumn Egg 2"] = CFrame.new(3527.39844, 30.7223492, 12150.4932, -0.308820128, -9.9491011e-08, 0.951120436, -4.06626661e-08, 1, 9.14012119e-08, -0.951120436, -1.04485594e-08, -0.308820128);
-	["Event Egg"] = CFrame.new(74.7213516, 25.8495693, -106.706306, 0.286026955, -2.58336925e-08, 0.958221555, 9.23232193e-08, 1, -5.98229799e-10, -0.958221555, 8.86372078e-08, 0.286026955);
-	["Christmas Zone 2 Egg 2"] = CFrame.new(436.19455, 970.498596, -1271.03406, -0.564071655, 0, 0.82572329, 0, 1, 0, -0.82572329, 0, -0.564071655);
+	["Autumn Zone Boss"] = Vector3.new(3506.71142578125, 43.40776062011719, 12374.5322265625);
+	["Autumn Egg 2"] = Vector3.new(3518.75634765625, 33.770015716552734, 12153.056640625);
+	["Event Egg"] = Vector3.new(64.29299926757812, 30.878000259399414, -111.57599639892578);
+	["Christmas Zone 2 Egg 2"] = Vector3.new(436.1945495605469, 970.802490234375, -1271.0340576171875);
+	["Christmas Zone 1 Egg 2"] = Vector3.new(428.68499755859375, 970.635009765625, -1307.9110107421875);
 };
 
 local LocalPlayer = game:GetService("Players").LocalPlayer;
@@ -45,8 +46,18 @@ getgenv.TASK = ({
 	...
 })[LocalPlayer.UserId];
 
+
+local rand = math.random;
+local function randVec3()
+	if(rand()>0.5)then
+		if(rand()>0.5)then return Vector3.new(rand(2,6),0,rand(2,6))end;
+		return Vector3.new(rand(2,6),0,-rand(2,6));
+	elseif(rand()>0.5)then return Vector3.new(-rand(2,6),0,rand(2,6))end;
+	return -Vector3.new(rand(2,6),0,rand(2,6));
+end;
+
 local function Teleport()
-	rootPart.CFrame = TempCFrames[TASK];
+	rootPart.CFrame = CFrame.new(TempCFrames[TASK] + randVec3(), TempCFrames[TASK]);
 	rootPart.Anchored = true;
     task.wait(3);
     rootPart.Anchored = false;
