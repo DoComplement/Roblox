@@ -564,14 +564,14 @@ do
 		if(_G.FARM_EGGS)then checkHatch(InvokeServer(Events[3],_G.EGG,HatchType))end;
 	end);
 
-	local DungeonHandler,NewTime = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
-	NewTime = hookfunction(os.time, function() 
+	local DungeonHandler,time = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
+	time = hookfunction(os.time, newcclosure(function() 
 		if(getcallingscript()==DungeonHandler)then 
-			Fire(autoEgg); -- Egg Hatch
-			Fire(dungeonEar); -- Auto Dungeon
+			Fire(autoEgg); 			-- Egg Hatch
+			Fire(dungeonEar); 		-- Auto Dungeon
 		end;
-		return NewTime();
-	end);
+		return time();
+	end));
 end;
 
 local function CheckZone()
