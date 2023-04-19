@@ -1,6 +1,6 @@
+if(not game:IsLoaded())then game.Loaded:Wait()end;
 if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end;
 getgenv()["QRfuSEK*VSAbxd;1ob*w"] = true;
-if(not game:IsLoaded())then game.Loaded:Wait()end;
 
 do
 	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");	
