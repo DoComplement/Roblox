@@ -942,57 +942,54 @@ table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
 end));
 
 do	-- hooks
-	local DungeonHandler = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
-	local time = os.time;
-	
-	-- bindable event for checking whether the dungeon is ready
-	setreadonly(os,false);
-	os.time = newcclosure(function()
+	local DungeonHandler,time = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
+	time = hookfunction(os.time, newcclosure(function()
 		if(getcallingscript()==DungeonHandler)then 
 			Fire(BindableEvents.Second);			-- Called once every second
 		end;
 		return time();
-	end);
-	setreadonly(os,true);
+	end));
 	
 	-- scans for a new queue item
 	BindableEvents.QueueHook = Instance.new("BindableEvent");
 	table.insert(Main[4], Connect(BindableEvents.QueueHook.Event, function(cast) 
-		local uid,name,releaseDate = getNewQueueUid(cast);	-- will lilely nil-instantiate every call
-		while(not uid and wait())do							-- while a new item hasn't been found
+		local uid,name,releaseDate = getNewQueueUid(cast);		-- will lilely nil-instantiate every call
+		while(not uid and wait())do								-- while a new item hasn't been found
 			uid,name,releaseDate = getNewQueueUid(cast);	
 		end;
+		Main[12][cast] += 1;
 		newQueueItem(cast,uid,name,releaseDate);
 	end));
 	
-	local mt = getrawmetatable(game);
-	local namecall = mt.__namecall;		-- the metamethod is manually obtained to reset if the gui is closed mid-game
+	BindableEvents.ClaimHook = Instance.new("BindableEvent");
+	table.insert(Main[4], Connect(BindableEvents.ClaimHook.Event, function(cast,uid)
+		Main[12][cast] -= 1; 						-- Update respective queue quantity
+		Instances.QueueScroller[uid]:Destroy();		-- Destroy the frame representing the collected item
+	end));
 	
-	setreadonly(mt, false);
-	mt.__namecall = newcclosure(function(self,...)
-		if(getnamecallmethod()=="InvokeServer"and self==Main[6][2])then		-- if user manually fuses an omega-tier item
-			Fire(BindableEvents.QueueHook,(...));	-- Scans for the new queue item
+	local namecall = nil;
+	namecall = hookmetamethod(game, "__namecall", newcclosure(function(self,...)
+		if(getnamecallmethod()=="InvokeServer")then
+			if(self==Main[6][2])then					-- if user manually fuses an omega-tier item
+				Fire(BindableEvents.QueueHook,(...));	-- Scans for the new queue item
+			elseif(self==Main[6][3])then				-- (failsafe) if user manually collects an antimatter (will only occur if an error is present)
+				Fire(BindableEvents.ClaimHook,...);
+			end;
 		end;
-		return namecall(self,...);					-- Module script expects a response
-	end);
-	setreadonly(mt, true);
+		return namecall(self,...);						-- Module script expects a response
+	end));
 	
 	-- Deallocate Memory
 	Instances.MainGui.Destroying:Once(function()
-		setreadonly(mt, false);
-		mt.__namecall = namecall;	-- reset game.__namecall
-		setreadonly(mt, true);
-		
-		setreadonly(os, false);
-		os.time = time; 			-- reset os.time
-		setreadonly(os, true);
+		hookmetamethod(game, "__namecall", namecall);		-- reset game.__namecall
+		hookfunction(os.time, time);						-- reset os.time
 
 		if(Main[8][4])then 
 			Main[5][11]();
-			Main[8][4] = false; 	-- disable any future save attempts
+			Main[8][4] = false; 							-- disable any future save attempts
 		end;
 		
-		for _,con in ipairs(Main[4])do con:Disconnect()end;		-- disconnect ALL FuseGui Connections
+		for _,con in ipairs(Main[4])do con:Disconnect()end;			-- disconnect ALL FuseGui Connections
 		
 		Instances.FuseGui:Destroy();
 		Instances.SettingsGui:Destroy();
