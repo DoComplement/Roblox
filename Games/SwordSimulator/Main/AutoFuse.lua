@@ -324,8 +324,8 @@ end;
 
 -- Toggle GUI Visible
 local UserInputService = game:GetService("UserInputService");
-Main[5][7] = function(Input)
-	if(Input.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
+Main[5][7] = function(Input,isProc)
+	if(isProc or Input.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
 		return;
 	elseif(Input.KeyCode.Value==109)then
 		Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
