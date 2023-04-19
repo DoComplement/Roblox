@@ -137,10 +137,10 @@ else
 		checkHatch(InvokeServer(EggEvent, TASK, HatchType));
 	end);
 
-	local f = nil;f = hookfunction(os.time, function()
+	local time = nil;time = hookfunction(os.time, newcclosure(function()
 		if(getcallingscript()==DungeonHandler)then Bvent:Fire()end;
-		return f();
-	end);
+		return time();
+	end));
 end;
 
 -- onCharacterAdded event
