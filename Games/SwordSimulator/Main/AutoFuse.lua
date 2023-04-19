@@ -774,12 +774,12 @@ table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
 end));
 
 local DungeonHandler = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler;
-local Time = nil;Time = hookfunction(os.time, function()
+local Time = nil;Time = hookfunction(os.time, newcclosure(function()
 	if(BindableEvents~=nil and getcallingscript()==DungeonHandler)then 
 		Fire(BindableEvents.Second); -- called once every second
 	end;
 	return Time();
-end);
+end));
 
 -- Deallocate Memory
 Instances.MainGui.Destroying:Once(function()
