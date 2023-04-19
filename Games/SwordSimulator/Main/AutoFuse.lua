@@ -2,11 +2,6 @@ if(getgenv()["@Esz#O8k(9]1HBol~S8C"]~=nil or not table.find({7026949294,11127874
 getgenv()["@Esz#O8k(9]1HBol~S8C"] = true;
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 
--- Create an Antimatter Queue Frame with an AutoCollect toggle (to remove the Retrieve Queue function)
--- Look into a way of checking the queue via an in-game function, or a signal rather than having a thread that counts down until an item is ready to be grabbed
-
--- Add a frame to IgnoreElementedFrame with buttons for each Element to toggle which Elements will be ignored
-
 local wait,lower,Connect = task.wait,string.lower,game.Changed.Connect; -- a unique "Connect" function is created every time, but they server the same purpose
 local PlayerData = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]);
 if(not PlayerData.Replica.Data)then PlayerData.Loaded:Wait()end; -- wait until data is loaded
