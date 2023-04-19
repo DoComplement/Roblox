@@ -473,7 +473,7 @@ end;
 local UserInputService = game:GetService("UserInputService");
 Main[5][7] = function(key,isProc)
 	-- if a key is pressed while either the leftcontrol or rightcontrol is held down
-	if(not isProc or key.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
+	if(isProc or key.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
 		return;
 	elseif(key.KeyCode.Value==109)then										-- if M-key is pressed
 		Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
