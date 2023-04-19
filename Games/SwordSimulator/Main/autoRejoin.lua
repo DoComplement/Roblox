@@ -19,9 +19,15 @@ task.defer(function()
 end);
 
 game.Loaded:Wait();
-if(assert(game:HttpGetAsync("https://httpbin.org/get"),"error obtaining data"):match("Specific_PrivateGame"))then -- if game is private
-	RECONNECT = RECONNECT:Disconnect();
-	return;
+do
+	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");	
+	while(not succ and task.wait(8))do
+		succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
+	end;
+	if(val:match("Specific_PrivateGame")~=nil)then 	-- if game is private
+		RECONNECT = RECONNECT:Disconnect();
+		return;
+	end;
 end;
 
 local TempCFrames = {	-- may change/add CFrames to what is desired
