@@ -331,19 +331,6 @@ do
 	end;
 end;
 
--- Retrieve Queue: returns the Quantity of taken slots in the antimatter gui category 
-local function checkAntimatterQueue(cast)
-    for uid,item in next,plrData.QueuedItems[cast]do
-		if(item.ReleaseDate<=os.time())then
-			InvokeServer(Main[5][3],cast,uid);			-- Collect antimatter item
-			Main[11][cast] -= 1; 						-- Update respective queue quantity
-			Instances.QueueScroller[uid]:Destroy();		-- Destroy the frame representing the collected item
-			if(Main[7][12])then saveQueue()end;
-			if(Main[7][7])then print("Antimatter",item.ItemData.Base,"retrieved.")end;
-		end
-    end;
-end;
-
 task.defer(function()
 	if(plrData.Gamepasses["1296775568"])then return end;							-- do nothing if user has max crafting slots
 	local devProdIds = {1296775568,1296775418,1296775177,1296774844,1296774588};	-- DevProduct IDs for crafting slot tiers (in reverse-tier order)
@@ -444,7 +431,7 @@ local function runEnhanceCheck(items,cast,change,list)
 	end;
 	
 	for _,list in next,items do
-		data[1][2],data[2][2],data[3][2] = 0,0,0;													-- reset table tag quantities
+		list[1][2],list[2][2],list[3][2] = 0,0,0;													-- reset table tag quantities
 	end;
 	
 	if(cast=="Pets")then																			-- indicate which signal is active
@@ -466,30 +453,30 @@ local temptEnhanceCast = nil;
 do	-- Check Toggles from Gem Signal
 	local function checkToggles(idx)
 		for _,list in next,Main[3][idx]do
-			if(list[1][1]or list[1][2]or list[1][3])then return(true)end;				-- check if any toggles are active
+			if(list[1][1]or list[1][2]or list[1][3])then return(true)end;					-- check if any toggles are active
 		end;
 		return false;
 	end;
 
 	-- Calls enhance function if Gem Toggle and any Fuse Toggle is enabled
-	temptEnhanceCast = newcclosure(function(idx)
+	temptEnhanceCast = function(idx)
 		if(nil~=table.find(Main[1],true)and checkToggles(idx))then
 			Main[7][idx] = false;															-- indicate fusing is active
 			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];		-- Enhance Items function
 		end;
-	end);
+	end;
 end;
 
 
 do	-- Item Fuse Frame Connections
 	local function toggleFrameBtn(fuseBtn, list, idx, itm_idx)
 		local val = nil;																-- temp upvalue
-		return newcclosure(function()
+		return function()
 			val = not list[1];
 			
 			SaveData["Items"][lower(fuseBtn.Parent.Name)][1][itm_idx] = val; 			-- Update AutoSave Data
 			list[1],fuseBtn.BackgroundColor3 = val,Main[10][val]; 						-- Update respective Item List and Button Color
-			if(Main[7][4])then SAVE_DATA()end;						 				-- Update Save File
+			if(Main[7][4])then SAVE_DATA()end;						 					-- Update Save File
 			
 			if(not val)then return end;
 			if(not Main[7][idx])then													-- if fusing is already active
@@ -501,7 +488,7 @@ do	-- Item Fuse Frame Connections
 			Main[7][idx] = false; 														-- set inactive to false
 			Main[9][idx] = false; 														-- indicate no signal is in queue
 			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];		-- calling enhance items function
-		end);
+		end;
 	end;
 
 	local function updateFuseQnty(bulkBtn, anti, list)
@@ -830,10 +817,25 @@ end;
 Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end); 	-- Called when Close button is pressed
 
 -- Loop for checking if items are finished upgrading to Antimatter
-table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
-	if(Main[7][1])then checkAntimatterQueue("Pets")end; 		-- check antimatter pet queue
-	if(Main[7][2])then checkAntimatterQueue("Weapons")end; 	-- check antimatter weapon queue
-end));
+do
+	-- Retrieve Queue: returns the Quantity of taken slots in the antimatter gui category 
+	local function checkAntimatterQueue(cast)
+		for uid,item in next,plrData.QueuedItems[cast]do
+			if(item.ReleaseDate<=os.time())then
+				InvokeServer(Main[5][3],cast,uid);												-- Collect antimatter item
+				Main[11][cast] -= 1; 															-- Update respective queue quantity
+				Instances.QueueScroller[uid]:Destroy();											-- Destroy the frame representing the collected item
+				if(Main[7][12])then saveQueue()end;
+				if(Main[7][7])then print("Antimatter",item.ItemData.Base,"retrieved.")end;
+			end
+		end;
+	end;
+	
+	table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
+		if(Main[7][1])then checkAntimatterQueue("Pets")end; 									-- check antimatter pet queue
+		if(Main[7][2])then checkAntimatterQueue("Weapons")end; 									-- check antimatter weapon queue
+	end));
+end;
 
 do	-- hooks
 	local DungeonHandler,time = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
