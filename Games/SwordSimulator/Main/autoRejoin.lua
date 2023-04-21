@@ -1,10 +1,10 @@
 -- Place the AutoFuse.lua script and this script in the autoexec file of the executor
-if(game.PlaceId~=7026949294 or game:IsLoaded())then return end;
+if(game:IsLoaded())then return end;
 
 local RECONNECT = nil;
 -- reconnect when disconnected
 task.defer(function()
-	RECONNECT = game:WaitForChild("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
+	RECONNECT = game:GetService("CoreGui"):WaitForChild("RobloxPromptGui"):WaitForChild("promptOverlay").ChildAdded:Connect(function(UI)
 		task.wait(3);
 		UI = UI:FindFirstChild("ErrorTitle", true);
 		if(not UI or UI.Text~="Disconnected")then return end;
@@ -19,6 +19,7 @@ task.defer(function()
 end);
 
 game.Loaded:Wait();
+if(game.PlaceId~=7026949294)then return end;
 do
 	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");	
 	while(not succ and task.wait(8))do
@@ -101,7 +102,7 @@ else
 	local Bvent = Instance.new("BindableEvent");
 	
 	local HatchType = "Hatch3";
-	if(not game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId,40355989))then
+	if(not plrData.Gamepasses["40355989"])then
 		HatchType = "Hatch";
 		local GP_Purchased = nil;
 		GP_Purchased = game:GetService("MarketplaceService").PromptGamePassPurchaseFinished:Connect(function(player,gamePassId,wasPurchased)
