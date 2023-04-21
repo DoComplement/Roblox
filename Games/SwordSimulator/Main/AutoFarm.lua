@@ -100,9 +100,10 @@ do	-- pre/postload config stuff
 	if(not isfile(fileName))then
 		if(not isfolder("SwordSimData"))then makefolder("SwordSimData")end;
 		if(not isfolder("SwordSimData/Configs"))then makefolder("SwordSimData/Configs")end;
-		writefile(fileName, "{\"TARGET\":\"nil\",\"ZONE_TO_FARM\":\"nil\",\"EGG\":\"nil\",\"LOG_DUNGEON_DATA\":false,\"JOIN_DUNGEON\":false,\"LOG_WEAPON_DATA\":false,\"FARM_BOSS\":false,\"IGNORE_ITEM_MESSAGES\":false,\"INDEX_RANDOMLY\":false,\"LOG_HATCH_DATA\":false,\"FARM_DUNGEON\":false,\"FARM_TARGET\":false,\"ACTIVE\":false,\"ZONE_TO_FARM\":\"22\",\"FARM_MAX\":false,\"FARM_EGGS\":false,\"LOG_REWARDS_DATA\":false,\"TARGET\":\"AutumnPaladin\"}");
+		writefile(fileName, "{\"TARGET\":\"nil\",\"ZONE_TO_FARM\":\"nil\",\"EGG\":\"nil\",\"LOG_DUNGEON_DATA\":false,\"JOIN_DUNGEON\":false,\"LOG_WEAPON_DATA\":false,\"FARM_BOSS\":false,\"DISABLE_EGG_PROMPTS\":false,\"IGNORE_ITEM_MESSAGES\":false,\"INDEX_RANDOMLY\":false,\"LOG_HATCH_DATA\":false,\"FARM_DUNGEON\":false,\"FARM_TARGET\":false,\"ACTIVE\":false,\"ZONE_TO_FARM\":\"22\",\"FARM_MAX\":false,\"FARM_EGGS\":false,\"LOG_REWARDS_DATA\":false,\"TARGET\":\"AutumnPaladin\"}");
 		print("this is your first time using this script, here are the toggles you can modify (modify by setting _G[INDEX] = VALUE, from here forward: \n\n");
 		for idx,val in next,HttpService:JSONDecode(readfile(fileName))do print("_G."..idx,'=',val)end;
+		print("\_G.DISABLE_EGG_PROMPTS is special :). modify by _G.DISABLE_EGG_PROMPTS = BOOL_VALUE");
 		print("\ncall SAVE_DATA() at any time to save the toggles for the next time you use this script");
 	end;
 	
@@ -110,9 +111,15 @@ do	-- pre/postload config stuff
 		writefile(fileName, Encode(HttpService,_G));
 	end);
 	
+	_G.DISABLE_EGG_PROMPTS = Instance.new("StringValue");													-- doesn't transfer through json
 	_G.MAX_ZONE = Modules[1].CurrentZone;																	-- default
+	
 	for idx,val in next,HttpService:JSONDecode(readfile(fileName))do										-- load config
-		_G[idx] = val;
+		if(idx~="DISABLE_EGG_PROMPTS")then
+			_G[idx] = val;
+		else
+			_G[idx].Value = val;
+		end;
 	end;
 end;
 
@@ -155,6 +162,19 @@ if(game:GetService("ReplicatedStorage"):FindFirstChild("EventMobs",true)~=nil)th
 			end;
 		end;
     end;
+end;
+
+do	-- disable egg ui prompt popups
+	local function invisPrompt(prompt)
+		if(prompt~=nil)then
+			prompt.Frame.Visible = not _G.DISABLE_EGG_PROMPTS.Value;
+		end;
+	end;
+	Folders[3].EggOpeningPrompts.ChildAdded:Connect(invisPrompt);							-- on egg prompt popup
+	_G.DISABLE_EGG_PROMPTS.Changed:Connect(function()
+		invisPrompts(Folders[3].EggOpeningPrompts:FindFirstChild("Frame"));					-- call potential on changed
+	end);
+	invisPrompts(Folders[3].EggOpeningPrompts:FindFirstChild("Frame"));						-- initialize
 end;
 
 -- Signals to update "Boss" as the player enters a new area within the same zone (Devs overlap zones)
