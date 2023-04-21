@@ -4,7 +4,6 @@ getgenv()["@Esz#O8k(9]1HBol~S8C"] = true;
 
 local localUserId = game:GetService("Players").LocalPlayer.UserId;
 local localName	  = game:GetService("Players").LocalPlayer.Name;
-local fileName    = "SwordSimData/AutoFuseData/AutoSave_"..localUserId..".lua";
 
 local plrData,craftingSlots = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]),nil;
 if(not plrData.HasLoaded)then plrData.Loaded:Wait()end; 	-- wait until data is loaded
@@ -276,7 +275,7 @@ createCornerBtns(Instances,{"ToggleFrame","SaveQueueButton","All","Pets","Weapon
 
 
 
-local saveQueue,newQueueItem = nil,nil;
+local saveQueue,newQueueItem,SAVE_DATA = nil,nil,nil;
 do
 	-- function to format a time, of the format returned by os.time, into an extended date
 	local FRMT = "%s, %s %i, %02i:%02i:%02i, %02i/%02i/%04i";
@@ -288,7 +287,7 @@ do
 
 	do	-- save queue
 		local queueFile   = "SwordSimData/QueueData.json";
-		local legibleFile = "SwordSimData/QueueData.lua";
+		local legibleFile = "SwordSimData/QueueData_LEGIBLE.lua";
 		
 		if(not isfolder("SwordSimData"))then makefolder("SwordSimData")end;									-- check folder existense
 		if(not isfile(queueFile))then writefile(queueFile,"[]")end;											-- check json file existence
@@ -309,18 +308,23 @@ do
 		
 		local HttpService   = game:GetService("HttpService");
 		local Encode,Decode = HttpService.JSONEncode,HttpService.JSONDecode;
+		local fileName = "SwordSimData/AutoFuseData/AutoSave_"..localUserId..".json";						-- save data file directory
+		
+		SAVE_DATA = newcclosure(function()
+			writefile(fileName,Encode(HttpService,SaveData));					-- update autosave data
+		end);
 		
 		saveQueue = newcclosure(function()
-			local queue = Decode(HttpService,readfile(queueFile));					-- get data
-			queue[localName] = getQueue();											-- update local portion
-			writefile(queueFile, Encode(HttpService,queue));						-- write json
-			writefile(legibleFile, t2s(queue,nil,true));							-- write legible
+			local queue = Decode(HttpService,readfile(queueFile));											-- get data
+			queue[localName] = getQueue();																	-- update local portion
+			writefile(queueFile, Encode(HttpService,queue));												-- write json
+			writefile(legibleFile, t2s(queue,nil,true));													-- write "legible" format
 		end);
 	end;
 
 	do	-- newQueueItem
-		local fmt1,fmt2 = "&gt;   <u>%s</u>:   %s","     (%d/%d) - %s";					-- release date format, item type header format
-		local order = {Pets = 1,Weapons = 3};											-- item type LayoutOrder constants 
+		local fmt1,fmt2 = "&gt;   <u>%s</u>:   %s","     (%d/%d) - %s";										-- release date format, item type header format
+		local order = {Pets = 1,Weapons = 3};																-- item type LayoutOrder constants 
 		newQueueItem = newcclosure(function(cast,uid,name,releaseDate)
 			if(Main[7][12])then saveQueue()end;
 			
@@ -332,30 +336,28 @@ do
 end;
 
 task.defer(function()
-	if(plrData.Gamepasses["1296775568"])then return end;							-- do nothing if user has max crafting slots
-	local devProdIds = {1296775568,1296775418,1296775177,1296774844,1296774588};	-- DevProduct IDs for crafting slot tiers (in reverse-tier order)
-	for idx = 5,1,-1 do																-- Index in reverse for easy table.remove calls
-		if(not plrData.Gamepasses[tostring(devProdIds[idx])])then break end;		-- If plr doesn't own one tier, the rest are not owned
+	if(plrData.Gamepasses["1296775568"])then return end;										-- do nothing if user has max crafting slots
+	local devProdIds = {1296775568,1296775418,1296775177,1296774844,1296774588};				-- DevProduct IDs for crafting slot tiers (in reverse-tier order)
+	for idx = 5,1,-1 do																			-- Index in reverse for easy table.remove calls
+		if(not plrData.Gamepasses[tostring(devProdIds[idx])])then break end;					-- If plr doesn't own one tier, the rest are not owned
 		table.remove(devProdIds);
 	end;
 	
-	
-	-- players can still be gifted items
 	local con = nil;
 	con = game:GetService("MarketplaceService").PromptProductPurchaseFinished:Connect(function(userId, productId, isPurchased)
-		if(userId==localUserId and productId==devProdIds[#devProdIds]and isPurchased)then	-- if local user purchased more crafting slots
+		if(userId==localUserId and productId==devProdIds[#devProdIds]and isPurchased)then								-- if local user purchased more crafting slots
 			
-			table.remove(devProdIds);				-- remove productId from reference table for later disconnection
-			craftingSlots += 2;						-- increment local craftingSlots quantity
-			if(Main[7][12])then saveQueue()end;		-- save if toggled
+			table.remove(devProdIds);																					-- remove productId from reference table for later disconnection
+			craftingSlots += 2;																							-- increment local craftingSlots quantity
+			if(Main[7][12])then saveQueue()end;																			-- save if toggled
+				
+			Instances.PetsHeader.Text    = "     ("..Main[11]["Pets"]..'/'..craftingSlots..") - Pets";					-- update pets header
+			Instances.WeaponsHeader.Text = "     ("..Main[11]["Weapons"]..'/'..craftingSlots..") - Weapons";			-- update weapons header
 			
-			Instances.PetsHeader.Text    = "     ("..Main[11]["Pets"]..'/'..craftingSlots..") - Pets";			-- update pets header
-			Instances.WeaponsHeader.Text = "     ("..Main[11]["Weapons"]..'/'..craftingSlots..") - Weapons";	-- update weapons header
-			
-			if(#devProdIds==0)then con = con:Disconnect()end;	-- disconnect if there aren't 
-		end;
-	end);
-	table.insert(Main[4],con);	--	for disconnection if the gui is destroyed mid-game
+			if(#devProdIds==0)then con = con:Disconnect()end;															-- disconnect if the last (purchaseable) crafting slot tier was purchased
+		end;																											-- shame on the devs for making the price of the slots exponentially increase with each tier...
+	end);																												-- the last tier costs 39999 robux -_-
+	table.insert(Main[4],con);				--	for disconnection if the gui is destroyed mid-game		
 end);
 
 -- 
@@ -370,16 +372,16 @@ end));
 -- initialize antimatter queue frame (use same thread)
 for cast,data in next,plrData.QueuedItems do
 	for uid,item in next,data do
-		Main[11][cast] += 1												-- increment queue quantity
-		newQueueItem(cast,uid,item.ItemData.Base,item.ReleaseDate);		-- create a new queue frame
+		Main[11][cast] += 1													-- increment queue quantity
+		newQueueItem(cast,uid,item.ItemData.Base,item.ReleaseDate);			-- create a new queue frame
 	end;
 end;
 
 -- scans for a new queued item
 local function getNewQueueUid(cast)
 	for uid,item in next,plrData.QueuedItems[cast]do
-		if(not Instances.QueueScroller:FindFirstChild(uid))then		-- if item doesn't have a corresponding queue frame
-			return uid,item.ItemData.Base,item.ReleaseDate;			-- return data to create a new queue frame
+		if(not Instances.QueueScroller:FindFirstChild(uid))then				-- if item doesn't have a corresponding queue frame
+			return uid,item.ItemData.Base,item.ReleaseDate;					-- return data to create a new queue frame
 		end;
 	end;
 end;
@@ -441,19 +443,11 @@ local function runEnhanceCheck(items,cast,change,list)
 	end;
 end;
 
-local SAVE_DATA = nil;
-do	-- Save Data function
-	local header = "-- AutoSave Data, "..localName.."\n-- ";
-	SAVE_DATA = function()
-		writefile(fileName,header..os.date().."\n\n"..t2s(SaveData,nil,true));
-	end;
-end;
-
 local temptEnhanceCast = nil;
 do	-- Check Toggles from Gem Signal
 	local function checkToggles(idx)
 		for _,list in next,Main[3][idx]do
-			if(list[1][1]or list[1][2]or list[1][3])then return(true)end;					-- check if any toggles are active
+			if(list[1][1]or list[1][2]or list[1][3])then return(true)end;						-- check if any toggles are active
 		end;
 		return false;
 	end;
@@ -461,8 +455,8 @@ do	-- Check Toggles from Gem Signal
 	-- Calls enhance function if Gem Toggle and any Fuse Toggle is enabled
 	temptEnhanceCast = function(idx)
 		if(nil~=table.find(Main[1],true)and checkToggles(idx))then
-			Main[7][idx] = false;															-- indicate fusing is active
-			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];		-- Enhance Items function
+			Main[7][idx] = false;																-- indicate fusing is active
+			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];			-- Enhance Items function
 		end;
 	end;
 end;
@@ -470,63 +464,63 @@ end;
 
 do	-- Item Fuse Frame Connections
 	local function toggleFrameBtn(fuseBtn, list, idx, itm_idx)
-		local val = nil;																-- temp upvalue
+		local val = nil;																		-- temp upvalue
 		return function()
 			val = not list[1];
 			
-			SaveData["Items"][lower(fuseBtn.Parent.Name)][1][itm_idx] = val; 			-- Update AutoSave Data
-			list[1],fuseBtn.BackgroundColor3 = val,Main[10][val]; 						-- Update respective Item List and Button Color
-			if(Main[7][4])then SAVE_DATA()end;						 					-- Update Save File
+			SaveData["Items"][lower(fuseBtn.Parent.Name)][1][itm_idx] = val; 					-- Update AutoSave Data
+			list[1],fuseBtn.BackgroundColor3 = val,Main[10][val]; 								-- Update respective Item List and Button Color
+			if(Main[7][4])then SAVE_DATA()end;						 							-- Update Save File
 			
 			if(not val)then return end;
-			if(not Main[7][idx])then													-- if fusing is already active
-				if(Main[9][idx])then return end;										-- return if a signal is already in queue
-				Main[9][idx] = true;													-- indicate signal is in queue
-				while(not Main[7][idx])do wait()end; 									-- wait the active signal is finished
+			if(not Main[7][idx])then															-- if fusing is already active
+				if(Main[9][idx])then return end;												-- return if a signal is already in queue
+				Main[9][idx] = true;															-- indicate signal is in queue
+				while(not Main[7][idx])do wait()end; 											-- wait the active signal is finished
 			end;
 			
-			Main[7][idx] = false; 														-- set inactive to false
-			Main[9][idx] = false; 														-- indicate no signal is in queue
-			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];		-- calling enhance items function
+			Main[7][idx] = false; 																-- set inactive to false
+			Main[9][idx] = false; 																-- indicate no signal is in queue
+			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];			-- calling enhance items function
 		end;
 	end;
 
 	local function updateFuseQnty(bulkBtn, anti, list)
-		local data,bulk = nil,nil;									-- temp upvalues
+		local data,bulk = nil,nil;										-- temp upvalues
 		return function()
 			-- assign respective upvalues
-			data = SaveData["Items"][lower(anti.Parent.Name)];		-- reference data
-			bulk = (#list[3] - 1);									-- new item quantity
+			data = SaveData["Items"][lower(anti.Parent.Name)];			-- reference data
+			bulk = (#list[3] - 1);										-- new item quantity
 			
-			if(bulk==0)then 										-- if lower yield is reached
-				bulk = 8;											-- set to valid max
+			if(bulk==0)then 											-- if lower yield is reached
+				bulk = 8;												-- set to valid max
 				for idx = 1,8 do			
-					list[3][idx] = '';								-- update tags
+					list[3][idx] = '';									-- update tags
 				end;
 			else
-				list[3][bulk + 1] = nil;							-- remove last tag
+				list[3][bulk + 1] = nil;								-- remove last tag
 			end;
 			
-			list[1],data[1][3] = false,false;						-- disable fusing to avoid unintenional fusing
-			anti.BackgroundColor3 = COLORS[3]; 						-- set button color to red to indicate disabled fusing
+			list[1],data[1][3] = false,false;							-- disable fusing to avoid unintenional fusing
+			anti.BackgroundColor3 = COLORS[3]; 							-- set button color to red to indicate disabled fusing
 				
-			bulkBtn.Text,data[2] = bulk,bulk;						-- update tag quantity, antimatter fuse quantity
+			bulkBtn.Text,data[2] = bulk,bulk;							-- update tag quantity, antimatter fuse quantity
 			if(Main[7][4])then SAVE_DATA()end;
 		end;
 	end;
 
 
 	local function deallocateFrame(signals, itemBtn)
-		for _,con in ipairs(signals)do con:Disconnect()end;		-- disconnect button connections
-		SaveData["Items"][lower(itemBtn.Text)] = nil; 			-- remove item from SaveData
-		itemBtn.Value.Value = true;								-- itemBtn will now be visible in the search frame
+		for _,con in ipairs(signals)do con:Disconnect()end;				-- disconnect button connections
+		SaveData["Items"][lower(itemBtn.Text)] = nil; 					-- remove item from SaveData
+		itemBtn.Value.Value = true;										-- itemBtn will now be visible in the search frame
 		
 		-- update quantity of items in the fuse frame
-		if(Main[9][3]==1)then									-- if only 1 item existed in the frame...
+		if(Main[9][3]==1)then											-- if only 1 item existed in the frame...
 			Main[9][3] = 0;
-			Instances.FuseFrame.Visible = false;				-- set FuseFrame visibility to false
+			Instances.FuseFrame.Visible = false;						-- set FuseFrame visibility to false
 		else
-			Main[9][3] -= 1;									-- decrement quantity
+			Main[9][3] -= 1;											-- decrement quantity
 		end
 		
 		if(Main[7][4])then SAVE_DATA()end;
@@ -569,8 +563,8 @@ do	-- Item Fuse Frame Connections
 	
 	local function makeClickedSignal(itemBtn,idx)
 		return function(BULK,TOG1,TOG2,TOG3)
-			itemBtn.Value.Value = false;					-- itembtn will be invisible in the search frame
-			Instances.FuseFrame.Visible = true;				-- the fuse frame will be visible
+			itemBtn.Value.Value = false;							-- itembtn will be invisible in the search frame
+			Instances.FuseFrame.Visible = true;						-- the fuse frame will be visible
 			local item = {
 				-- reference item fuse data format
 				[1] = {
@@ -592,17 +586,17 @@ do	-- Item Fuse Frame Connections
 					[3] = table.create(BULK, '');
 				};
 			};
-			Main[3][idx][itemBtn.Text] = item; 				-- add item to main data
-			connectMakeFuseFrame(itemBtn, idx, item); 		-- create frame in FuseFrame
-			SaveData.Items[itemBtn.Name] = { 				-- add item to SaveData
+			Main[3][idx][itemBtn.Text] = item; 						-- add item to main data
+			connectMakeFuseFrame(itemBtn, idx, item); 				-- create frame in FuseFrame
+			SaveData.Items[itemBtn.Name] = { 						-- add item to SaveData
 				[1] = {
-					[1] = TOG1;								-- normal fusing toggle
-					[2] = TOG2;								-- evolved fusing toggle
-					[3] = TOG3;								-- omega fusing toggle
+					[1] = TOG1;										-- normal fusing toggle
+					[2] = TOG2;										-- evolved fusing toggle
+					[3] = TOG3;										-- omega fusing toggle
 				};
-				[2] = BULK;									-- antimatter fuse quantity
+				[2] = BULK;											-- antimatter fuse quantity
 			};
-			if(Main[7][4])then SAVE_DATA()end; 			-- Save if enabled
+			if(Main[7][4])then SAVE_DATA()end; 						-- Save if enabled
 		end;
 	end;
 
@@ -613,13 +607,13 @@ do	-- Item Fuse Frame Connections
 		table.insert(Main[4], Connect(setVals("BoolValue",{Name="Value",Value=true},itemBtn):GetPropertyChangedSignal("Value"),function()itemBtn.Visible = itemBtn.Value.Value end));			-- toggle visible connection
 		
 		local bindEvent = Instance.new("BindableEvent");
-		table.insert(Main[4], Connect(bindEvent.Event,makeClickedSignal(itemBtn,idx)));											-- add item to fuse frame
-		table.insert(Main[4], Connect(itemBtn.MouseButton1Click,function()Fire(bindEvent,8,false,false,false)end));				-- update SaveData with item content
-		BindableEvents[itemBtn.Name] = bindEvent;																				-- store event in global reference
+		table.insert(Main[4], Connect(bindEvent.Event,makeClickedSignal(itemBtn,idx)));												-- add item to fuse frame
+		table.insert(Main[4], Connect(itemBtn.MouseButton1Click,function()Fire(bindEvent,8,false,false,false)end));					-- update SaveData with item content
+		BindableEvents[itemBtn.Name] = bindEvent;																					-- store event in global reference
 	end;
 
-	for _,pet in ipairs(game:GetService("ReplicatedStorage").Storage.Pets:GetChildren())    do makeButton(pet.Name, 1)end;		-- make Pet item buttons
-	for _,wpn in ipairs(game:GetService("ReplicatedStorage").Storage.Weapons:GetChildren()) do makeButton(wpn.Name, 2)end;		-- make Weapon item buttons
+	for _,pet in ipairs(game:GetService("ReplicatedStorage").Storage.Pets:GetChildren())    do makeButton(pet.Name, 1)end;			-- make Pet item buttons
+	for _,wpn in ipairs(game:GetService("ReplicatedStorage").Storage.Weapons:GetChildren()) do makeButton(wpn.Name, 2)end;			-- make Weapon item buttons
 end;
 
 -- FocusLost function
@@ -637,9 +631,9 @@ do	-- Toggle ScreenUI(s) visibility
 	table.insert(Main[4], Connect(UserInputService.InputBegan,function(key,isProc)
 		if(isProc or key.UserInputType.Value~=8 or not(UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)or UserInputService:IsKeyDown(Enum.KeyCode.RightControl)))then 
 			return;
-		elseif(key.KeyCode.Value==109)then										-- if M-key is pressed
+		elseif(key.KeyCode.Value==109)then											-- if M-key is pressed
 			Instances.FuseFrame.Visible = not Instances.FuseFrame.Visible;
-		elseif(key.KeyCode.Value==103)then										-- if G-key is pressed
+		elseif(key.KeyCode.Value==103)then											-- if G-key is pressed
 			Instances.ItemFrame.Visible = not Instances.ItemFrame.Visible;
 			Instances.SettingsMain.Visible = false;
 		end;
@@ -668,8 +662,8 @@ do	-- General Remove Pets/Weapons function
 		end;
 	end;
 	
-	table.insert(Main[4], Connect(Instances.Pets.MouseButton1Click,		delCastItems(1))); 		-- Called when Pets button is pressed
-	table.insert(Main[4], Connect(Instances.Weapons.MouseButton1Click,	delCastItems(2)));		-- Called when Weapons button is pressed
+	table.insert(Main[4], Connect(Instances.Pets.MouseButton1Click,		delCastItems(1))); 			-- Called when Pets button is pressed
+	table.insert(Main[4], Connect(Instances.Weapons.MouseButton1Click,	delCastItems(2)));			-- Called when Weapons button is pressed
 end;
 
 -- RemoveAll function, called when Instances.All is pressed
@@ -679,17 +673,18 @@ table.insert(Main[4], Connect(Instances.All.MouseButton1Click,function()
 	end;
 end));
 
-table.insert(Main[4], Connect(Instances.Info.MouseButton1Click,function()Instances.SettingsMain.Visible = not Instances.SettingsMain.Visible end));					-- Called when Info button is pressed
+-- Called when Info button is pressed
+table.insert(Main[4], Connect(Instances.Info.MouseButton1Click,function()Instances.SettingsMain.Visible = not Instances.SettingsMain.Visible end));
 
 -- updates gem toggles and calls pets/weapon checks if either are inactive when gems are obtained
 -- the significance of this function is to call the enhance item function if enough gems have been obtained 
 table.insert(Main[4], Connect(game:GetService("Players").LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount:GetPropertyChangedSignal("Text"),function()
-	Main[1][1] = (plrData.Gems>=10000);					-- toggle for normal fusing
-	Main[1][2] = (plrData.Gems>=200000);				-- toggle for enhance fusing
+	Main[1][1] = (plrData.Gems>=10000);									-- toggle for normal fusing
+	Main[1][2] = (plrData.Gems>=200000);								-- toggle for enhance fusing
 
-	if(Main[7][6])then 									-- checks Gems Toggle
-		if(Main[7][1])then temptEnhanceCast(1)end;		-- if Pets toggle is inactive, check Pets
-		if(Main[7][2])then temptEnhanceCast(2)end;		-- if Weapons toggle is inactive, check Weapons
+	if(Main[7][6])then 													-- checks Gems Toggle
+		if(Main[7][1])then temptEnhanceCast(1)end;						-- if Pets toggle is inactive, check Pets
+		if(Main[7][2])then temptEnhanceCast(2)end;						-- if Weapons toggle is inactive, check Weapons
 	end;
 end));
 
@@ -708,23 +703,24 @@ do
 		end;
 	end;
 	
-	table.insert(Main[4], Connect(Instances.Settings.MouseButton1Click,		setVisToggles(Instances.SettingsFrame, 	  Instances.InformationFrame, Instances.Settings,    Instances.Information))); 		-- Called when Setting button is pressed
-	table.insert(Main[4], Connect(Instances.Information.MouseButton1Click,	setVisToggles(Instances.InformationFrame, Instances.SettingsFrame,    Instances.Information, Instances.Settings))); 		-- Called when Information button is pressed
+	-- InformationFrame and SettingsFrame toggles
+	table.insert(Main[4], Connect(Instances.Settings.MouseButton1Click,		setVisToggles(Instances.SettingsFrame, 	  Instances.InformationFrame, Instances.Settings,    Instances.Information)));
+	table.insert(Main[4], Connect(Instances.Information.MouseButton1Click,	setVisToggles(Instances.InformationFrame, Instances.SettingsFrame,    Instances.Information, Instances.Settings)));
 end;
 
 do	-- General Check Pets/Weapons function for Fusing
 	-- a valid egg hatch will return data from the remote call, so pet fusing could be linked there (but eh, this works fine)
 	local function checkCastFuse(idx)
 		return function()
-			if(not(Main[6][idx].Visible and Main[7][idx]))then return end;					-- if Notification was cleared or Enhancement is active
+			if(not(Main[6][idx].Visible and Main[7][idx]))then return end;						-- if Notification was cleared or Enhancement is active
 			
-			local Amount = Main[6][idx].Amount.Text;										-- reference
-			wait(); 																		-- allow time for text to POTENTIALLY change
+			local Amount = Main[6][idx].Amount.Text;											-- reference
+			wait(); 																			-- allow time for text to POTENTIALLY change
 			
-			if(Main[6][idx].Amount.Text~=Amount)then return end;							-- if enhancing is inactive and text is unchanged			
+			if(Main[6][idx].Amount.Text~=Amount)then return end;								-- if enhancing is inactive and text is unchanged			
 			
-			Main[7][idx] = false; 															-- indicate fusing is active (inactive = false)
-			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx]; 		-- repeat until inactive = true
+			Main[7][idx] = false; 																-- indicate fusing is active (inactive = false)
+			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx]; 			-- repeat until inactive = true
 		end;
 	end;
 
@@ -773,22 +769,22 @@ end;
 
 -- Toggle IgnoreElemented Button
 table.insert(Main[4], Connect(Instances.IgnoreElementedButton.MouseButton1Click,function()
-	if(Main[9][4]==0)then return end;										-- do nothing if zero elements are being ignored, 	
-	local val = not Main[7][11];											-- reference toggle value
-	SaveData.Toggles.IgnoreElemented = val;									-- assign savedata
-	Instances.IgnoreElementedButton.BackgroundColor3 = Main[10][val];		-- update toggle button color
-	Main[7][11] = val;														-- update main data toggle value
+	if(Main[9][4]==0)then return end;											-- do nothing if zero elements are being ignored, 	
+	local val = not Main[7][11];												-- reference toggle value
+	SaveData.Toggles.IgnoreElemented = val;										-- assign savedata
+	Instances.IgnoreElementedButton.BackgroundColor3 = Main[10][val];			-- update toggle button color
+	Main[7][11] = val;															-- update main data toggle value
 	
-	if(Main[7][4])then SAVE_DATA()end;									-- save, if enabled
+	if(Main[7][4])then SAVE_DATA()end;											-- save, if enabled
 end));
 
 do 	-- Connections for Ignore-Element-Toggles
 	local function toggleAuraBtn(AURA, BTN)
 		return function()
-			if(BTN.ImageTransparency==0.5)then			-- if toggle is disabled
-				SaveData.Elements[AURA] = true			-- enable toggle data value
-				BTN.ImageTransparency = 0;				-- indicate toggle is enabled
-				Main[9][4] += 1;						-- increment ignored elements count
+			if(BTN.ImageTransparency==0.5)then									-- if toggle is disabled
+				SaveData.Elements[AURA] = true									-- enable toggle data value
+				BTN.ImageTransparency = 0;										-- indicate toggle is enabled
+				Main[9][4] += 1;												-- increment ignored elements count
 			else
 				SaveData.Elements[AURA] = false
 				BTN.ImageTransparency = 0.5;
@@ -814,7 +810,7 @@ do 	-- Connections for Ignore-Element-Toggles
 	end;
 end;
 
-Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end); 	-- Called when Close button is pressed
+Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end); 				-- Called when Close button is pressed
 
 -- Loop for checking if items are finished upgrading to Antimatter
 do
@@ -841,7 +837,7 @@ do	-- hooks
 	local DungeonHandler,time = game:GetService("Players").LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
 	time = hookfunction(os.time, newcclosure(function()
 		if(getcallingscript()==DungeonHandler)then 
-			Fire(BindableEvents.Second);			-- Called once every second
+			Fire(BindableEvents.Second);														-- Called once every second
 		end;
 		return time();
 	end));
@@ -849,8 +845,8 @@ do	-- hooks
 	-- scans for a new queue item
 	BindableEvents.QueueHook = Instance.new("BindableEvent");
 	table.insert(Main[4], Connect(BindableEvents.QueueHook.Event, function(cast) 
-		local uid,name,releaseDate = getNewQueueUid(cast);		-- will lilely nil-instantiate every call
-		while(not uid and wait())do								-- while a new item hasn't been found
+		local uid,name,releaseDate = getNewQueueUid(cast);										-- will likely nil-instantiate every call
+		while(not uid and wait())do																-- while a new item hasn't been found
 			uid,name,releaseDate = getNewQueueUid(cast);	
 		end;
 		Main[11][cast] += 1;
@@ -859,33 +855,33 @@ do	-- hooks
 	
 	BindableEvents.ClaimHook = Instance.new("BindableEvent");
 	table.insert(Main[4], Connect(BindableEvents.ClaimHook.Event, function(cast,uid)
-		Main[11][cast] -= 1; 							-- Update respective queue quantity
-		Instances.QueueScroller[uid]:Destroy();			-- Destroy the frame representing the collected item
+		Main[11][cast] -= 1; 																	-- Update respective queue quantity
+		Instances.QueueScroller[uid]:Destroy();													-- Destroy the frame representing the collected item
 	end));
 	
 	local namecall = nil;
 	namecall = hookmetamethod(game, "__namecall", newcclosure(function(self,...)
 		if(getnamecallmethod()=="InvokeServer")then
-			if(self==Main[5][2])then					-- if user manually fuses an omega-tier item
-				Fire(BindableEvents.QueueHook,(...));	-- Scans for the new queue item
-			elseif(self==Main[5][3])then				-- (failsafe) if user manually collects an antimatter (will only occur if an error is present)
+			if(self==Main[5][2])then															-- if user manually fuses an omega-tier item
+				Fire(BindableEvents.QueueHook,(...));											-- Scans for the new queue item
+			elseif(self==Main[5][3])then														-- (failsafe) if user manually collects an antimatter (will only occur if an error is present)
 				Fire(BindableEvents.ClaimHook,...);
 			end;
 		end;
-		return namecall(self,...);						-- Module script expects a response
+		return namecall(self,...);																-- Module script expects a response
 	end));
 	
 	-- Deallocate Memory
 	Instances.MainGui.Destroying:Once(function()
-		hookmetamethod(game, "__namecall", namecall);				-- reset game.__namecall
-		hookfunction(os.time, time);								-- reset os.time
+		hookmetamethod(game, "__namecall", namecall);											-- reset game.__namecall
+		hookfunction(os.time, time);															-- reset os.time
 
 		if(Main[7][4])then 
-			SAVE_DATA();											-- save on close
-			Main[7][4] = false; 									-- disable any future save attempts
+			SAVE_DATA();																		-- save on close
+			Main[7][4] = false; 																-- disable any future save attempts
 		end;
 		
-		for _,con in ipairs(Main[4])do con:Disconnect()end;			-- disconnect ALL FuseGui Connections
+		for _,con in ipairs(Main[4])do con:Disconnect()end;										-- disconnect ALL (<- imagine underlined and bold) FuseGui Connections
 		
 		Instances.FuseGui:Destroy();
 		Instances.SettingsGui:Destroy();
@@ -895,16 +891,17 @@ do	-- hooks
 end;
 
 do	-- Load Saved Data
-	if(not isfile(fileName))then					-- if there is no savedata
-		if(not isfolder("SwordSimData/AutoFuseData"))then makefolder("SwordSimData/AutoFuseData")end;
+	local fileName = "SwordSimData/AutoFuseData/AutoSave_"..localUserId..".json";
+	if(not isfile(fileName))then																						-- if there is no savedata
+		if(not isfolder("SwordSimData/AutoFuseData"))then makefolder("SwordSimData/AutoFuseData")end;					-- make folder :)
 		Instances.ItemFrame.Visible    = true;
 		Instances.FuseFrame.Visible    = true;
 		Instances.SettingsMain.Visible = true;
-		return SAVE_DATA();							-- initial save
+		return SAVE_DATA();																								-- initial save
 	end;
 	
 	-- assert data format
-	local data = assert(loadstring(readfile(fileName)),"Error, table expected from data fetch: workspace/"..fileName)();
+	local data = assert(game:GetService("HttpService"):JSONDecode(readfile(fileName)),"table expected from data fetch: workspace/"..fileName);
 	if(not(data.Toggles and data.Toggles.AutoLoad))then return end;		-- return if AutoLoad is nil or disabled
 	
 	local ref,trns,val = {
@@ -928,17 +925,17 @@ do	-- Load Saved Data
 	-- Validate and Load Toggle Data
 	Main[9][4] = 0;
 	for name,list in next,SaveData do
-		if(not data[name]or name=="Items")then continue end;									-- validate and extradite
-		assert(type(data[name])=="table", "table expected when reading \""..name);				-- assert format
+		if(not data[name]or name=="Items")then continue end;												-- validate and extradite
+		assert(type(data[name])=="table", "table expected when reading \""..name);							-- assert format
 		for idx in next,list do
-			val = (type(data[name][idx])=="boolean"and data[name][idx]);						-- obtain toggle state
-			list[idx] = val;																	-- assign toggle state
+			val = (type(data[name][idx])=="boolean"and data[name][idx]);									-- obtain toggle state
+			list[idx] = val;																				-- assign toggle state
 			if(name=="Elements")then															
-				Instances.Elements[idx.."ToggleButton"].BackgroundTransparency = trns[val];		-- assign transparency state
-				if(val)then Main[9][4] += 1 end; 												-- Count enabled, ignored elements
+				Instances.Elements[idx.."ToggleButton"].BackgroundTransparency = trns[val];					-- assign transparency state
+				if(val)then Main[9][4] += 1 end; 															-- Count enabled, ignored elements
 			elseif(name~="Visible")then
-				Main[7][ref[idx]] = val;														-- assign toggle visibility
-				Instances[idx.."Button"].BackgroundColor3 = Main[10][val];						-- assign toggle background color
+				Main[7][ref[idx]] = val;																	-- assign toggle visibility
+				Instances[idx.."Button"].BackgroundColor3 = Main[10][val];									-- assign toggle background color
 			end;
 		end;
 	end;
@@ -946,46 +943,46 @@ do	-- Load Saved Data
 	-- assign fram visibility
 	Instances.ItemFrame.Visible = SaveData.Visible[1];
 	Instances.FuseFrame.Visible = SaveData.Visible[2];
-	if(Main[7][12])then saveQueue()end; 					-- saveQueue if enabled
-	val = SaveData.Visible[2];								-- SaveData is smaller than Instances
+	if(Main[7][12])then saveQueue()end; 																	-- saveQueue if enabled
+	val = SaveData.Visible[2];																				-- SaveData is smaller than Instances
 	
 	-- Disable ignoring elements if zero elements are being ignored
 	if(0==Main[9][4]and Main[7][11])then
-		Instances.IgnoreElementedButton.BackgroundColor3 = COLORS[3];	-- red = disabled
-		Main[7][11] = false;											-- disable :( ?
+		Instances.IgnoreElementedButton.BackgroundColor3 = COLORS[3];										-- red = disabled
+		Main[7][11] = false;																				-- disable :( ?
 	end;
 	
-	if(type(data.Items)~="table")then return end;			-- validate item data format
-	local dataFrame,toggles = nil,nil;						-- temp values
+	if(type(data.Items)~="table")then return end;															-- validate item data format
+	local dataFrame,toggles = nil,nil;																		-- temp values
 	for name,item in next,data["Items"]do					
 	
-		assert(Instances.ItemScroller[lower(name)]~=nil, "invalid item in \"Items\": "..name); 								-- Validate item name
-		assert(type(item)=="table"and type(item[1])=="table", "table expected in \"Items\" when referencing: "..name);		-- Validate referenced data is a table of size 2
-		if(type(item[2])~="number"or item[2]<=0 or item[2]>=9)then 															-- Validate Antimatter Fuse Quantity and Data Type
+		assert(Instances.ItemScroller[lower(name)]~=nil, "invalid item in \"Items\": "..name); 									-- Validate item name
+		assert(type(item)=="table"and type(item[1])=="table", "table expected in \"Items\" when referencing: "..name);			-- Validate referenced data is a table of size 2
+		if(type(item[2])~="number"or item[2]<=0 or item[2]>=9)then 																-- Validate Antimatter Fuse Quantity and Data Type
 			-- normal values
 			item[2] = 8;
 			item[1][3] = false;
 		end;
 		
 		toggles = {
-			[1] = (type(item[1][1])=="boolean"and item[1][1]); 			-- normal fusing toggle
-			[2] = (type(item[1][2])=="boolean"and item[1][2]); 			-- evolved fusing toggle
-			[3] = (type(item[1][3])=="boolean"and item[1][3]);			-- omega fusing toggle
+			[1] = (type(item[1][1])=="boolean"and item[1][1]); 												-- normal fusing toggle
+			[2] = (type(item[1][2])=="boolean"and item[1][2]); 												-- evolved fusing toggle
+			[3] = (type(item[1][3])=="boolean"and item[1][3]);												-- omega fusing toggle
 		};
 		
-		Fire(BindableEvents[lower(name)],item[2],unpack(toggles)); 		-- Make Button in Fuse Frame (will save if enabled)
+		Fire(BindableEvents[lower(name)],item[2],unpack(toggles)); 											-- Make Button in Fuse Frame (will save if enabled)
 			
-		dataFrame = Instances.FuseScroller[lower(name)];				-- get reference button
-		dataFrame.FuseQuantity.Text = item[2];							-- update fuse text
-		dataFrame.Evolve.BackgroundColor3 = Main[10][toggles[1]];		-- update normal fuse toggle button color
-		dataFrame.Omega.BackgroundColor3 = Main[10][toggles[2]];		-- update evolve fuse toggle button color
-		dataFrame.Antimatter.BackgroundColor3 = Main[10][toggles[3]];	-- update omega fuse toggle button color
+		dataFrame = Instances.FuseScroller[lower(name)];													-- get reference button
+		dataFrame.FuseQuantity.Text = item[2];																-- update fuse text
+		dataFrame.Evolve.BackgroundColor3 = Main[10][toggles[1]];											-- update normal fuse toggle button color
+		dataFrame.Omega.BackgroundColor3 = Main[10][toggles[2]];											-- update evolve fuse toggle button color
+		dataFrame.Antimatter.BackgroundColor3 = Main[10][toggles[3]];										-- update omega fuse toggle button color
 	end;
 	
-	Instances.FuseFrame.Visible = val; 									-- calling the bindable event will open the fuseframe, so re-set the value
+	Instances.FuseFrame.Visible = val; 																		-- calling the bindable event will open the fuseframe, so re-set the value
 	if(dataFrame~=nil and SaveData.Toggles.LoadFuse)then 
-		temptEnhanceCast(1); 											-- calling pet enhancement function
-		temptEnhanceCast(2); 											-- calling weapon enhancement function
+		temptEnhanceCast(1); 																				-- calling pet enhancement function
+		temptEnhanceCast(2); 																				-- calling weapon enhancement function
 	end;
 end;
 
