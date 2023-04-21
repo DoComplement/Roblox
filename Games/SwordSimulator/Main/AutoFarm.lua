@@ -1,27 +1,42 @@
+
+-- to-do:
+
+-- some variables aren't used beyond initialization. 
+-- it would be efficient to relocate the assignment of these variables with respect to their usage.
+-- the functions would be more understandable, and the config format is not really even necessary
+
+
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 if(game.PlaceId~=7026949294 or getgenv()["QRfuSEK*VSAbxd;1ob*w"]~=nil)then return end;
 getgenv()["QRfuSEK*VSAbxd;1ob*w"] = true;
 
 do
-	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");	
+	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
 	while(not succ and task.wait(8))do
 		succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
 	end;
-	if(not val:match("Specific_PrivateGame"))then return end;	-- if game is not private
+	if(not val:match("Specific_PrivateGame"))then return end; -- do not execute the script if the server is public
 end;
-
--- 1) De-nest the branching and looping into separate functions
--- 2) consolidate the variables, functions, connections, threads, etc. into a arrays
--- 3) find the in-game functions (if existing) that correspond to remote calls (the functions will call the remotes, adding a bit of spoofing)
--- 4) simplify the GatherBest function by removing the IgnoreVanity argument (and update the code that is influenced by this argument)
 
 local wait,getChildren = task.wait,game.GetChildren;
 
--- Reference Variables for Auto Daily Rewards
-local DailyRewards = {
-    [1] = game:GetService("CollectionService"):GetTagged("DailyGroupRewardsZone")[1].Countdown.CountdownUI.Frame.Countdown;
-    [2] = game:GetService("CollectionService"):GetTagged("RankRewardZone")[1].Countdown.CountdownUI.Frame.Countdown;
-};
+do	-- if autofarming with multiple players	(specifically for dungeons)
+	getgenv().PLR_CNT = 0;																		-- wait for a certain quantity of players before executing
+	if(PLR_CNT>1 and #getChildren(game:GetService("Players"))<PLR_CNT)then						-- check if the value was set, and the quantity hasn't been met yet
+		local startWait,plrJoin = Instance.new("BindableEvent"),nil;							-- event to yield the script
+		local plrs = game:GetService("Players");												-- ease-of-access
+		plrJoin = plrs.PlayerAdded:Connect(function(plr)										-- accumulate connection
+			if(#getChildren(plrs)>=PLR_CNT)then													-- check player count when a new player has joined
+				plr.CharacterAdded:Wait();														-- wait for the character to load
+				plrJoin = plrJoin:Disconnect();													-- disconnect if the quantity has been met
+				startWait:Fire();																-- signal for the script to continue executing
+			end;
+		end);
+		
+		startWait.Event:Wait();																	-- yield the script to wait until the desired quantity of players has joined
+	end;
+	getgenv().PLR_CNT = nil;																	-- genv is used so the user can change the value mid-iteration (with consequence), if desired
+end;
 
 local LocalPlayer = game:GetService("Players").LocalPlayer;
 if(not(LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()).PrimaryPart)then 
@@ -38,17 +53,17 @@ end);
 
 -- Important Folders
 local Folders = {
-    [1] = Workspace.Mobs; -- Workspace.Mobs
-	[2] = game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent; -- ReplicatedStorage.Saturn.Modules.GameDependent
-	[3] = LocalPlayer.PlayerGui; -- LocalPlayer.PlayerGui
+    [1] = Workspace.Mobs; 																			-- Mobs directory
+	[2] = game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent; 						-- modulescript directory
+	[3] = LocalPlayer.PlayerGui; 																	-- LocalPlayer.PlayerGui
 }
 
 -- Frequently-Used Remote Events
 local Events = {
-    [1] = game:GetService("ReplicatedStorage").Remotes.Gameplay.FireHit; -- Hit Event
-    [2] = game:GetService("ReplicatedStorage").Events.GetDungeonData; -- Dungeon State
-    [3] = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase; -- Egg Purchase
-	[4] = game:GetService("ReplicatedStorage").Events; -- Events CurrentZone
+    [1] = game:GetService("ReplicatedStorage").Remotes.Gameplay.FireHit; 						-- Hit mob remote
+    [2] = game:GetService("ReplicatedStorage").Events.GetDungeonData; 							-- get Dungeon State remote
+    [3] = game:GetService("ReplicatedStorage").Remotes.Gameplay.RequestPetPurchase; 			-- Egg Purchase remote
+	[4] = game:GetService("ReplicatedStorage").Events; 											-- Events directory
 };
 
 local FireServer = Events[1].FireServer;
@@ -73,44 +88,39 @@ end;
 -- local Routines = {}
 
 local MobsTable,BossTable,Teleports,ElementInventory = {},{},{},{};
-for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn)end; -- Teleport positions
-for _,Element in ipairs(getChildren(Folders[2].Elements))do ElementInventory[Element.Name] = 0 end;
-for _,Element in next,Modules[1].AuraInventory do ElementInventory[Element.Base] += 1 end;
+for Zone,Info in ipairs(Modules[5]) do Teleports[Zone] = CFrame.new(Info.ZoneSpawn)end;					-- Teleport positions
+for _,Element in ipairs(getChildren(Folders[2].Elements))do ElementInventory[Element.Name] = 0 end;		-- initialize element table
+for _,Element in next,Modules[1].AuraInventory do ElementInventory[Element.Base] += 1 end;				-- count all player elements
 
--- All the below values can be changed mid-game 
-
--- Edit these variables here
-_G.MAX_ZONE = Modules[1].CurrentZone;
-_G.TARGET = "AutumnPaladin";
-_G.ZONE_TO_FARM = "22";
-_G.EGG = ({
-	[ [==[ Player UserId ]==] ] = "Event Egg";
-    [ [==[ Alt Player UserId ]==] ] = "Event Egg";
-    ...
-})[LocalPlayer.UserId];
-
--- Edit these toggles
-_G.IGNORE_ITEM_MESSAGES = true;
-_G.PRINT_REWARDS_DATA = false;
-_G.PRINT_DUNGEON_DATA = true;
-_G.PRINT_WEAPON_DATA = true;
-_G.PRINT_HATCH_DATA = true;
-
-_G.INDEX_RANDOMLY = false;
-_G.FARM_DUNGEON = true;
-_G.JOIN_DUNGEON = true; -- may only want to use in private servers if farming mobs
-
-_G.FARM_TARGET = true;
-_G.FARM_BOSS = true;
-_G.FARM_EGGS = true;
-_G.FARM_MAX = true;
-_G.ACTIVE = true;
+do	-- pre/postload config stuff
+	local fileName = "SwordSimData/Configs/Config_"..LocalPlayer.UserId..".json";
+	local HttpService = game:GetService("HttpService");
+	local Encode = HttpService.JSONEncode;
+	
+	if(not isfile(fileName))then
+		if(not isfolder("SwordSimData"))then makefolder("SwordSimData")end;
+		if(not isfolder("SwordSimData/Configs"))then makefolder("SwordSimData/Configs")end;
+		writefile(fileName, "{\"TARGET\":\"nil\",\"ZONE_TO_FARM\":\"nil\",\"EGG\":\"nil\",\"LOG_DUNGEON_DATA\":false,\"JOIN_DUNGEON\":false,\"LOG_WEAPON_DATA\":false,\"FARM_BOSS\":false,\"IGNORE_ITEM_MESSAGES\":false,\"INDEX_RANDOMLY\":false,\"LOG_HATCH_DATA\":false,\"FARM_DUNGEON\":false,\"FARM_TARGET\":false,\"ACTIVE\":false,\"ZONE_TO_FARM\":\"22\",\"FARM_MAX\":false,\"FARM_EGGS\":false,\"LOG_REWARDS_DATA\":false,\"TARGET\":\"AutumnPaladin\"}");
+		print("this is your first time using this script, here are the toggles you can modify (modify by setting _G[INDEX] = VALUE, from here forward: \n\n");
+		for idx,val in next,HttpService:JSONDecode(readfile(fileName))do print("_G."..idx,'=',val)end;
+		print("\ncall SAVE_DATA() at any time to save the toggles for the next time you use this script");
+	end;
+	
+	getgenv().SAVE_DATA = newcclosure(function()															-- make global so values can be saved mid-game
+		writefile(fileName, Encode(HttpService,_G));
+	end);
+	
+	_G.MAX_ZONE = Modules[1].CurrentZone;																	-- default
+	for idx,val in next,HttpService:JSONDecode(readfile(fileName))do										-- load config
+		_G[idx] = val;
+	end;
+end;
 
 local AwayFromBoss = true;
 local AtDungeon = false;
 
-local CurrentZone,DungeonState = Folders[1]:WaitForChild("Other"),nil;
-for _,Folder in ipairs(getChildren(Folders[1]))do
+local CurrentZone,DungeonState = Workspace.Mobs:WaitForChild("Other"),nil;
+for _,Folder in ipairs(getChildren(Workspace.Mobs))do
 	if(Folder.Name~="Other")then
 	    CurrentZone = Folder;
 	end;
@@ -194,7 +204,7 @@ end;
 
 -- Finding the Boss(s) when a new zone is entered;
 local ChildAdded,ParentChanged = nil;
-Folders[1].ChildAdded:Connect(function(NewZone)
+Workspace.Mobs.ChildAdded:Connect(function(NewZone)
 	CurrentZone = NewZone;
 	if(not BossTable[tonumber(NewZone.Name)][1])then return end;
 	
@@ -202,26 +212,26 @@ Folders[1].ChildAdded:Connect(function(NewZone)
 	
 	ChildAdded = NewZone.ChildAdded:Connect(YieldHumanoid);
 	ParentChanged = NewZone.AncestryChanged:Connect(function() 
-		if(NewZone.Parent~=Folders[1])then
+		if(NewZone.Parent~=Workspace.Mobs)then
 			ChildAdded:Disconnect();
 			ParentChanged:Disconnect();
 		end;
 	end);
 end);
 
-Folders[1].ChildRemoved:Connect(function()CurrentZone = Folders[1].Other end);
+Workspace.Mobs.ChildRemoved:Connect(function()CurrentZone = Workspace.Mobs.Other end);
 
 -- (1) makes all incoming item pop-ups on the screen invisible if indicated (_G.IGNORE_ITEM_MESSAGES is true)
--- (2) prints the aura and its' percent gained from a completed dungeon if indicated (_G.PRINT_DUNGEON_DATA is true)
+-- (2) prints the aura and its' percent gained from a completed dungeon if indicated (_G.LOG_DUNGEON_DATA is true)
 Folders[3].MessagesUI.Frame.ChildAdded:Connect(function(Label)
 	if(Label.Name=="Frame")then
         if(_G.IGNORE_ITEM_MESSAGES and wait())then 
 			Label.Visible = false;
 		end;
-        if(_G.PRINT_WEAPON_DATA and Modules[3][Label.ViewportFrame:FindFirstChildOfClass("Model").Name].Rarity=="Mythical")then 
+        if(_G.LOG_WEAPON_DATA and Modules[3][Label.ViewportFrame:FindFirstChildOfClass("Model").Name].Rarity=="Mythical")then 
 			print(Label.TextLabel.Text);
         end;
-    elseif(_G.PRINT_DUNGEON_DATA and Label.Name=="TextLabel"and ElementInventory[Label.Text:match("Obtained (.+) Aura")]~=nil)then 
+    elseif(_G.LOG_DUNGEON_DATA and Label.Name=="TextLabel"and ElementInventory[Label.Text:match("Obtained (.+) Aura")]~=nil)then 
 		print(Label.Text);
 	end;
 end);
@@ -277,7 +287,7 @@ local function GatherBest(Storage, Module, Items, Calculator, Event)
 	local Data = nil;
     for ID,Item in next,Storage do 
 		Data = Module[Item.Base];
-		-- if Data["Vanity" ~= nil then ...; end;
+		-- if Data.Vanity ~= nil then ...; end;
 		local Power = GetItemPower(ID,Item,Module[Item.Base],Calculator,Event);
 		if(Power~=nil)then
 			Index = SortItems(Items,Values,Power,ID,Index);
@@ -310,26 +320,6 @@ local function EquipBest(Category, Event)
     end;
 end;
 
-local function ClaimDailyRewards()
-	if(DailyRewards[1].Text~="Ready")then return end;
-	wait(2);
-	if(not LocalPlayer:IsInGroup(11109344))then
-		print("Not in Tachyon Roblox Group, so group rewards can not be claimed.");
-		print("Group rewards will be claimed if you join mid-game.");
-		repeat wait(1)until LocalPlayer:IsInGroup(11109344);
-	end;
-	InvokeServer(Events[4].ClaimGroupDailyReward);
-	if(_G.PRINT_REWARDS_DATA)then print("Claimed Group Rewards")end;
-end;
-
-local function ClaimRankRewards()
-	if(DailyRewards[2].Text=="Ready")then
-		wait(2);
-		InvokeServer(Events[4].ClaimRankReward);
-		if(_G.PRINT_REWARDS_DATA)then print("Claimed Rank Rewards") end;
-	end;
-end;
-
 -- See to enhancing the modules in here (removing autosInit)
 -- Also see to consolidating the local variables 
 task.defer(function()
@@ -342,11 +332,11 @@ task.defer(function()
 		elseif(Reward.TimeLeft.Text~="CLICK TO CLAIM")then
 			Reward.TimeLeft:GetPropertyChangedSignal("TextColor3"):Once(function()
 				getconnections(Reward.TimeLeft.Activated)[1].Function();
-				if(_G.PRINT_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
+				if(_G.LOG_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
 			end);
         else 
             getconnections(Reward.TimeLeft.Activated)[1].Function();
-			if(_G.PRINT_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
+			if(_G.LOG_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
         end
     end
     
@@ -354,7 +344,7 @@ task.defer(function()
     Folders[3].Rewards.Main.Frame.ChildAdded:Connect(function(Reward)
         Reward:WaitForChild("TimeLeft"):GetPropertyChangedSignal("TextColor3"):Once(function()
 			getconnections(Reward.TimeLeft.Activated)[1].Function();
-			if(_G.PRINT_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
+			if(_G.LOG_REWARDS_DATA)then print("Claimed Playtime reward",Reward.Name)end;
         end)
     end)
 
@@ -364,24 +354,53 @@ task.defer(function()
 	
     if(SpinReward.Visible)then 
         Spin();
-		if(_G.PRINT_REWARDS_DATA)then print("Collected Daily Rewards")end;
+		if(_G.LOG_REWARDS_DATA)then print("Collected Daily Rewards")end;
 	end
     
     SpinReward:GetPropertyChangedSignal("Visible"):Connect(function()
         if(SpinReward.Visible)then 
 			Spin();
-			if(_G.PRINT_REWARDS_DATA)then print("Collected Daily Rewards")end;
+			if(_G.LOG_REWARDS_DATA)then print("Collected Daily Rewards")end;
 		end
     end);
 
     -- Initializing automatic Rank and Group rewards
     -- each signal is called with this configuration regardless when initialized for some reason
     -- Connections are not designed to have arguments with directly passed functions (ClaimRewards(...) in this case), so I had to overlap generic functions
-	DailyRewards[1]:GetPropertyChangedSignal("Text"):Connect(ClaimDailyRewards);
-    DailyRewards[2]:GetPropertyChangedSignal("Text"):Connect(ClaimRankRewards);
+	-- Reference Variables for Auto Daily Rewards
 	
-	task.defer(ClaimDailyRewards);	-- Initialize Daily Rewards
-	task.defer(ClaimRankRewards);	-- Initialize Rank Rewards
+	local rwrdCntrs = {
+		[1] = game:GetService("CollectionService"):GetTagged("DailyGroupRewardsZone")[1].Countdown.CountdownUI.Frame.Countdown;	
+		[2] = game:GetService("CollectionService"):GetTagged("RankRewardZone")[1].Countdown.CountdownUI.Frame.Countdown;
+	};
+	
+	local function ClaimDailyRewards()
+		if(rwrdCntrs[1].Text~="Ready")then return end;
+		wait(2);
+		if(not LocalPlayer:IsInGroup(11109344))then
+			print("Not in Tachyon Roblox Group, so group rewards can not be claimed.");
+			print("Group rewards will be claimed if you join mid-game.");
+			repeat wait(1)until LocalPlayer:IsInGroup(11109344);
+		end;
+		InvokeServer(Events[4].ClaimGroupDailyReward);
+		if(_G.LOG_REWARDS_DATA)then print("Claimed Group Rewards")end;
+	end;
+
+	local function ClaimRankRewards()
+		if(rwrdCntrs[2].Text=="Ready")then
+			wait(2);
+			InvokeServer(Events[4].ClaimRankReward);
+			if(_G.LOG_REWARDS_DATA)then print("Claimed Rank Rewards") end;
+		end;
+	end;
+	
+	-- check if each reward is ready to be claimed upon textchanged
+	rwrdCntrs[1]:GetPropertyChangedSignal("Text"):Connect(ClaimDailyRewards);
+    rwrdCntrs[2]:GetPropertyChangedSignal("Text"):Connect(ClaimRankRewards);
+	
+	-- it rewards are ready to be claimed upon script execution... (text will not change)
+	task.defer(ClaimDailyRewards);																-- Initialize Daily Rewards
+	task.defer(ClaimRankRewards);																-- Initialize Rank Rewards
 
 
     -- Initializing automatic Index rewards
@@ -396,12 +415,12 @@ task.defer(function()
 		-- Connection = Claim:GetPropertyChangedSignal("Visible"):Connect(function()
 			-- if(Claim.Visible)then 
 				-- claimReward();
-				-- if _G.PRINT_REWARDS_DATA then print("Claimed", Category, "Index")end;
+				-- if _G.LOG_REWARDS_DATA then print("Claimed", Category, "Index")end;
 				-- Claim.Visible=false;
 			-- end;
 			-- wait(1)
 			-- if(Counter.Text=="Completed")then 
-				-- if(_G.PRINT_REWARDS_DATA)then print(Category, "Indexes Completed")end;
+				-- if(_G.LOG_REWARDS_DATA)then print(Category, "Indexes Completed")end;
 				-- Connection = Connection:Disconnect();
 			-- end;
 		-- end);
@@ -477,7 +496,7 @@ do
 		DungeonState = InvokeServer(Events[2]); -- updated once every second
 		if(AtDungeon)or(not(_G.JOIN_DUNGEON and DungeonState=="Starting")and os.time()<(Modules[1].LastDungeonEnter+3600))or(DungeonState=="Begun")then return end;
 		AtDungeon = true;
-		if(_G.PRINT_DUNGEON_DATA)then print("Dungeon is ready")end;
+		if(_G.LOG_DUNGEON_DATA)then print("Dungeon is ready")end;
 		while not(_G.FARM_DUNGEON)do wait(1)end;		-- when dungeon is ready, waits until dungeon farming is active
 		
 			-- (1) Starts Dungeon
@@ -516,7 +535,7 @@ do
 
 			-- (9) Unequip current weapons then equip previous weapons
 		local Equipped = {}
-		for ID in next,Modules[1].EquippedItems.Weapons do Equipped[#Equipped + 1] = ID end;
+		for ID in next,Modules[1].EquippedItems.Weapons do table.insert(Equipped, ID)end;
 		InvokeServer(Events[4].EquipItem,"Weapons",Equipped)wait(1); -- unequip current weapons
 		InvokeServer(Events[4].EquipItem,"Weapons",EquippedWeapons); -- equip previous weapons
 		HumanoidRootPart.Anchored = false;
@@ -539,10 +558,10 @@ do
 	end;
 	
 	local function checkHatch(hatched)
-		if(not hatched)then return(nil)end;
+		if(not hatched or type(hatched)~="table")then return(nil)end;
 		local rarity = nil;
 		for _,dat in ipairs(hatched)do
-			if(dat[3]or not _G.PRINT_HATCH_DATA)then continue;
+			if(dat[3]or not _G.LOG_HATCH_DATA)then continue;
 			elseif(not dat[2].Weapon)then	-- if hatched item is a pet
 				rarity = Modules[2][dat[1]].Rarity;
 			else
@@ -567,8 +586,8 @@ do
 	local DungeonHandler,time = LocalPlayer.PlayerScripts.PlayerHandler.Miscallenious.DungeonHandler,nil;
 	time = hookfunction(os.time, newcclosure(function() 
 		if(getcallingscript()==DungeonHandler)then 
-			Fire(autoEgg); 			-- Egg Hatch
-			Fire(dungeonEar); 		-- Auto Dungeon
+			Fire(autoEgg); -- Egg Hatch
+			Fire(dungeonEar); -- Auto Dungeon
 		end;
 		return time();
 	end));
