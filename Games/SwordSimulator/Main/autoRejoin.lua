@@ -47,7 +47,7 @@ end;
 local rootPart = LocalPlayer.Character.PrimaryPart;
 rootPart.CanQuery = false;
 	
-getgenv.TASK = ({
+getgenv().TASK = ({
 	[ [==[ UserId ]==] ] = "Autumn Zone Boss"; -- temp
 	[ [==[ alt UserId ]==] ] = ...;
 	...
