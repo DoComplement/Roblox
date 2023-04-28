@@ -116,7 +116,7 @@ else
 	local WeaponsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.WeaponsModule);
 	local PetsModule = require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.Storage.PetsModule);
 	local function checkHatch(hatched)
-		if(not hatched)then return(nil)end;
+		if(not(hatched)or"table"~=type(hatched))then return(nil)end;
 		local rarity = nil;
 		for _,dat in ipairs(hatched)do
 			if(dat[3])then continue;
