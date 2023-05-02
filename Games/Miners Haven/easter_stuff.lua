@@ -3,7 +3,10 @@
 if(not game:IsLoaded())then game.Loaded:Wait()end;
 if(game.PlaceId~=258258996)then return end;
 
-game:GetService("Players").LocalPlayer.PlayerGui.ChildRemoved:Wait();										-- wait until player is loaded
+if(not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("GUI"))then
+	game:GetService("Players").LocalPlayer.PlayerGui.ChildRemoved:Wait();										-- wait until player is loaded
+end;	
+
 local hrp = game:GetService("Players").LocalPlayer.Character.PrimaryPart;
 game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function(Character)
     Character:GetPropertyChangedSignal("PrimaryPart"):Wait();
