@@ -8,6 +8,15 @@
 
 ## Check Server Type
 - returns a boolean value to indicate whether the server connected to the active roblox game of the executed script is private
+```
+do
+	local succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
+	while(not(succ)and task.wait(8))do
+		succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
+	end;
+	if(not val:match("Specific_PrivateGame"))then return end; -- do not execute the script if the server is public
+end;
+```
 
 ## ClearDevConsole
 - clears all the messages currently in the dev console upon execution
