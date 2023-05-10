@@ -17,11 +17,11 @@ local function createInst(class,props,protect)
 end;
 
 -- ideal, use this (can add the protect function)
-local function setVals(class, props, parent)
+local function setVals(class, parent, props)
     local inst = Instance.new(class);
     for prop,val in next,props do
         inst[prop] = val;
     end;
-    inst.Parent = parent; -- set parent after other properties so roblox game-datamodel-listeners doesn't mess with the properties during assignment
+    inst.Parent = parent; -- set parent after other properties so roblox datamodel-listeners do not mess with the properties during assignment
     return inst;
 end;
