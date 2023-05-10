@@ -15,6 +15,7 @@ do
 		succ,val = pcall(game.HttpGetAsync,game,"https://httpbin.org/headers");
 	end;
 	if(not val:match("Specific_PrivateGame"))then return end; -- do not execute the script if the server is public
+	-- if(nil~=val:match("Specific_PrivateGame"))then return end; -- do not execute the script if the server is private
 end;
 ```
 
