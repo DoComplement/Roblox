@@ -362,23 +362,7 @@ do	-- Detect Admin
 		end;
 	end;
 	
-	for _,plr in ipairs(Players:GetPlayers())do
-		if(find(Admins,plr.UserId)~=nil)then
-			if(autoLeaveOnAdminJoin)then
-				warn("Admin in the server. Alias':",plr.Name,plr.DisplayName);
-				game:GetService("TeleportService"):Teleport(game.PlaceId);
-			end;
-			Notify(StarterGui,"SendNotification",{
-				Title = "An Admin is in the server.";
-				Text = "Name: "..plr.Name.."\nDisplayName: "..plr.DisplayName;
-				Duration = 864000;
-				Callback = doSomething;
-				Button1 = "Leave";
-				Button2 = "Stay";
-			});
-		end;
-	end;
-	Players.PlayerAdded:Connect(function(plr)
+	local function checkPlr(plr)
 		if(find(Admins,plr.UserId)~=nil)then
 			if(autoLeaveOnAdminJoin)then
 				warn("Admin has joined. Alias':",plr.Name,plr.DisplayName);
@@ -393,7 +377,10 @@ do	-- Detect Admin
 				Button2 = "Stay";
 			})
 		end;
-	end);
+	end;
+		
+	for _,plr in ipairs(Players:GetPlayers())do checkPlr(plr)end;
+	Players.PlayerAdded:Connect(checkPlr)
 end;
 
 do	-- Auto Claim/Ignore on-screen message
