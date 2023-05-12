@@ -2,29 +2,31 @@
 
 --[[
 local Filename = "Colors.lua";
-writefile(Filename, "return {");
+local format = {"return {"};
+writefile(Filename, table.concat(format, '\n'));
 local found,Count,Color = {},1,nil;
 
 for i = 1,1100 do 
 	Color = BrickColor.new(i)
-	if Color.Name ~= "Medium stone grey" and table.find(found, Color) == nil then
-		found[Count]=Color; 
+	if(Color.Name ~= "Medium stone grey"and not table.find(found, Color))then
+		found[Count] = Color; 
 		Count += 1;
-		appendfile(Filename, "\n\t["..Count.."] = Color3.new("..tostring(Color.Color)..");\t-- "..Color.Name);
+		format[#format + 1] = "\t["..Count.."] = Color3.new("..tostring(Color.Color)..");\t-- "..Color.Name;
 	end;
 end;
 
 
 for i = 1,127 do
 	Color = BrickColor.palette(i);
-	if Color.Name ~= "Medium stone grey" and table.find(found, Color) == nil then
-		found[Count]=Color;
+	if(Color.Name ~= "Medium stone grey"and not table.find(found, Color))then
+		found[Count] = Color;
 		Count += 1;
-		appendfile(Filename, "\n\t["..Count.."] = Color3.new("..tostring(Color.Color)..");\t-- "..Color.Name);
+		format[#format + 1] = "\t["..Count.."] = Color3.new("..tostring(Color.Color)..");\t-- "..Color.Name;
 	end;
 end;
 
-appendfile(Filename, "\n},"..Count..';');
+format[#format + 1] = "\n},"..Count..';';
+writefile(Filename, table.concat(format, '\n'));
 ]]
 
 return {
