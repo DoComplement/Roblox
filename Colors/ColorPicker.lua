@@ -1,4 +1,4 @@
-local function setVals(class, props, parent)
+local function setVals(class, parent, props)
 	local inst = Instance.new(class);
 	for prop,val in next,props do
 		inst[prop] = val;
@@ -7,18 +7,18 @@ local function setVals(class, props, parent)
 	return inst;
 end)
 
-local ScreenGui = setVals("ScreenGui",{
+local ScreenGui = setVals("ScreenGui",game:GetService("CoreGui"), {
 	Name = "ColorPicker",
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-},game:GetService("CoreGui"));
+});
 
-local Frame = setVals("Frame", {
+local Frame = setVals("Frame", game:GetService("CoreGui"), {
 	BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 	Position = UDim2.new(0.0690362304, 0, 0.115960099, 0),
 	Size = UDim2.new(0, 241, 0, 105)
-},game:GetService("CoreGui"));
+});
 
-local Button = setVals("TextButton", {
+local Button = setVals("TextButton", Frame, {
 	Name = "Button",
 	BackgroundColor3 = Color3.fromRGB(0, 150, 150),
 	BorderSizePixel = 0,
@@ -29,9 +29,9 @@ local Button = setVals("TextButton", {
 	TextColor3 = Color3.fromRGB(255, 255, 255),
 	TextSize = 13.000,
 	TextWrapped = true,
-},Frame);
-setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Button);
-local Keep = setVals("TextButton", {
+});
+setVals("UICorner", Button, {CornerRadius = UDim.new(1, 0)});
+local Keep = setVals("TextButton", nil, {
 	Name = "Keep",
 	Parent = Frame,
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
@@ -45,8 +45,8 @@ local Keep = setVals("TextButton", {
 	TextSize = 13.000,
 	TextWrapped = true,
 });
-setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Keep);
-local Next = setVals("TextButton", {
+setVals("UICorner", Keep, {CornerRadius = UDim.new(1, 0)});
+local Next = setVals("TextButton", Frame, {
 	Name = "Next",
 	BackgroundColor3 = Color3.fromRGB(0, 150, 0),
 	BorderSizePixel = 0,
@@ -58,11 +58,11 @@ local Next = setVals("TextButton", {
 	TextColor3 = Color3.fromRGB(255, 255, 255),
 	TextSize = 13.000,
 	TextWrapped = true,
-},Frame);
-setVals("UICorner", {CornerRadius = UDim.new(1, 0)},Next);
+});
+setVals("UICorner", Next, {CornerRadius = UDim.new(1, 0)});
 
 local Filename = "ColorPicks_"..tostring(math.random(1e+3, 1e+4))..".lua";
-writefile(Filename, "return {");
+writefile(Filename, ");
 
 local Changed,Index = Instance.new("BindableEvent").Event,nil;
 local Colors = assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/All.lua")),"failed to get colors")();
@@ -77,15 +77,18 @@ task.defer(function()
 	ScreenGui:Destroy();
 end);
 
+local fmt = {"return {"};
 local c1,c2 = nil,nil;
 c1 = Next.MouseButton1Down:Connect(function() Changed:Fire() end);
 c2 = Keep.MouseButton1Down:Connect(function()
-	appendfile(Filename, "\n\t["..Index.."] = Color3.new("..tostring(Button.BackgroundColor3)..");\t-- "..Button.Text));
+	
+	fmt[#fmt + 1] = "\t["..Index.."] = Color3.new("..tostring(Button.BackgroundColor3)..");\t-- "..Button.Text;
 	Changed:Fire();
 end);
 
+fmt[#fmt + 1] = "};";
 ScreenGui.Destroying:Once(function()
-	appendfile(Filename, "\n};");
+	writefile(Filename, '\n');
 	c1 = c1:Disconnect();
 	c2 = c2:Disconnect();
 end)
