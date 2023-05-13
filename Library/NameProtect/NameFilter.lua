@@ -40,18 +40,18 @@ end;
 function Main:Filter(Text)
 	local LowerText = Text:lower();
 	local Indices,changed,i1,i2,offset = {},nil;
-	for Username,Filter in next, Main.Names do
+	for Username,Filter in next,Main.Names do
 		offset = 0; -- reset offset
 		i1,i2 = LowerText:find(Username); -- get start and end indices of found username
 		changed = (i1~=nil); 
-		while i1 ~= nil do
-			table.insert(Indices, {i1+offset-1, i2+offset+1, Filter[1]}); -- see use below (for _,Table in ipairs(Indices) do ...)
+		while(i1~=nil)do
+			Indices[#Indices + 1] = {i1 + offset - 1, i2 + offset + 1, Filter[1]}; -- see use below (for _,Table in ipairs(Indices) do ...)
 			offset += Filter[2]; -- update offset
 			i1,i2 = LowerText:find(Username, i2); -- update indices
 		end;
 		
 		-- must update lowertext if multiple usernames are found in the same string
-		if changed then LowerText = LowerText:gsub(Username, Filter[1]); end; 
+		if(changed)then LowerText = (LowerText:gsub(Username, Filter[1]))end; 
 	end;
 	
 	for _,Table in ipairs(Indices) do
@@ -63,12 +63,11 @@ end;
 
 function Main:Update(TextLabel, Text)
     local Offset,Spaces = 0,Main.SpaceOffset;
-    for _,Label in ipairs(TextLabel:GetChildren()) do
+    for _,Label in ipairs(TextLabel:GetChildren())do
 		Offset += Label.TextBounds.X;
     end;
 	
-	for _=1,Offset do Spaces = Spaces .. ' '; end;
-    return Spaces..Main:Filter(Text);
+    return Spaces..string.rep(' ',Offset)..Main:Filter(Text);
 end
 
 function Main:Enable()
@@ -87,7 +86,7 @@ function Main:Enable()
         TextButton = Frame:FindFirstChild("TextButton", true);
         if TextButton ~= nil then
             TextButton.Text = Main:Filter(TextButton.Text);
-            Frame.TextLabel.Text = Main:Update(Frame.TextLabel, Frame.TextLabel.Text:match("%s*(.+)"));
+            Frame.TextLabel.Text = Main:Update(Frame.TextLabel, Frame.TextLabel.Text:match("(%S+.+)"));
         else
             Frame.TextLabel.Text = Main:Filter(Frame.TextLabel.Text)
         end
@@ -142,7 +141,7 @@ local OldNewIndex
 OldNewIndex = hookmetamethod(game, "__newindex", function(Self, Index, Value)
     if Main.Enabled then
         if Self.Parent ~= nil and Self.Parent.Parent == Main.Scroller and Index == "Text" then
-            return OldNewIndex(Self, Index, Main:Update(Self, Value:match("%s*(.+)"))); -- removes all white spaces (can lead to erroneous errors)
+            return OldNewIndex(Self, Index, Main:Update(Self, Value:match("(%S+.+)")));	-- remove all leading space 
         end;
     end;
     
