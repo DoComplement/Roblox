@@ -55,10 +55,11 @@ do										-- collect easter eggs
 end;
 
 do										-- server hop
+	local url = "https://games.roblox.com/v1/games/258258996/servers/0?limit=100&excludeFullGames=true";
 	local function getServers()
-		local succ,servers = pcall(game.HttpGetAsync, game, "https://games.roblox.com/v1/games/258258996/servers/0?limit=100&excludeFullGames=true");
+		local succ,servers = pcall(game.HttpGetAsync, game, url);
 		while(not(succ)and task.wait(5))do
-			succ,servers = pcall(game.HttpGetAsync, game, "https://games.roblox.com/v1/games/258258996/servers/0?limit=100&excludeFullGames=true");
+			succ,servers = pcall(game.HttpGetAsync, game, url);
 		end;
 
 		return game:GetService("HttpService"):JSONDecode(servers).data;
