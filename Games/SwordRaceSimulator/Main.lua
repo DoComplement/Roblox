@@ -313,22 +313,20 @@ for _,signal in ipairs(getconnections(LocalPlayer.Idled)) do
 end;
 
 -- initialize zone data table
-local Zones = (function(Zones)
-    for id,details in next,require(game.ReplicatedStorage.Modules.LocalConfig.WorldConfig) do
-        Zones.zones[details.WorldName]=id;
-        Zones[id]={};
-    end;
-    return Zones;
-end)({zones={}});
+local Zones = {zones = {}};
+for id,details in next,require(game.ReplicatedStorage.Modules.LocalConfig.WorldConfig) do
+	Zones.zones[details.WorldName] = id;
+	Zones[id] = {};
+end;
 
 do -- format zone data
     local conversion = {
-        [1]={1,''};
-        [2]={1e-3,'k'};
-        [3]={1e-6,'m'};
-        [4]={1e-9,'b'};
-        [5]={1e-12,"Qa"};
-    };
+		[1] = {1,""};
+		[2] = {1e-3,"k"};
+		[3] = {1e-6,"m"};
+		[4] = {1e-9,"b"};
+		[5] = {1e-12,"Qa"};
+	}; -- and so on
 		
 	local floor,log10,abs = math.floor,math.log10,math.abs;
     local function Abbreviate(num,idx)
@@ -340,9 +338,9 @@ do -- format zone data
     for Egg,Data in next,require(game.ReplicatedStorage.Modules.LocalConfig.DrawConfig) do
         if(Data.Type==1)then -- payment currency is not robux
             table.insert(Zones[Data.WorldIds],{
-                [1]=Egg;
-                [2]=Data.Price;
-                [3]=Abbreviate(Data.Price);
+                [1] = Egg;
+                [2] = Data.Price;
+                [3] = Abbreviate(Data.Price);
             });
         end;
     end;
