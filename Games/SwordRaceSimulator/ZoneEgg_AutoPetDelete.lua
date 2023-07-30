@@ -5,20 +5,23 @@ optimize the script itself to achieve the multiple tasks efficiently
 
 -- format zone data
 local PetConfig = require(game.ReplicatedStorage.Modules.LocalConfig.PetConfig);
-local floor,conversion=math.floor,{
-    [1]={4,1,''};
-    [2]={7,1e+3,'k'};
-    [3]={10,1e+6,'m'};
-    [4]={13,1e+9,'b'};
-    [5]={16,1e+12,"Qa"};
-};
-local function Abbreviate(num)
-    local len=tostring(floor(num)):len();
-    for _,d in ipairs(conversion) do
-        if len<d[1] then
-            return ((num/d[2]..d[3]):gsub("%.0+",''));
-        end;
-    end;
+local Abbreviate = nil;
+
+do
+	local consts = {
+		[1] = {1,""};
+		[2] = {1e-3,"k"};
+		[3] = {1e-6,"m"};
+		[4] = {1e-9,"b"};
+		[5] = {1e-12,"Qa"};
+	}; -- and so on
+
+	local floor,log10 = math.floor,math.log10;
+	Abbreviate = function(num,idx)
+		idx = consts[1 + floor(log10(num)/3)];
+		if(not idx)then return(num)end;
+		return(floor(num*idx[1]*10)/10)..idx[2];
+	end;
 end;
 
 local DeleteToggles = {};
