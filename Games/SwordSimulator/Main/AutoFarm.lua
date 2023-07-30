@@ -22,18 +22,11 @@ local wait,getChildren = task.wait,game.GetChildren;
 
 do	-- if autofarming with multiple players	(specifically for dungeons)
 	getgenv().PLR_CNT = 0;																		-- wait for a certain quantity of players before executing
-	if(PLR_CNT>1 and #getChildren(game:GetService("Players"))<PLR_CNT)then						-- check if the value was set, and the quantity hasn't been met yet
-		local startWait,plrJoin = Instance.new("BindableEvent"),nil;							-- event to yield the script
-		local plrs = game:GetService("Players");												-- ease-of-access
-		plrJoin = plrs.PlayerAdded:Connect(function(plr)										-- accumulate connection
-			if(#getChildren(plrs)>=PLR_CNT)then													-- check player count when a new player has joined
-				plr.CharacterAdded:Wait();														-- wait for the character to load
-				plrJoin = plrJoin:Disconnect();													-- disconnect if the quantity has been met
-				startWait:Fire();																-- signal for the script to continue executing
-			end;
-		end);
-		
-		startWait.Event:Wait();																	-- yield the script to wait until the desired quantity of players has joined
+	if(PLR_CNT > 1)then
+		local plrs = game:GetService("Players");
+		while(#getChildren(plrs) < PLR_CNT)do													-- wait until the desired quantity of players has been reached
+			plrs.ChildAdded:Wait();																-- wait until a new player joins
+		end;
 	end;
 	getgenv().PLR_CNT = nil;																	-- genv is used so the user can change the value mid-iteration (with consequence), if desired
 end;
