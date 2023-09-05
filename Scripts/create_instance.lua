@@ -17,7 +17,7 @@ local function createInst(class,props,protect)
 end;
 
 -- ideal, use this (can add the protect function)
-local function setVals(class, parent, props)
+local function create(class, parent, props)
     local inst = Instance.new(class);
     for prop,val in next,props do
         inst[prop] = val;
