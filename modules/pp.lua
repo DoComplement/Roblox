@@ -21,4 +21,5 @@ localPlayer.CharacterAdded:Connect(function(char)
 	humanoid = char:WaitForChild("Humanoid");	-- can yield, easy fix tho
 end);
 
-return character,primaryPart,humanoid;
+getgenv()["h_parts"] = {character, primaryPart, humanoid};
+return character, primaryPart, humanoid;
