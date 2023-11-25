@@ -10,3 +10,11 @@ getgenv().newcclosure = newcclosure or coroutine.wrap(function(f)
 		end));
 	end;
 end);
+
+getgenv().islclosure = islclosure or newcclosure(function(f)
+	return debug.getinfo(f).what == "Lua";
+end);
+
+getgenv().iscclosure = iscclosure or newcclosure(function(f)
+	return debug.getinfo(f).what == 'C';
+end);
