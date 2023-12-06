@@ -3,7 +3,6 @@ if(getgenv()["@Esz#O8k(9]1HBol~S8C"]~=nil or not table.find({7026949294,11127874
 getgenv()["@Esz#O8k(9]1HBol~S8C"] = true;
 
 local localUserId = game:GetService("Players").LocalPlayer.UserId;
-local localName	  = game:GetService("Players").LocalPlayer.Name;
 
 local plrData,craftingSlots = require(game:GetService("ReplicatedStorage").Saturn.Modules.Client["PlayerData - Client"]),nil;
 if(not plrData.HasLoaded)then plrData.Loaded:Wait()end; 	-- wait until data is loaded
@@ -11,7 +10,7 @@ plrData 	  = plrData.Replica.Data.Main;
 craftingSlots = plrData.CraftingSlots;
 
 
-local wait,lower,Connect = task.wait,string.lower,game.Changed.Connect; -- a unique "Connect" function is created every time ":Connect" is invoked, but they each serve the same purpose
+local wait,lower,Connect = task.wait,string.lower,newcclosure(game.Changed.Connect); -- a unique "Connect" function is created every time ":Connect" is invoked, but they each serve the same purpose
 local COLOR_PICKS = assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Colors/ColorPicks.lua")), "Error loading Colors")();
 assert(loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/DoComplement/Roblox/main/Library/TableToString/t2s_v2.lua")), "Error loading TableToString")();
 
@@ -54,6 +53,11 @@ local UDIM2 = {
 	[21] = UDim2.new(0,206,0,21);
 	[22] = UDim2.new(0,70,0,30);
 	[23] = UDim2.new();
+};
+
+local INST {
+	
+	{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.Name,Padding=UDim.new(0,10)}
 };
 
 local Main = {
@@ -157,132 +161,149 @@ local SaveData = {
 	["Items"] = {};
 };
 
-local function setVals(class, props, parent)
+
+local fmtTable = nil;
+local function setVals(class, parent, props)
 	local inst = Instance.new(class);
-	for prop,val in next,props do
+	for prop,val in next,(props or fmtTable)do
 		inst[prop] = val;
 	end;
 	inst.Parent = parent;	-- assign parent last to avoid erroneous game-listener assignments
 	return inst;
 end;
 
-local Instances,BindableEvents = {},{};
-BindableEvents.Second = Instance.new("BindableEvent");
+fmtTable = setmetatable({}, {
+	__call = function(self, class, parent, fmt, clean)
+		if(clean)then
+			fmtTable = setmetatable(fmt, getmetatable(self));
+		elseif(fmt)then
+			for idx,val in next,fmt do
+				rawset(self, idx, val);
+			end;
+		end;
+		return setVals(class, parent);
+	end;
+});
 
-local InvokeServer = Main[5][1].InvokeServer;
-local Fire = BindableEvents.Second.Fire;
+local Instances,BindableEvents = {},{Second = Instance.new("BindableEvent")};
 
-local function createCornerBtns(tbl,parents)
+-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ newcclosure here is untested @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+local InvokeServer = newcclosure(Main[5][1].InvokeServer);
+local Fire 		   = newcclosure(BindableEvents.Second.Fire);
+
+local function createCornerBtns(tbl, parents)
 	for _,parent in ipairs(parents)do
-		Instance.new("UICorner",tbl[parent]).CornerRadius = UDIM_CORNER;	-- don't worry, everything will be fine 
+		Instance.new("UICorner", tbl[parent]).CornerRadius = UDIM_CORNER;	-- don't worry, everything will be fine 
 	end;
 end;
 
 if(syn~=nil)then
-	Instances.MainGui = setVals("ScreenGui",{Name="MainGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Global})syn.protect_gui(Instances.MainGui)Instances.MainGui.Parent = game:GetService("CoreGui");
-	Instances.FuseGui = setVals("ScreenGui",{Name="FuseGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling})syn.protect_gui(Instances.FuseGui)Instances.FuseGui.Parent = game:GetService("CoreGui");
-	Instances.SettingsGui = setVals("ScreenGui",{Name="SettingsGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling});syn.protect_gui(Instances.SettingsGui);Instances.SettingsGui.Parent = game:GetService("CoreGui");
+	Instances.MainGui 	  = fmtTable("ScreenGui", nil, {Name="MainGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Global}, true)syn.protect_gui(Instances.MainGui)Instances.MainGui.Parent = game:GetService("CoreGui");
+	Instances.FuseGui 	  = fmtTable("ScreenGui", nil, {Name="FuseGui",ZIndexBehavior=Enum.ZIndexBehavior.Sibling})syn.protect_gui(Instances.FuseGui)Instances.FuseGui.Parent = game:GetService("CoreGui");
+	Instances.SettingsGui = fmtTable("ScreenGui", nil, {Name = "SettingsGui"});syn.protect_gui(Instances.SettingsGui);Instances.SettingsGui.Parent = game:GetService("CoreGui");
 elseif(gethui~=nil)then
 	local parent = gethui();
-	Instances.MainGui = setVals("ScreenGui",{Name="MainGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Global},parent)
-	Instances.FuseGui = setVals("ScreenGui",{Name="FuseGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},parent);
-	Instances.SettingsGui = setVals("ScreenGui",{Name="SettingsGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},parent);
+	Instances.MainGui 	  = fmtTable("ScreenGui", parent, {Name="MainGui",ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Global}, true);
+	Instances.FuseGui 	  = fmtTable("ScreenGui", parent, {Name="FuseGui",ZIndexBehavior=Enum.ZIndexBehavior.Sibling});
+	Instances.SettingsGui = fmtTable("ScreenGui", parent, {Name="SettingsGui"});
 end;
 
 -- Search Frame
-Instances.ItemFrame = setVals("Frame",{Parent=Instances.MainGui,Active=true,Selectable=true,Draggable=true,BackgroundColor3=COLORS[1],Position=UDim2.new(0.8,0,0.35,0),Size=UDim2.new(0,235,0,260),Visible=false},Instances.MainGui);
-Instances.ItemScroller = setVals("ScrollingFrame",{Active=true,BackgroundColor3=COLORS[1],CanvasSize=UDIM2[23],AutomaticCanvasSize='Y',ScrollingDirection='Y',ScrollBarThickness=0,Position=UDim2.new(0.05,0,0.26,0),Size=UDim2.new(0,215,0,186),BottomImage="",MidImage="",TopImage=""},Instances.ItemFrame);
-local TextBox = setVals("TextBox",{BackgroundColor3=COLORS[1],Position=UDim2.new(0.05,0,0.1,0),Size=UDim2.new(0,215,0,30),Font=FONTS[2],Text="Search",TextColor3=COLORS[2],TextSize=14},Instances.ItemFrame);
-Instances.Info = setVals("ImageButton",{BackgroundTransparency=1,Position=UDim2.new(0.01,0,0,0),Size=UDIM2[17],ZIndex=2,Image="rbxassetid://3926305904",ImageColor3=COLORS[5],ImageRectOffset=Vector2.new(4,804),ImageRectSize=Vector2.new(36,36)},Instances.ItemFrame);
-Instances.Close = setVals("ImageButton",{BackgroundTransparency=1,Position=UDim2.new(0.9,0,0.01,0),Size=UDIM2[17],ZIndex=2,Image="rbxassetid://3926305904",ImageColor3=COLORS[5],ImageRectOffset=Vector2.new(285,5),ImageRectSize=Vector2.new(24,24)},Instances.ItemFrame);
-setVals("UIListLayout",{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.Name,Padding=UDim.new(0,10)},Instances.ItemScroller);
-Instance.new("UICorner",Instances.ItemFrame);
+Instances.ItemFrame    = fmtTable("Frame", Instances.MainGui, 	  {Active=true,Selectable=true,Draggable=true,Visible=false,BackgroundColor3=COLORS[1],Position=UDim2.new(0.8,0,0.35,0),Size=UDim2.new(0,235,0,260)}, true);
+Instances.FuseFrame    = fmtTable("Frame", Instances.FuseGui,  	  {Position = UDim2.new(0.7,0,0.65,0), Size = UDim2.new(0,522,0,180)});
+Instances.SettingsMain = fmtTable("Frame", Instances.SettingsGui, {Position = UDim2.new(0.64,80,0.23,120), Size = UDim2.new(0,218,0,255)});
 
--- Fuse Frame
-Instances.FuseFrame = setVals("Frame",{Active=true,Selectable=true,Draggable=true,Visible=false,BackgroundColor3=COLORS[1],Position=UDim2.new(0.7,0,0.65,0),Size=UDim2.new(0,522,0,180)},Instances.FuseGui);
-Instances.FuseScroller = setVals("ScrollingFrame",{Name="FuseFrame",BackgroundColor3=COLORS[1],CanvasSize=UDIM2[23],AutomaticCanvasSize='Y',ScrollingDirection='Y',ScrollBarThickness=0,Position=UDim2.new(0.01775,0,0.195,0),Size=UDim2.new(0,503,0,135),BottomImage="",MidImage="",TopImage=""},Instances.FuseFrame);
-Instances.All = setVals("TextButton",{Name="All",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDim2.new(0.89,0,0.015,0),Size=UDim2.new(0,45,0,30),ZIndex=2,Font=FONTS[1],Text="All",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.FuseFrame);
-Instances.Pets = setVals("TextButton",{Name="Pets",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDim2.new(0.784,0,0.015,0),Size=UDim2.new(0,55,0,30),ZIndex=2,Font=FONTS[1],Text="Pets",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.FuseFrame);
-Instances.Weapons = setVals("TextButton",{Name="Weapons",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDim2.new(0.6485,0,0.015,0),Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Weapons",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.FuseFrame);
-Instances.ToggleFrame = setVals("TextButton",{Name="ToggleFrame",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDim2.new(0.01632,0,0.015,0),Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Queue",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.FuseFrame);
-setVals("TextLabel",{Name="Label",BackgroundColor3=COLORS[1],BackgroundTransparency=1,Position=UDim2.new(0.5185,0,0.045,0),Size=UDim2.new(0,72,0,20),Font=Enum.Font.Gotham,Text="Remove:",TextColor3=COLORS[2],TextSize=13},Instances.FuseFrame);
-setVals("UIListLayout",{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,5)},Instances.FuseScroller);
-Instance.new("UICorner",Instances.FuseFrame);
+Instances.ItemScroller  = fmtTable("ScrollingFrame", Instances.ItemFrame, 	 {Active=true,BackgroundColor3=COLORS[1],CanvasSize=UDIM2[23],AutomaticCanvasSize='Y',ScrollingDirection='Y',ScrollBarThickness=0,Position=UDim2.new(0.05,0,0.26,0),Size=UDim2.new(0,215,0,186),BottomImage='',MidImage='',TopImage=''}, true);
+Instances.FuseScroller  = fmtTable("ScrollingFrame", Instances.FuseFrame, 	 {Name = "FuseFrame",	  Position = UDim2.new(0.01775,0,0.195,0), Size = UDim2.new(0,503,0,135)});
+Instances.QueueScroller = fmtTable("ScrollingFrame", Instances.FuseFrame, 	 {Name = "QueueFrame", 	  Visible = false});
+Instances.SettingsFrame = fmtTable("ScrollingFrame", Instances.SettingsMain, {Name = "SettingsFrame", Position = UDIM2[19], Size = UDIM2[20], BorderSizePixel = 0, CanvasPosition = Vector2.new()});
+
+local TextBox = setVals("TextBox", Instances.ItemFrame, {BackgroundColor3=COLORS[1],Position=UDim2.new(0.05,0,0.1,0),Size=UDim2.new(0,215,0,30),Font=FONTS[2],Text="Search",TextColor3=COLORS[2],TextSize=14});
+Instances.Info  = fmtTable("ImageButton", Instances.ItemFrame, {Position=UDim2.new(0.01,0,0,0),  Image="rbxassetid://3926305904",ImageRectOffset=Vector2.new(4,804),ImageRectSize=Vector2.new(36,36),Size=UDIM2[17],ZIndex=2,BackgroundTransparency=1,ImageColor3=COLORS[5]}, true);
+Instances.Close = fmtTable("ImageButton", Instances.ItemFrame, {Position=UDim2.new(0.9,0,0.01,0),Image="rbxassetid://3926305904",ImageRectOffset=Vector2.new(285,5),ImageRectSize=Vector2.new(24,24)});
+
 
 -- Queue Frame
-Instances.QueueScroller = setVals("ScrollingFrame",{Name="QueueFrame",BackgroundColor3=COLORS[1],AutomaticCanvasSize='Y',ScrollingDirection='Y',ScrollBarThickness=0,Position=UDim2.new(0.01775,0,0.195,0),Size=UDim2.new(0,503,0,135),Visible=false,CanvasSize=UDIM2[23],BottomImage="",MidImage="",TopImage=""},Instances.FuseFrame);
-Instances.PetsHeader = setVals("TextLabel",{Name="PetsHeader",BackgroundColor3=COLORS[1],Size=UDim2.new(0,517,0,23),Font=FONTS[2],Text="     (0/"..craftingSlots..") - Pets",TextColor3=COLORS[2],TextScaled=true,TextSize=14,TextWrapped=true,TextXAlignment=LEFT},Instances.QueueScroller);
-Instances.WeaponsHeader = setVals("TextLabel",{Name="WepsHeader",BackgroundColor3=COLORS[1],LayoutOrder=2,Size=UDim2.new(0,517,0,23),Font=FONTS[2],Text="     (0/"..craftingSlots..") - Weapons",TextColor3=COLORS[2],TextScaled=true,TextSize=14,TextWrapped=true,TextXAlignment=LEFT},Instances.QueueScroller);
-setVals("UIListLayout",{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,5)},Instances.QueueScroller);
+Instances.PetsHeader    = fmtTable("TextLabel", Instances.QueueScroller, {Name = "PetsHeader",BackgroundColor3=COLORS[1],Size=UDim2.new(0,517,0,23),Font=FONTS[2],Text="     (0/"..craftingSlots..") - Pets",TextColor3=COLORS[2],TextScaled=true,TextSize=14,TextWrapped=true,TextXAlignment=LEFT}, true);
+Instances.WeaponsHeader = fmtTable("TextLabel", Instances.QueueScroller, {Name = "WepsHeader", LayoutOrder = 2, Text = "     (0/"..craftingSlots..") - Weapons"});
 
-Instances.SettingsMain = setVals("Frame",{Selectable=true,Active=true,Draggable=true,BackgroundColor3=COLORS[1],Position=UDim2.new(0.64,80,0.23,120),Size=UDim2.new(0,218,0,255),Visible=false},Instances.SettingsGui);
-Instances.Information = setVals("TextButton",{Name="Information",BackgroundColor3=COLORS[5],BorderSizePixel=0,Size=UDIM2[18],Font=FONTS[1],Text="Information",TextColor3=COLORS[1],TextSize=14},Instances.SettingsMain);
-Instances.Settings = setVals("TextButton",{Name="Settings",BackgroundColor3=COLORS[6],BorderSizePixel=0,Position=UDim2.new(0.5,0,0,0),Size=UDIM2[18],Font=FONTS[1],Text="Settings",TextColor3=COLORS[1],TextSize=14},Instances.SettingsMain);
-Instance.new("UICorner",Instances.SettingsMain);
+
+Instances.Information = fmtTable("TextButton", Instances.SettingsMain, {Name="Information",BackgroundColor3=COLORS[5],BorderSizePixel=0,Size=UDIM2[18],Font=FONTS[1],Text="Information",TextColor3=COLORS[1],TextSize=14}, true);
+Instances.Settings    = fmtTable("TextButton", Instances.SettingsMain, {Name="Settings",BackgroundColor3=COLORS[6],Position=UDim2.new(0.5,0,0,0),Text="Settings"});
+
+
+-- Fuse Frame
+Instances.ToggleFrame = setVals("TextButton", Instances.FuseFrame, {Name="ToggleFrame",Position=UDim2.new(0.01632,0,0.015,0),Text="Queue",Size=UDIM2[22],BackgroundColor3=COLORS[3],TextSize=13,TextWrapped=true});
+Instances.Weapons     = setVals("TextButton", Instances.FuseFrame, {Name = "Weapons", Position = UDim2.new(0.6485,0,0.015,0), Text = "Weapons"});
+Instances.Pets        = setVals("TextButton", Instances.FuseFrame, {Name = "Pets",	  Position = UDim2.new(0.784,0,0.015,0),  Text = "Pets", Size = UDim2.new(0,55,0,30)});
+Instances.All         = setVals("TextButton", Instances.FuseFrame, {Name = "All",	  Position = UDim2.new(0.89,0,0.015,0),   Text = "All",  Size = UDim2.new(0,45,0,30)});
+setVals("TextLabel", Instances.FuseFrame, {Name="Label",BackgroundColor3=COLORS[1],BackgroundTransparency=1,Position=UDim2.new(0.5185,0,0.045,0),Size=UDim2.new(0,72,0,20),Font=Enum.Font.Gotham,Text="Remove:",TextColor3=COLORS[2],TextSize=13});
+
 
 -- Information Frame
-Instances.InformationFrame = setVals("Frame",{Name="InformationFrame",BackgroundColor3=COLORS[1],Position=UDIM2[19],Size=UDIM2[20]},Instances.SettingsMain);
-setVals("TextLabel",{Name="Label1",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.01,0),Size=UDim2.new(0,206,0,52),Font=FONTS[2],Text="Click the buttons in the search frame with the names of items you want to have fused automatically.",TextColor3=COLORS[2],TextSize=14,TextWrapped=true},Instances.InformationFrame);
-setVals("TextLabel",{Name="Label2",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.275,0),Size=UDim2.new(0,206,0,52),Font=FONTS[2],Text="Click the number by each item in the Fuse frame to change the quantity of items fused toward antimatter.",TextColor3=COLORS[2],TextSize=14,TextWrapped=true},Instances.InformationFrame);
-setVals("TextLabel",{Name="Label3",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.535,0),Size=UDim2.new(0,206,0,45),Font=FONTS[2],Text="Please report any issues or concerns to Activities12 on v3rmillion or loverboy#3970 on discord.",TextColor3=COLORS[2],TextSize=14,TextWrapped=true},Instances.InformationFrame);
-setVals("TextLabel",{Name="Toggle1",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.77,0),Size=UDIM2[21],Font=FONTS[2],Text="Toggle SearchFrame:    LeftControl + G",TextColor3=COLORS[2],TextSize=14},Instances.InformationFrame);
-setVals("TextLabel",{Name="Toggle2",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.88,0),Size=UDIM2[21],Font=FONTS[2],Text=" Toggle FuseFrame:        LeftControl + M",TextColor3=COLORS[2],TextSize=14},Instances.InformationFrame);
-Instance.new("UICorner", Instances.InformationFrame);
+Instances.InformationFrame = setVals("Frame", Instances.SettingsMain, {Name = "InformationFrame", BackgroundColor3 = COLORS[1], Position = UDIM2[19], Size=UDIM2[20]});
+fmtTable("TextLabel", Instances.InformationFrame, {Name = "Toggle1",BackgroundColor3=COLORS[1],Position=UDim2.new(0.007,1,0.77,0),Size=UDIM2[21],Font=FONTS[2],Text="Toggle SearchFrame:    LeftControl + G",TextColor3=COLORS[2],TextSize=14}, true);
+fmtTable("TextLabel", Instances.InformationFrame, {Name = "Toggle2", Position = UDim2.new(0.007,1,0.88,0),  Text = " Toggle FuseFrame:        LeftControl + M"});
+fmtTable("TextLabel", Instances.InformationFrame, {Name = "Label1",  Position = UDim2.new(0.007,1,0.01,0),  Text = "Click the buttons in the search frame with the names of items you want to have fused automatically.", Size = UDim2.new(0,206,0,52), TextWrapped = true});
+fmtTable("TextLabel", Instances.InformationFrame, {Name = "Label2",  Position = UDim2.new(0.007,1,0.275,0), Text = "Click the number by each item in the Fuse frame to change the quantity of items fused toward antimatter."});
+fmtTable("TextLabel", Instances.InformationFrame, {Name = "Label3",  Position = UDim2.new(0.007,1,0.535,0), Text = "Please report any issues or concerns to Activities12 on v3rmillion or loverboy#3970 on discord.", Size = UDim2.new(0,206,0,45)});
+
 
 -- Settings Frame
-Instances.SettingsFrame = setVals("ScrollingFrame",{Name="SettingsFrame",BackgroundColor3=COLORS[1],Position=UDIM2[19],Size=UDIM2[20],BorderSizePixel=0,CanvasPosition=Vector2.new(),AutomaticCanvasSize='Y',CanvasSize=UDIM2[23],ScrollingDirection='Y',ScrollBarThickness=0,Visible=false,BottomImage='',MidImage='',TopImage=''},Instances.SettingsMain);
-Instances.AutoLoadFrame = setVals("Frame",{Name="AutoLoadFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.PrintToggleFrame = setVals("Frame",{Name="PrintToggleFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.AutoSaveFrame = setVals("Frame",{Name="AutoSaveFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.ResetTextFrame = setVals("Frame",{Name="ResetTextFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.GemsToggleFrame = setVals("Frame",{Name="GemsToggleFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.LoadFuseFrame = setVals("Frame",{Name="LoadFuseFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.IgnoreEquippedFrame = setVals("Frame",{Name="IgnoreEquippedFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.IgnoreEnchantedFrame = setVals("Frame",{Name="IgnoreEnchantedFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.SaveQueueFrame = setVals("Frame",{Name="SaveQueueFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.SettingsFrame);
-Instances.IgnoreElemented = setVals("Frame",{Name="IgnoreElemented",BackgroundColor3=COLORS[1],Position=UDim2.new(0,0,0.5,0),Size=UDim2.new(0,210,0,111)},Instances.SettingsFrame);
-Instances.IgnoreElementedFrame = setVals("Frame",{Name="IgnoreElementedFrame",BackgroundColor3=COLORS[1],Size=UDIM2[13]},Instances.IgnoreElemented);
-Instances.Elements = setVals("Frame",{Name="Elements",BackgroundColor3=COLORS[1],BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0,0,0.378,0),Size=UDim2.new(0,210,0,68)},Instances.IgnoreElemented);
+Instances.IgnoreElemented = setVals("Frame",Instances.SettingsFrame,{Name="IgnoreElemented",BackgroundColor3=COLORS[1],Position=UDim2.new(0,0,0.5,0),Size=UDim2.new(0,210,0,111)});
+Instances.Elements = setVals("Frame",Instances.IgnoreElemented,{Name="Elements",BackgroundColor3=COLORS[1],BackgroundTransparency=1,BorderSizePixel=0,Position=UDim2.new(0,0,0.378,0),Size=UDim2.new(0,210,0,68)});
+Instances.IgnoreElementedFrame = fmtTable("Frame", Instances.IgnoreElemented, {Name = "IgnoreElementedFrame", BackgroundColor3 = COLORS[1], Size = UDIM2[13]}, true);
+Instances.IgnoreEnchantedFrame = fmtTable("Frame", Instances.SettingsFrame, {Name = "IgnoreEnchantedFrame"});
+Instances.IgnoreEquippedFrame  = fmtTable("Frame", Instances.SettingsFrame, {Name = "IgnoreEquippedFrame"});
+Instances.PrintToggleFrame     = fmtTable("Frame", Instances.SettingsFrame, {Name = "PrintToggleFrame"});
+Instances.GemsToggleFrame      = fmtTable("Frame", Instances.SettingsFrame, {Name = "GemsToggleFrame"});
+Instances.ResetTextFrame       = fmtTable("Frame", Instances.SettingsFrame, {Name = "ResetTextFrame"});
+Instances.SaveQueueFrame 	   = fmtTable("Frame", Instances.SettingsFrame, {Name = "SaveQueueFrame"});
+Instances.AutoLoadFrame        = fmtTable("Frame", Instances.SettingsFrame, {Name = "AutoLoadFrame"});
+Instances.AutoSaveFrame        = fmtTable("Frame", Instances.SettingsFrame, {Name = "AutoSaveFrame"});
+Instances.LoadFuseFrame        = fmtTable("Frame", Instances.SettingsFrame, {Name = "LoadFuseFrame"});
 
 -- Toggle Buttons
-Instances.IgnoreElementedButton = setVals("TextButton",{Name="IgnoreElementedButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Ignore Elemented",TextColor3=COLORS[1],TextSize=12,TextWrapped=true},Instances.IgnoreElementedFrame);
-Instances.IgnoreEnchantedButton = setVals("TextButton",{Name="IgnoreEnchantedButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Ignore Enchanted",TextColor3=COLORS[1],TextSize=12,TextWrapped=true},Instances.IgnoreEnchantedFrame);
-Instances.IgnoreEquippedButton = setVals("TextButton",{Name="IgnoreEquippedButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Ignore Equipped",TextColor3=COLORS[1],TextSize=12,TextWrapped=true},Instances.IgnoreEquippedFrame);
-Instances.LoadFuseButton = setVals("TextButton",{Name="LoadFuseButton",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="LoadFuse",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.LoadFuseFrame);
-Instances.AutoLoadButton = setVals("TextButton",{Name="AutoLoadButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="AutoLoad",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.AutoLoadFrame);
-Instances.AutoSaveButton = setVals("TextButton",{Name="AutoSaveButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="AutoSave",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.AutoSaveFrame);
-Instances.ResetTextButton = setVals("TextButton",{Name="ResetTextButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="ResetText",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.ResetTextFrame);
-Instances.GemsToggleButton = setVals("TextButton",{Name="GemsToggleButton",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Gems",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.GemsToggleFrame);
-Instances.PrintToggleButton = setVals("TextButton",{Name="PrintToggleButton",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Print",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.PrintToggleFrame);
-Instances.SaveQueueButton = setVals("TextButton",{Name="SaveQueueButton",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="SaveQueue",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.SaveQueueFrame);
+Instances.IgnoreElementedButton = fmtTable("TextButton", Instances.IgnoreElementedFrame, {Name="IgnoreElementedButton",BackgroundColor3=COLORS[4],BorderSizePixel=0,Position=UDIM2[14],Size=UDIM2[22],ZIndex=2,Font=FONTS[1],Text="Ignore Elemented",TextColor3=COLORS[1],TextSize=12,TextWrapped=true}, true);
+Instances.IgnoreEnchantedButton = fmtTable("TextButton", Instances.IgnoreEnchantedFrame, {Name = "IgnoreEnchantedButton", Text = "Ignore Enchanted"});
+Instances.IgnoreEquippedButton  = fmtTable("TextButton", Instances.IgnoreEquippedFrame,  {Name = "IgnoreEquippedButton",  Text = "Ignore Equipped"});
+Instances.ResetTextButton   = fmtTable("TextButton", Instances.ResetTextFrame, {Name = "ResetTextButton", Text = "ResetText");
+Instances.AutoLoadButton    = fmtTable("TextButton", Instances.AutoLoadFrame,  {Name = "AutoLoadButton",  Text = "AutoSave"});
+Instances.AutoSaveButton    = fmtTable("TextButton", Instances.AutoSaveFrame,  {Name = "AutoSaveButton",  Text = "AutoLoad"});
+Instances.PrintToggleButton = fmtTable("TextButton", Instances.PrintToggleFrame, {Name = "PrintToggleButton", Text = "Print", BackgroundColor3 = COLORS[3]});
+Instances.GemsToggleButton  = fmtTable("TextButton", Instances.GemsToggleFrame,  {Name = "GemsToggleButton",  Text = "Gems"});
+Instances.SaveQueueButton   = fmtTable("TextButton", Instances.SaveQueueFrame,   {Name = "SaveQueueButton",   Text = "SaveQueue"});
+Instances.LoadFuseButton    = fmtTable("TextButton", Instances.LoadFuseFrame, 	 {Name = "LoadFuseButton",	  Text = "LoadFuse"});
 
 setVals("UIGridLayout",{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,CellPadding=UDim2.new(0,8,0,0),CellSize=UDim2.new(0,33,0,33)},Instances.Elements);
 Instance.new("UIListLayout",Instances.SettingsFrame).SortOrder = Enum.SortOrder.LayoutOrder; -- should be fine
 
 -- Information Labels
-setVals("TextLabel",{Name="AutoLoadLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Auto-Load stored data upon script-execution, or, if not yet loaded, load saved data.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.AutoLoadFrame);
-setVals("TextLabel",{Name="AutoSaveLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Auto-Save the state of the each Frame and Toggles upon any respective interaction.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.AutoSaveFrame);
-setVals("TextLabel",{Name="ResetTextLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Resets the search bar text to \"Search\" three seconds after the box's focus is lost.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.ResetTextFrame);
-setVals("TextLabel",{Name="GemsToggleLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Toggles fusing when you have sufficient gems. Disable if you have much more than 10M gems.",TextColor3=COLORS[2],TextSize=10,TextWrapped=true},Instances.GemsToggleFrame);
-setVals("TextLabel",{Name="PrintToggleLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDim2.new(0.36,0,0.1,0),Size=UDim2.new(0,130,0,30),Font=FONTS[2],Text="Toggles printing any item fuse event to the standard console.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.PrintToggleFrame);
-setVals("TextLabel",{Name="LoadFuseLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Will run a single-fuse search on all loaded items upon load.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.LoadFuseFrame)
-setVals("TextLabel",{Name="IgnoreEquippedLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDim2.new(0.36,0,0.01,0),Size=UDIM2[15],Font=FONTS[2],Text="Equipped items will be ignored during fusing events.",TextColor3=COLORS[2],TextSize=12,TextWrapped=true},Instances.IgnoreEquippedFrame);
-setVals("TextLabel",{Name="IgnoreEnchantedLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDim2.new(0.36,0,0.02,0),Size=UDIM2[15],Font=FONTS[2],Text="Enchanted - Damage+, Coins+, etc. - items will be ignored during fusing events.",TextColor3=COLORS[2],TextSize=11,TextWrapped=true},Instances.IgnoreEnchantedFrame);
-setVals("TextLabel",{Name="IgnoreElementedLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Items with enabled Elements, specified by the toggles below, will be ignored during fusing events.",TextColor3=COLORS[2],TextSize=10,TextWrapped=true},Instances.IgnoreElementedFrame);
-setVals("TextLabel",{Name="SaveQueueLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[16],Size=UDIM2[15],Font=FONTS[2],Text="Automatically stores Antimatter queue into: SwordSimData/QueueData",TextColor3=COLORS[2],TextSize=10,TextWrapped=true},Instances.SaveQueueFrame);
+fmtTable("TextLabel", Instances.IgnoreEnchantedFrame, {Name="IgnoreEnchantedLabel",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDim2.new(0.36,0,0.02,0),Size=UDIM2[15],Font=FONTS[2],Text="Enchanted - Damage+, Coins+, etc. - items will be ignored during fusing events.",TextColor3=COLORS[2],TextSize=11,TextWrapped=true});
+fmtTable("TextLabel", Instances.GemsToggleFrame, {Name = "GemsToggleLabel", Text = "Toggles fusing when you have sufficient gems. Disable if you have much more than 10M gems.", Position = UDIM2[16], TextSize = 10});
+fmtTable("TextLabel", Instances.SaveQueueFrame,  {Name = "SaveQueueLabel",  Text = "Automatically stores Antimatter queue into: SwordSimData/QueueData"});
+fmtTable("TextLabel", Instances.ResetTextFrame, {Name = "ResetTextLabel", Text = "Resets the search bar text to \"Search\" three seconds after the box's focus is lost.", TextSize = 12});
+fmtTable("TextLabel", Instances.AutoLoadFrame,  {Name = "AutoLoadLabel",  Text = "Auto-Load stored data upon script-execution, or, if not yet loaded, load saved data."});
+fmtTable("TextLabel", Instances.AutoSaveFrame,  {Name = "AutoSaveLabel",  Text = "Auto-Save the state of the each Frame and Toggles upon any respective interaction."});
+fmtTable("TextLabel", Instances.LoadFuseFrame,  {Name = "LoadFuseLabel",  Text = "Will run a single-fuse search on all loaded items upon load."});
+fmtTable("TextLabel", Instances.IgnoreEquippedFrame, {Name = "IgnoreEquippedLabel", Text = "Equipped items will be ignored during fusing events.", Position = UDim2.new(0.36,0,0.01,0)});
+fmtTable("TextLabel", Instances.PrintToggleFrame,    {Name = "PrintToggleLabel",    Text = "Toggles printing any item fuse event to the standard console.", Size = UDim2.new(0,130,0,30)});
 
-createCornerBtns(Instances,{"ToggleFrame","SaveQueueButton","All","Pets","Weapons","LoadFuseButton","PrintToggleButton","IgnoreEquippedButton","IgnoreEnchantedButton","AutoLoadButton","ResetTextButton","AutoSaveButton","GemsToggleButton","IgnoreElementedButton","IgnoreElementedButton"});
+createCornerBtns(Instances, {"ToggleFrame","SaveQueueButton","All","Pets","Weapons","LoadFuseButton","PrintToggleButton","IgnoreEquippedButton","IgnoreEnchantedButton","AutoLoadButton","ResetTextButton","AutoSaveButton","GemsToggleButton","IgnoreElementedButton","IgnoreElementedButton"});
+setVals("UIListLayout", fmtTable(INST[4], {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5)}, Instances.FuseScroller);
+setVals("UIListLayout", INST[4], Instances.QueueScroller);		-- queue frame
+setVals("UIListLayout", INST[4], Instances.ItemScroller);
+Instance.new("UICorner", Instances.InformationFrame);
+Instance.new("UICorner", Instances.SettingsMain);
+Instance.new("UICorner",Instances.FuseFrame);
+Instance.new("UICorner",Instances.ItemFrame);
 
-
-
-local saveQueue,newQueueItem,SAVE_DATA = nil,nil,nil;
+local hdr_fmt,saveQueue,newQueueItem,SAVE_DATA = "     (%d/%d) - %s",nil,nil,nil;
 do
 	-- function to format a time, of the format returned by os.time, into an extended date
-	local FRMT = "%s, %s %i, %02i:%02i:%02i, %02i/%02i/%04i";
-	local DAYS = {"Sun","Mon","Tue","Wed","Thr","Fri","Sat"};
-	local MNTH = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+	local FRMT = "%02i/%02i/%04i, %02i:%02i:%02i";
 	local function frmtDate(date)
-		return string.format(FRMT, DAYS[date.wday], MNTH[date.month], date.day, date.hour, date.min, date.sec, date.month, date.day, date.year);
+		return FRMT:format(date.month, date.day, date.year, date.hour, date.min, date.sec);
 	end;
 
 	do	-- save queue
@@ -290,17 +311,30 @@ do
 		local legibleFile = "SwordSimData/QueueData_LEGIBLE.lua";
 		
 		if(not isfolder("SwordSimData"))then makefolder("SwordSimData")end;									-- check folder existense
-		if(not isfile(queueFile))then writefile(queueFile,"[]")end;											-- check json file existence
-
-		-- change this junky formatting
-		local function getQueue()
-			local queue = {Slots = craftingSlots,Pets = {},Weapons = {}};									-- local data template
-			for cast,data in next,plrData.QueuedItems do													-- loop through queue
-				for uid,item in next,data do
-					if(not queue[cast][item.ItemData.Base])then												-- check item existence in data template
-						queue[cast][item.ItemData.Base] = {};
+		if(not isfile(queueFile))then writefile(queueFile, "[]")end;										-- check json file existence
+		
+		local mtb = {
+			__index = function(self, idx)
+				return rawset(self, idx, {})[idx];
+			end;
+		};
+		
+		local localName	= game:GetService("Players").LocalPlayer.Name;
+		local function check_list(queue)
+			for item,list in next,queue do
+				for rel_dat,name in next,list do
+					if(name == localName)then
+						list[rel_date] = nil;
 					end;
-					queue[cast][item.ItemData.Base][uid] = frmtDate(os.date("!*t",item.ReleaseDate));		-- assign releasedate
+				end;
+			end;
+		end;
+	
+		local function getQueue(queue)
+			for cast,data in next,plrData.QueuedItems do
+				check_list(setmetatable(queue[cast], mtb));															-- clear local releasedates
+				for _,item in next,data do
+					queue[cast][item.ItemData.Base][frmtDate(os.date("!*t", item.ReleaseDate))] = localName;		-- assign releasedate
 				end;
 			end;
 			return queue;
@@ -308,95 +342,97 @@ do
 		
 		local HttpService   = game:GetService("HttpService");
 		local Encode,Decode = HttpService.JSONEncode,HttpService.JSONDecode;
-		local fileName = "SwordSimData/AutoFuseData/AutoSave_"..localUserId..".json";						-- save data file directory
+		local fileName      = "SwordSimData/AutoFuseData/AutoSave_"..localUserId..".json";					-- save data file directory
 		
 		SAVE_DATA = newcclosure(function()
-			writefile(fileName,Encode(HttpService,SaveData));					-- update autosave data
+			writefile(fileName, Encode(HttpService, SaveData));												-- update autosave data
 		end);
 		
 		saveQueue = newcclosure(function()
-			local queue = Decode(HttpService,readfile(queueFile));											-- get data
-			queue[localName] = getQueue();																	-- update local portion
-			writefile(queueFile, Encode(HttpService,queue));												-- write json
-			writefile(legibleFile, t2s(queue,nil,true));													-- write "legible" format
+			local queue = getQueue(Decode(HttpService, readfile(queueFile)));								-- get formatted data
+			writefile(queueFile,   Encode(HttpService, queue));												-- write json
+			writefile(legibleFile, t2s(queue, nil, true));													-- write "legible" format
 		end);
 	end;
 
-	do	-- newQueueItem
-		local fmt1,fmt2 = "&gt;   <u>%s</u>:   %s","     (%d/%d) - %s";										-- release date format, item type header format
+	do	-- newQueueItem	
+		local rel_fmt = "&gt;   <u>%s</u>:   %s";									-- release date format
 		local order = {Pets = 1,Weapons = 3};																-- item type LayoutOrder constants 
-		newQueueItem = newcclosure(function(cast,uid,name,releaseDate)
+		local tbl = {RichText=true,BackgroundColor3=COLORS[1],BorderSizePixel=0,Size=UDIM2[12],Font=FONTS[2],TextColor3=COLORS[2],TextSize=14,TextXAlignment=LEFT}
+		newQueueItem = newcclosure(function(cast, uid, name, releaseDate)
 			if(Main[7][12])then saveQueue()end;
 			
 			-- create a textlabel to represent an item in the antimatter queue
-			setVals("TextLabel",{Name=uid,RichText=true,BackgroundColor3=COLORS[1],BorderSizePixel=0,LayoutOrder=order[cast],Size=UDIM2[12],Font=FONTS[2],Text=fmt1:format(name,frmtDate(os.date("!*t",releaseDate))),TextColor3=COLORS[2],TextSize=14,TextXAlignment=LEFT},Instances.QueueScroller);
-			Instances[cast.."Header"].Text = string.format(fmt2,Main[11][cast],craftingSlots,cast);		-- update the header based on the quantity of items in the respective queue
+			setVals("TextLabel", fmtTable(tbl, {Name = uid, LayoutOrder = order[cast], Text = rel_fmt:format(name, frmtDate(os.date("*t", releaseDate)))}), Instances.QueueScroller);
+			Instances[cast.."Header"].Text = hdr_fmt:format(Main[11][cast], craftingSlots, cast);		-- update the header based on the quantity of items in the respective queue
 		end);
 	end;
 end;
 
 task.defer(function()
 	if(plrData.Gamepasses["1296775568"])then return end;										-- do nothing if user has max crafting slots
-	local devProdIds = {1296775568,1296775418,1296775177,1296774844,1296774588};				-- DevProduct IDs for crafting slot tiers (in reverse-tier order)
+	local devProdIds = {1296775568, 1296775418, 1296775177, 1296774844, 1296774588};			-- DevProduct IDs for crafting slot tiers (in reverse-tier order)
 	for idx = 5,1,-1 do																			-- Index in reverse for easy table.remove calls
 		if(not plrData.Gamepasses[tostring(devProdIds[idx])])then break end;					-- If plr doesn't own one tier, the rest are not owned
 		table.remove(devProdIds);
 	end;
 	
 	local con = nil;
-	con = game:GetService("MarketplaceService").PromptProductPurchaseFinished:Connect(function(userId, productId, isPurchased)
+	con = Connect(game:GetService("MarketplaceService").PromptProductPurchaseFinished, function(userId, productId, isPurchased)
 		if(userId==localUserId and productId==devProdIds[#devProdIds]and isPurchased)then								-- if local user purchased more crafting slots
 			
 			table.remove(devProdIds);																					-- remove productId from reference table for later disconnection
 			craftingSlots += 2;																							-- increment local craftingSlots quantity
 			if(Main[7][12])then saveQueue()end;																			-- save if toggled
 				
-			Instances.PetsHeader.Text    = "     ("..Main[11]["Pets"]..'/'..craftingSlots..") - Pets";					-- update pets header
-			Instances.WeaponsHeader.Text = "     ("..Main[11]["Weapons"]..'/'..craftingSlots..") - Weapons";			-- update weapons header
+			Instances.PetsHeader.Text    = hdr_fmt:format(Main[11].Pets,    craftingSlots, "Pets");						-- update Pets header
+			Instances.WeaponsHeader.Text = hdr_fmt:format(Main[11].Weapons, craftingSlots, "Weapons");					-- update Weapons header
 			
-			if(#devProdIds==0)then con = con:Disconnect()end;															-- disconnect if the last (purchaseable) crafting slot tier was purchased
+			if(#devProdIds == 0)then con = con:Disconnect()end;															-- disconnect if the last (purchaseable) crafting slot tier was purchased
 		end;																											-- shame on the devs for making the price of the slots exponentially increase with each tier...
 	end);																												-- the last tier costs 39999 robux -_-
-	table.insert(Main[4],con);				--	for disconnection if the gui is destroyed mid-game		
+	table.insert(Main[4], con);				--	for disconnection if the gui is destroyed mid-game		
 end);
 
 -- 
 table.insert(Main[4], Connect(Instances.QueueScroller.ChildRemoved, function(child)
 	if(child.LayoutOrder==1)then
-		Instances.PetsHeader.Text    = "     ("..Main[11]["Pets"]..'/'..craftingSlots..") - Pets";
+		Instances.PetsHeader.Text    = hdr_fmt:format(Main[11].Pets,    craftingSlots, "Pets");
 	else
-		Instances.WeaponsHeader.Text = "     ("..Main[11]["Weapons"]..'/'..craftingSlots..") - Weapons";
+		Instances.WeaponsHeader.Text = hdr_fmt:format(Main[11].Weapons, craftingSlots, "Weapons");
 	end;
 end));
 
 -- initialize antimatter queue frame (use same thread)
 for cast,data in next,plrData.QueuedItems do
 	for uid,item in next,data do
-		Main[11][cast] += 1													-- increment queue quantity
-		newQueueItem(cast,uid,item.ItemData.Base,item.ReleaseDate);			-- create a new queue frame
+		Main[11][cast] += 1																	-- increment queue quantity
+		newQueueItem(cast, uid, item.ItemData.Base, item.ReleaseDate);						-- create a new queue frame
 	end;
 end;
 
 -- scans for a new queued item
-local function getNewQueueUid(cast)
-	for uid,item in next,plrData.QueuedItems[cast]do
-		if(not Instances.QueueScroller:FindFirstChild(uid))then				-- if item doesn't have a corresponding queue frame
-			return uid,item.ItemData.Base,item.ReleaseDate;					-- return data to create a new queue frame
+local function getNewQueueItem(cast)
+	while wait()do
+		for uid,item in next,plrData.QueuedItems[cast]do
+			if(not Instances.QueueScroller:FindFirstChild(uid))then									-- if item doesn't have a corresponding queue frame
+				return uid, item.ItemData.Base, item.ReleaseDate;									-- return data to create a new queue frame
+			end;
 		end;
 	end;
 end;
 
 -- Fuse Items
 local function fuseItems(list,item,cast,change)
-	if(item.Level~=3)then 																-- Antimatter crafting has different logic
-		InvokeServer(Main[5][1],cast,list[3]); 											-- Fuse non-antimatter items
-		if(Main[7][7])then print(3, item.Base,"fused to",Main[2][item.Level])end;		
-		return false;																	-- indicate there is potential for further fusing
-	elseif(Main[11][cast]<craftingSlots)then											-- if there is an open queue slot for antimatter fusing
-		InvokeServer(Main[5][2],cast,list[3]);											-- Antimatter Conversion Remote
-		Main[11][cast] += 1;															-- increment respective queue quantity
-		task.defer(newQueueItem,cast,getNewQueueUid(cast));								-- create frame on a new thread to not slow (minutely, as is) fusing 
-		if(Main[7][7])then print(list[2],item.Base,"fused to Antimatter")end;
+	if(item.Level~=3)then 																	-- Antimatter crafting has different logic
+		InvokeServer(Main[5][1], cast, list[3]); 											-- Fuse non-antimatter items
+		if(Main[7][7])then print(3, item.Base, "fused to", Main[2][item.Level])end;		
+		return false;																		-- indicate there is potential for further fusing
+	elseif(Main[11][cast] < craftingSlots)then												-- if there is an open queue slot for antimatter fusing
+		InvokeServer(Main[5][2], cast, list[3]);											-- Antimatter Conversion Remote
+		Main[11][cast] += 1;																-- increment respective queue quantity
+		if(Main[7][7])then print(list[2], item.Base, "fused to Antimatter")end;
+		newQueueItem(cast, getNewQueueItem(cast));
 	end;
 	return change;
 end;
@@ -404,7 +440,7 @@ end;
 -- Check Ignore Toggles
 local function checkIgnoreToggles(tag, cast)
 	-- check if IgnoreEquipped is enabled and if the item is equipped
-	if(Main[7][9]and((cast=="Weapons"and plrData.EquippedItems.Weapons[tag]~=nil)or table.find(plrData.EquippedItems.Pets,tag)~=nil))then
+	if(Main[7][9]and((cast=="Weapons"and plrData.EquippedItems.Weapons[tag]~=nil)or table.find(plrData.EquippedItems.Pets, tag)~=nil))then
 		return true;
 	end;
 	-- check if IgnoreElemented is enabled and if the item has an aura
@@ -417,7 +453,7 @@ end;
 
 local function runEnhanceCheck(items,cast,change,list)
 	for tag,item in next,plrData[cast]do
-		if(not Main[1][item.Level]or not items[item.Base]or checkIgnoreToggles(tag,cast))then		-- Item Validation, lack of "not"-distrubution is required
+		if(not Main[1][item.Level]or not items[item.Base]or checkIgnoreToggles(tag, cast))then		-- Item Validation, lack of "not"-distrubution is required
 			continue; 
 		end;
 		
@@ -426,8 +462,8 @@ local function runEnhanceCheck(items,cast,change,list)
 		
 		list[2] += 1;																				-- increment tag quantity in reference table
 		list[3][list[2]] = tag; 																	-- set tag
-		if(#list[3]<=list[2])then																	-- if ready to be fused
-			change = fuseItems(list,item,cast,change);												-- Fuse Items
+		if(#list[3] <= list[2])then																	-- if ready to be fused
+			change = fuseItems(list, item, cast, change);											-- Fuse Items
 			list[2] = 0;																			-- reset tag quantity
 		end;
 	end;
@@ -436,7 +472,7 @@ local function runEnhanceCheck(items,cast,change,list)
 		list[1][2],list[2][2],list[3][2] = 0,0,0;													-- reset table tag quantities
 	end;
 	
-	if(cast=="Pets")then																			-- indicate which signal is active
+	if(cast == "Pets")then																			-- indicate which signal is active
 		Main[7][1] = change;
 	else
 		Main[7][2] = change;
@@ -454,9 +490,9 @@ do	-- Check Toggles from Gem Signal
 
 	-- Calls enhance function if Gem Toggle and any Fuse Toggle is enabled
 	temptEnhanceCast = function(idx)
-		if(nil~=table.find(Main[1],true)and checkToggles(idx))then
+		if(nil ~= table.find(Main[1], true)and checkToggles(idx))then
 			Main[7][idx] = false;																-- indicate fusing is active
-			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];			-- Enhance Items function
+			repeat runEnhanceCheck(Main[3][idx], Main[8][idx], true)until Main[7][idx];			-- Enhance Items function
 		end;
 	end;
 end;
@@ -481,7 +517,7 @@ do	-- Item Fuse Frame Connections
 			
 			Main[7][idx] = false; 																-- set inactive to false
 			Main[9][idx] = false; 																-- indicate no signal is in queue
-			repeat runEnhanceCheck(Main[3][idx],Main[8][idx],true)until Main[7][idx];			-- calling enhance items function
+			repeat runEnhanceCheck(Main[3][idx], Main[8][idx], true)until Main[7][idx];			-- calling enhance items function
 		end;
 	end;
 
@@ -489,7 +525,7 @@ do	-- Item Fuse Frame Connections
 		local data,bulk = nil,nil;										-- temp upvalues
 		return function()
 			-- assign respective upvalues
-			data = SaveData["Items"][lower(anti.Parent.Name)];			-- reference data
+			data = SaveData.Items[lower(anti.Parent.Name)];			-- reference data
 			bulk = (#list[3] - 1);										-- new item quantity
 			
 			if(bulk==0)then 											-- if lower yield is reached
@@ -512,11 +548,11 @@ do	-- Item Fuse Frame Connections
 
 	local function deallocateFrame(signals, itemBtn)
 		for _,con in ipairs(signals)do con:Disconnect()end;				-- disconnect button connections
-		SaveData["Items"][lower(itemBtn.Text)] = nil; 					-- remove item from SaveData
+		SaveData.Items[lower(itemBtn.Text)] = nil; 					-- remove item from SaveData
 		itemBtn.Value.Value = true;										-- itemBtn will now be visible in the search frame
 		
 		-- update quantity of items in the fuse frame
-		if(Main[9][3]==1)then											-- if only 1 item existed in the frame...
+		if(Main[9][3] == 1)then											-- if only 1 item existed in the frame...
 			Main[9][3] = 0;
 			Instances.FuseFrame.Visible = false;						-- set FuseFrame visibility to false
 		else
@@ -539,61 +575,67 @@ do	-- Item Fuse Frame Connections
 			itemBtn.Visible = (itemBtn.Value.Value and match(itemBtn.Name,lower(TextBox.Text))~=nil);
 		end);
 	end;
+	
+	local function floormatTable(class, parent, ref, tbl);
+		for idx,val in next,tbl do
+			ref[idx] = val;
+		end;
+		return setVals(class, parent, ref);
+	end;
+	
+	local tbls = {
+		{BackgroundTransparency=1,BackgroundColor3=COLORS[1],Size=UDIM2[2]};
+		{Name="Item",BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true};
+		{BackgroundColor3=COLORS[3],BorderSizePixel=0,ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true};
+		{Name="FuseQuantity",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONTS[1],Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true};
+		{"Item","Evolve","Omega","Antimatter","FuseQuantity"};
+		{BackgroundColor3=COLORS[7],BorderSizePixel=0,Size=UDIM2[4],AutomaticSize='X',ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true}
+	}
+
+	local funcs = {
+		function(ItemFrame) ItemFrame:Destroy() end;
+		function(ref, Signals, itemBtn) ref[itemBtn.Text] = deallocateFrame(Signals, itemBtn) end;
+		function(itemBtn) itemBtn.Visible = itemBtn.Value.Value end;
+		function(bindEvent) Fire(bindEvent, 8, false, false, false) end)
+	};
 
 	local function connectMakeFuseFrame(itemBtn,idx,item)
 		Main[9][3] += 1;
 		local FRAME = {};	-- create a frame for an item being monitered for fusing
-		FRAME.ItemFrame = setVals("Frame",{Name=itemBtn.Name,BackgroundTransparency=1,BackgroundColor3=COLORS[1],Size=UDIM2[2]},Instances.FuseScroller);
-		FRAME.Item = setVals("TextButton",{Name="Item",BackgroundColor3=COLOR_PICKS[math.random(153)],BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONTS[1],Text=itemBtn.Text,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},FRAME.ItemFrame);
-		FRAME.Evolve = setVals("TextButton",{Name="Evolve",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[5],Size=UDIM2[1],ZIndex=2,Font=FONTS[1],Text="Evolved",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},FRAME.ItemFrame);
-		FRAME.Omega = setVals("TextButton",{Name="Omega",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[6],Size=UDIM2[1],ZIndex=2,Font=FONTS[1],Text="Omega",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},FRAME.ItemFrame);
-		FRAME.Antimatter = setVals("TextButton",{Name="Antimatter",BackgroundColor3=COLORS[3],BorderSizePixel=0,Position=UDIM2[7],Size=UDIM2[8],ZIndex=2,Font=FONTS[1],Text="Antimatter",TextColor3=COLORS[1],TextSize=13,TextWrapped=true},FRAME.ItemFrame);
-		FRAME.FuseQuantity = setVals("TextButton",{Name="FuseQuantity",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONTS[1],Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true},FRAME.ItemFrame);
-		createCornerBtns(FRAME,{"Item","Evolve","Omega","Antimatter","FuseQuantity"});
+		FRAME.ItemFrame    = floormatTable("Frame", Instances.FuseScroller, tbls[1], {Name = itemBtn.Name});
+		FRAME.Item         = floormatTable("TextButton", FRAME.ItemFrame, tbls[2], {BackgroundColor3 = COLOR_PICKS[math.random(153)], Text = itemBtn.Text});
+		FRAME.Evolve       = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Evolve",     Position = UDIM2[5], Text = "Evolved", Size = UDIM2[1]});
+		FRAME.Omega        = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Omega",      Position = UDIM2[6], Text = "Omega"});
+		FRAME.Antimatter   = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Antimatter", Position = UDIM2[7], Text = "Antimatter", Size = UDIM2[8]}));
+		FRAME.FuseQuantity = setVals("TextButton", FRAME.ItemFrame, tbls[4]);
+		createCornerBtns(FRAME, tbls[5]);
 
 		local Signals = {
-			[1] = Connect(FRAME.Evolve.MouseButton1Click,		toggleFrameBtn(FRAME.Evolve, 		item[1], idx, 1));						-- "toggle normal fusing" signal
-			[2] = Connect(FRAME.Omega.MouseButton1Click,		toggleFrameBtn(FRAME.Omega, 		item[2], idx, 2));						-- "toggle omega fusing" signal
-			[3] = Connect(FRAME.Antimatter.MouseButton1Click,	toggleFrameBtn(FRAME.Antimatter, 	item[3], idx, 3));						-- "toggle antimatter fusing" signal
-			[4] = Connect(FRAME.FuseQuantity.MouseButton1Click,	updateFuseQnty(FRAME.FuseQuantity,  FRAME.Antimatter, item[3]));			-- "update fuse quantity" signal
-			[5] = FRAME.Item.MouseButton1Click:Once(function()FRAME.ItemFrame:Destroy()end);												-- "destroy the frame" signal
+			[1] = Connect(FRAME.Evolve.MouseButton1Click,		toggleFrameBtn(FRAME.Evolve, 	 item[1], idx, 1));							-- "toggle normal fusing" signal
+			[2] = Connect(FRAME.Omega.MouseButton1Click,		toggleFrameBtn(FRAME.Omega, 	 item[2], idx, 2));							-- "toggle omega fusing" signal
+			[3] = Connect(FRAME.Antimatter.MouseButton1Click,	toggleFrameBtn(FRAME.Antimatter, item[3], idx, 3));							-- "toggle antimatter fusing" signal
+			[4] = Connect(FRAME.FuseQuantity.MouseButton1Click,	updateFuseQnty(FRAME.FuseQuantity, FRAME.Antimatter, item[3]));				-- "update fuse quantity" signal
+			[5] = FRAME.Item.MouseButton1Click:Once(funcs[1](FRAME.ItemFrame));																-- "destroy the frame" signal
 		};
-		FRAME.ItemFrame.Destroying:Once(function()Main[3][idx][itemBtn.Text] = deallocateFrame(Signals, itemBtn)end);						-- deallocates the item savedata and frame signals
+		FRAME.ItemFrame.Destroying:Once(funcs[2](Main[3][idx], Signals, itemBtn));															-- deallocates the item savedata and frame signals
 	end
 	
 	local function makeClickedSignal(itemBtn,idx)
-		return function(BULK,TOG1,TOG2,TOG3)
+		local ref = {{nil, 0, {'','',''}}, {nil, 0, {'','',''}}, {nil, 0}};
+		return function(BULK, TOG1, TOG2, TOG3)
 			itemBtn.Value.Value = false;							-- itembtn will be invisible in the search frame
 			Instances.FuseFrame.Visible = true;						-- the fuse frame will be visible
-			local item = {
-				-- reference item fuse data format
-				[1] = {
-					-- normal fusing
-					[1] = TOG1;
-					[2] = 0;
-					[3] = {'','',''};
-				};
-				[2] = {
-					-- evolved fusing
-					[1] = TOG2;
-					[2] = 0;
-					[3] = {'','',''};
-				};
-				[3] = {
-					-- omega fusing
-					[1] = TOG3;
-					[2] = 0;
-					[3] = table.create(BULK, '');
-				};
-			};
+			
+			local item = table.clone(ref);
+			item[1][1] = TOG1;									-- normal fusing
+			item[2][1] = TOG2;									-- evolved fusing
+			item[3][1] = TOG3;									-- omega fusing
+			item[3][3] = table.create(BULK, '');
+			
 			Main[3][idx][itemBtn.Text] = item; 						-- add item to main data
 			connectMakeFuseFrame(itemBtn, idx, item); 				-- create frame in FuseFrame
 			SaveData.Items[itemBtn.Name] = { 						-- add item to SaveData
-				[1] = {
-					[1] = TOG1;										-- normal fusing toggle
-					[2] = TOG2;										-- evolved fusing toggle
-					[3] = TOG3;										-- omega fusing toggle
-				};
+				[1] = {TOG1, TOG2, TOG3};
 				[2] = BULK;											-- antimatter fuse quantity
 			};
 			if(Main[7][4])then SAVE_DATA()end; 						-- Save if enabled
@@ -601,14 +643,14 @@ do	-- Item Fuse Frame Connections
 	end;
 
 	local function makeButton(name,idx)
-		local itemBtn = setVals("TextButton",{Name=lower(name),BackgroundColor3=COLORS[7],BorderSizePixel=0,Size=UDIM2[4],AutomaticSize='X',ZIndex=2,Font=FONTS[1],Text=name,TextColor3=COLORS[1],TextSize=13,TextWrapped=true},Instances.ItemScroller);
+		local itemBtn = floormatTable("TextButton", Instances.ItemScroller, tbls[6], {Name = lower(name), Text = name});
 		Instance.new("UICorner",itemBtn); 
 		table.insert(Main[4], searchConnection(itemBtn));																																		-- search connection
-		table.insert(Main[4], Connect(setVals("BoolValue",{Name="Value",Value=true},itemBtn):GetPropertyChangedSignal("Value"),function()itemBtn.Visible = itemBtn.Value.Value end));			-- toggle visible connection
+		table.insert(Main[4], Connect(setVals("BoolValue",itemBtn,{Name="Value",Value=true}):GetPropertyChangedSignal("Value"),funcs[3](itemBtn));			-- toggle visible connection
 		
 		local bindEvent = Instance.new("BindableEvent");
 		table.insert(Main[4], Connect(bindEvent.Event,makeClickedSignal(itemBtn,idx)));												-- add item to fuse frame
-		table.insert(Main[4], Connect(itemBtn.MouseButton1Click,function()Fire(bindEvent,8,false,false,false)end));					-- update SaveData with item content
+		table.insert(Main[4], Connect(itemBtn.MouseButton1Click,funcs[4](bindEvent));					-- update SaveData with item content
 		BindableEvents[itemBtn.Name] = bindEvent;																					-- store event in global reference
 	end;
 
@@ -654,16 +696,16 @@ table.insert(Main[4], Connect(Instances.ToggleFrame.MouseButton1Click, function(
 end));
 
 do	-- General Remove Pets/Weapons function
-	local function delCastItems(idx)
+	local function delCastItems(tbl)
 		return function()
-			for Item in next,Main[3][idx]do
+			for Item in next,tbl do
 				Instances.FuseScroller[lower(Item)]:Destroy();
 			end;
 		end;
 	end;
 	
-	table.insert(Main[4], Connect(Instances.Pets.MouseButton1Click,		delCastItems(1))); 			-- Called when Pets button is pressed
-	table.insert(Main[4], Connect(Instances.Weapons.MouseButton1Click,	delCastItems(2)));			-- Called when Weapons button is pressed
+	table.insert(Main[4], Connect(Instances.Pets.MouseButton1Click,	   delCastItems(Main[3][1]))); 				-- Called when Pets button is pressed
+	table.insert(Main[4], Connect(Instances.Weapons.MouseButton1Click, delCastItems(Main[3][2])));				-- Called when Weapons button is pressed
 end;
 
 -- RemoveAll function, called when Instances.All is pressed
@@ -679,8 +721,8 @@ table.insert(Main[4], Connect(Instances.Info.MouseButton1Click,function()Instanc
 -- updates gem toggles and calls pets/weapon checks if either are inactive when gems are obtained
 -- the significance of this function is to call the enhance item function if enough gems have been obtained 
 table.insert(Main[4], Connect(game:GetService("Players").LocalPlayer.PlayerGui.Main.Left.GemsBar.GemsBar.Amount:GetPropertyChangedSignal("Text"),function()
-	Main[1][1] = (plrData.Gems>=10000);									-- toggle for normal fusing
-	Main[1][2] = (plrData.Gems>=200000);								-- toggle for enhance fusing
+	Main[1][1] = (plrData.Gems >= 10000);									-- toggle for normal fusing
+	Main[1][2] = (plrData.Gems >= 200000);								 	-- toggle for enhance fusing
 
 	if(Main[7][6])then 													-- checks Gems Toggle
 		if(Main[7][1])then temptEnhanceCast(1)end;						-- if Pets toggle is inactive, check Pets
@@ -731,7 +773,7 @@ end;
 do	-- General ItemFrame/FuseFrame Visible Changed Function for AutoSave
 	local function frameVisChanged(idx, Frame)
 		return function()
-			SaveData["Visible"][idx] = Frame.Visible;
+			SaveData.Visible[idx] = Frame.Visible;
 			if(Main[7][4])then SAVE_DATA()end;
 		end;
 	end;
@@ -741,7 +783,7 @@ do	-- General ItemFrame/FuseFrame Visible Changed Function for AutoSave
 end;
 
 do	-- General Logic Button Toggle
-	local function toggleChanged(idx,name)
+	local function toggleChanged(idx, name)
 		return function()
 			local val = not Main[7][idx];										-- reference bool
 			Main[7][idx],SaveData.Toggles[name] = val,val;						-- assign data toggle values
@@ -805,12 +847,12 @@ do 	-- Connections for Ignore-Element-Toggles
 	-- assigns the images to element toggle buttons
 	local template = "rbxthumb://type=Asset&id=%i&w=150&h=150";
 	for Aura,Data in next,require(game:GetService("ReplicatedStorage").Saturn.Modules.GameDependent.Elements)do
-		local auraBtn = setVals("ImageButton",{Name=Aura.."ToggleButton",BackgroundColor3=COLORS[1],BackgroundTransparency=0,BorderSizePixel=0,Size=UDIM2[11],Image=template:format(Data.Image)},Instances.Elements);
+		local auraBtn = setVals("ImageButton", Instances.Elements, {Name=Aura.."ToggleButton",BackgroundColor3=COLORS[1],BackgroundTransparency=0,BorderSizePixel=0,Size=UDIM2[11],Image=template:format(Data.Image)});
 		table.insert(Main[4], Connect(auraBtn.MouseButton1Click,toggleAuraBtn(Aura, auraBtn)));		-- clicked connection
 	end;
 end;
 
-Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end); 				-- Called when Close button is pressed
+Instances.Close.MouseButton1Click:Once(function()Instances.MainGui:Destroy()end); 					-- Called when Close button is pressed
 
 -- Loop for checking if items are finished upgrading to Antimatter
 do
@@ -818,9 +860,9 @@ do
 	local function checkAntimatterQueue(cast)
 		for uid,item in next,plrData.QueuedItems[cast]do
 			if(item.ReleaseDate<=os.time())then
-				InvokeServer(Main[5][3],cast,uid);												-- Collect antimatter item
-				Main[11][cast] -= 1; 															-- Update respective queue quantity
-				Instances.QueueScroller[uid]:Destroy();											-- Destroy the frame representing the collected item
+				InvokeServer(Main[5][3],cast,uid);													-- Collect antimatter item
+				Main[11][cast] -= 1; 																-- Update respective queue quantity
+				Instances.QueueScroller[uid]:Destroy();												-- Destroy the frame representing the collected item
 				if(Main[7][12])then saveQueue()end;
 				if(Main[7][7])then print("Antimatter",item.ItemData.Base,"retrieved.")end;
 			end
@@ -828,8 +870,8 @@ do
 	end;
 	
 	table.insert(Main[4],Connect(BindableEvents.Second.Event,function()
-		if(Main[7][1])then checkAntimatterQueue("Pets")end; 									-- check antimatter pet queue
-		if(Main[7][2])then checkAntimatterQueue("Weapons")end; 									-- check antimatter weapon queue
+		if(Main[7][1])then checkAntimatterQueue("Pets")end; 										-- check antimatter pet queue
+		if(Main[7][2])then checkAntimatterQueue("Weapons")end; 										-- check antimatter weapon queue
 	end));
 end;
 
@@ -844,31 +886,27 @@ do	-- hooks
 	
 	-- scans for a new queue item
 	BindableEvents.QueueHook = Instance.new("BindableEvent");
-	table.insert(Main[4], Connect(BindableEvents.QueueHook.Event, function(cast) 
-		local uid,name,releaseDate = getNewQueueUid(cast);										-- will likely nil-instantiate every call
-		while(not uid and wait())do																-- while a new item hasn't been found
-			uid,name,releaseDate = getNewQueueUid(cast);	
-		end;
+	table.insert(Main[4], Connect(BindableEvents.QueueHook.Event, function(cast)
 		Main[11][cast] += 1;
-		newQueueItem(cast,uid,name,releaseDate);
+		newQueueItem(cast, getNewQueueItem(cast));
 	end));
 	
 	BindableEvents.ClaimHook = Instance.new("BindableEvent");
-	table.insert(Main[4], Connect(BindableEvents.ClaimHook.Event, function(cast,uid)
-		Main[11][cast] -= 1; 																	-- Update respective queue quantity
-		Instances.QueueScroller[uid]:Destroy();													-- Destroy the frame representing the collected item
+	table.insert(Main[4], Connect(BindableEvents.ClaimHook.Event, function(cast, uid)
+		Main[11][cast] -= 1; 																							-- Update respective queue quantity
+		Instances.QueueScroller[uid]:Destroy();																			-- Destroy the frame representing the collected item
 	end));
 	
 	local namecall = nil;
-	namecall = hookmetamethod(game, "__namecall", newcclosure(function(self,...)
+	namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
 		if(getnamecallmethod()=="InvokeServer")then
 			if(self==Main[5][2])then															-- if user manually fuses an omega-tier item
-				Fire(BindableEvents.QueueHook,(...));											-- Scans for the new queue item
+				Fire(BindableEvents.QueueHook, ...);											-- Scans for the new queue item
 			elseif(self==Main[5][3])then														-- (failsafe) if user manually collects an antimatter (will only occur if an error is present)
-				Fire(BindableEvents.ClaimHook,...);
+				Fire(BindableEvents.ClaimHook, ...);
 			end;
 		end;
-		return namecall(self,...);																-- Module script expects a response
+		return namecall(self, ...);																-- Module script expects a response
 	end));
 	
 	-- Deallocate Memory
