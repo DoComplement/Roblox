@@ -14,7 +14,7 @@ local Dump = "http://setup.roblox.com/%s-API-Dump.json";
 writefile("rbx_api.dat",game:HttpGetAsync(string.format(Dump, Version)));
 ```
 
-## c++
+## ext
 ```
 local function readfile(name)
 	local f = assert(io.open(name), "no such file: " .. name);
