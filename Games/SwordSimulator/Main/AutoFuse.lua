@@ -55,11 +55,6 @@ local UDIM2 = {
 	[23] = UDim2.new();
 };
 
-local INST {
-	
-	{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.Name,Padding=UDim.new(0,10)}
-};
-
 local Main = {
 	[1] = {	
 		-- Gem Toggles
@@ -290,13 +285,15 @@ fmtTable("TextLabel", Instances.IgnoreEquippedFrame, {Name = "IgnoreEquippedLabe
 fmtTable("TextLabel", Instances.PrintToggleFrame,    {Name = "PrintToggleLabel",    Text = "Toggles printing any item fuse event to the standard console.", Size = UDim2.new(0,130,0,30)});
 
 createCornerBtns(Instances, {"ToggleFrame","SaveQueueButton","All","Pets","Weapons","LoadFuseButton","PrintToggleButton","IgnoreEquippedButton","IgnoreEnchantedButton","AutoLoadButton","ResetTextButton","AutoSaveButton","GemsToggleButton","IgnoreElementedButton","IgnoreElementedButton"});
-setVals("UIListLayout", fmtTable(INST[4], {SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5)}, Instances.FuseScroller);
-setVals("UIListLayout", INST[4], Instances.QueueScroller);		-- queue frame
-setVals("UIListLayout", INST[4], Instances.ItemScroller);
-Instance.new("UICorner", Instances.InformationFrame);
-Instance.new("UICorner", Instances.SettingsMain);
-Instance.new("UICorner",Instances.FuseFrame);
-Instance.new("UICorner",Instances.ItemFrame);
+
+fmtTable("UIListLayout", Instances.QueueScroller, {HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.Name,Padding=UDim.new(0,10)});
+setVals("UIListLayout", Instances.ItemScroller);	-- the previous table is carried over in the function from fmtTable's metatable
+setVals("UIListLayout", Instances.FuseScroller, {HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,5)});
+
+for _,inst in ipairs({"InformationFrame", "SettingsMain", "FuseFrame", "ItemFrame"})do
+	Instance.new("UICorner", Instances[inst]);
+end;
+
 
 local hdr_fmt,saveQueue,newQueueItem,SAVE_DATA = "     (%d/%d) - %s",nil,nil,nil;
 do
@@ -576,20 +573,16 @@ do	-- Item Fuse Frame Connections
 		end);
 	end;
 	
-	local function floormatTable(class, parent, ref, tbl);
-		for idx,val in next,tbl do
-			ref[idx] = val;
-		end;
-		return setVals(class, parent, ref);
-	end;
-	
-	local tbls = {
-		{BackgroundTransparency=1,BackgroundColor3=COLORS[1],Size=UDIM2[2]};
-		{Name="Item",BorderSizePixel=0,Position=UDIM2[3],Size=UDIM2[4],ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true};
-		{BackgroundColor3=COLORS[3],BorderSizePixel=0,ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true};
-		{Name="FuseQuantity",BackgroundColor3=COLORS[1],BorderSizePixel=0,Position=UDIM2[9],Size=UDIM2[10],ZIndex=2,Font=FONTS[1],Text="8",TextColor3=COLORS[2],TextScaled=true,TextSize=13,TextWrapped=true};
+	local refs = {
+		{BackgroundColor3 = COLORS[1], BackgroundTransparency = 1, Size = UDIM2[2]}
+		{Name = "Item", Position = UDIM2[3], AutomaticSize = "None"};
+		{Name = "Evolve", Position = UDIM2[5], Text = "Evolved", Size = UDIM2[1], BackgroundColor3 = COLORS[3]};
+		{Name = "Omega", Position = UDIM2[6], Text = "Omega"};
+		{Name = "Antimatter", Position = UDIM2[7], Text = "Antimatter", Size = UDIM2[8]};
+		{Name = "FuseQuantity", Position = UDIM2[9], Text = "8", Size = UDIM2[10], BackgroundColor3 = COLORS[1], TextColor3 = COLORS[2], TextScaled = true};
 		{"Item","Evolve","Omega","Antimatter","FuseQuantity"};
-		{BackgroundColor3=COLORS[7],BorderSizePixel=0,Size=UDIM2[4],AutomaticSize='X',ZIndex=2,Font=FONTS[1],TextColor3=COLORS[1],TextSize=13,TextWrapped=true}
+		{BackgroundColor3 = COLORS[7], BorderSizePixel = 0, Size = UDIM2[4], AutomaticSize = 'X', ZIndex = 2, Font = FONTS[1], TextColor3 = COLORS[1], TextSize = 13, TextWrapped = true};
+		{Name = "Value", Value = true};
 	}
 
 	local funcs = {
@@ -602,13 +595,13 @@ do	-- Item Fuse Frame Connections
 	local function connectMakeFuseFrame(itemBtn,idx,item)
 		Main[9][3] += 1;
 		local FRAME = {};	-- create a frame for an item being monitered for fusing
-		FRAME.ItemFrame    = floormatTable("Frame", Instances.FuseScroller, tbls[1], {Name = itemBtn.Name});
-		FRAME.Item         = floormatTable("TextButton", FRAME.ItemFrame, tbls[2], {BackgroundColor3 = COLOR_PICKS[math.random(153)], Text = itemBtn.Text});
-		FRAME.Evolve       = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Evolve",     Position = UDIM2[5], Text = "Evolved", Size = UDIM2[1]});
-		FRAME.Omega        = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Omega",      Position = UDIM2[6], Text = "Omega"});
-		FRAME.Antimatter   = floormatTable("TextButton", FRAME.ItemFrame, tbls[3], {Name = "Antimatter", Position = UDIM2[7], Text = "Antimatter", Size = UDIM2[8]}));
-		FRAME.FuseQuantity = setVals("TextButton", FRAME.ItemFrame, tbls[4]);
-		createCornerBtns(FRAME, tbls[5]);
+		FRAME.ItemFrame = setVals("Frame", Instances.FuseScroller, rawset(refs[1], Name, itemBtn.Name));
+		FRAME.Item  = fmtTable("TextButton", FRAME.ItemFrame, rawset(rawset(refs[2], "BackgroundColor3", COLOR_PICKS[math.random(153)]), "Text", itemBtn.Text));
+		for idx = 2,5 do
+			FRAME[refs[7][idx]] = fmtTable("TextButton", FRAME.ItemFrame, refs[idx + 1]);
+		end;
+
+		createCornerBtns(FRAME, tbls[7]);
 
 		local Signals = {
 			[1] = Connect(FRAME.Evolve.MouseButton1Click,		toggleFrameBtn(FRAME.Evolve, 	 item[1], idx, 1));							-- "toggle normal fusing" signal
@@ -643,14 +636,14 @@ do	-- Item Fuse Frame Connections
 	end;
 
 	local function makeButton(name,idx)
-		local itemBtn = floormatTable("TextButton", Instances.ItemScroller, tbls[6], {Name = lower(name), Text = name});
-		Instance.new("UICorner",itemBtn); 
+		local itemBtn = fmtTable("TextButton", Instances.ItemScroller, rawset(rawset(refs[8], "Name", lower(name)), "Text", name), true);
+		Instance.new("UICorner", itemBtn); 
 		table.insert(Main[4], searchConnection(itemBtn));																																		-- search connection
-		table.insert(Main[4], Connect(setVals("BoolValue",itemBtn,{Name="Value",Value=true}):GetPropertyChangedSignal("Value"),funcs[3](itemBtn));			-- toggle visible connection
+		table.insert(Main[4], Connect(setVals("BoolValue", itemBtn, refs[9]):GetPropertyChangedSignal("Value"), funcs[3](itemBtn)));			-- toggle visible connection
 		
 		local bindEvent = Instance.new("BindableEvent");
-		table.insert(Main[4], Connect(bindEvent.Event,makeClickedSignal(itemBtn,idx)));												-- add item to fuse frame
-		table.insert(Main[4], Connect(itemBtn.MouseButton1Click,funcs[4](bindEvent));					-- update SaveData with item content
+		table.insert(Main[4], Connect(bindEvent.Event, makeClickedSignal(itemBtn,idx)));												-- add item to fuse frame
+		table.insert(Main[4], Connect(itemBtn.MouseButton1Click, funcs[4](bindEvent));					-- update SaveData with item content
 		BindableEvents[itemBtn.Name] = bindEvent;																					-- store event in global reference
 	end;
 
@@ -1027,3 +1020,4 @@ end;
 -- Deallocate table variables that will not be used in the script from this moment forward
 for idx = 13,23 do UDIM2[idx] = nil end;
 COLORS[7] = nil;
+
