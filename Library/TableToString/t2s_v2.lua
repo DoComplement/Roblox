@@ -1,63 +1,65 @@
-if(t2s~=nil)then return(nil)end;
 
-local function GetIndices(dict,sort)
+if(t2s)then return end;
+
+local function GetIndices(dict, sort)
 	local idxs = {}
 	for idx in next,dict do 
 		idxs[#idxs + 1] = idx;
 	end;
 	
-	if(sort==nil)then return(idxs)end;
+	if(sort == nil)then return(idxs)end;
 	if(sort)then
-		table.sort(idxs); 									-- Ascending
+		table.sort(idxs); 									    -- Ascending
 	else
-		table.sort(idxs,function(A,B)return(B<A)end); 		-- Descending
+		table.sort(idxs, function(A, B) return(B < A)end); 		-- Descending
 	end;
 
 	return idxs; 											-- Array
 end;
 
-getgenv().t2s = function(Table, Title, Sort, logID)
-	assert(type(Table) == "table", "ERROR! Input table is not a valid table.");
-	
-	local tbls = {};
-	local function formatTable(Entity, Index, Tab)
-		local Model,T = pcall(typeof, Entity);
-		if(T=="string")then
-			Model = '\"'..Entity..'\"';
-		else
-			Model = tostring(Entity);
-		end;
-		
-		if type(Index) == "string" then 
-			Index = Tab.."[\""..Index.."\"] = ";
-		elseif Index ~= nil then
-			Index = Tab..'['..tostring(Index).."] = ";
-		else
-			Index = '';
-		end;
-		
-		if(type(Entity)~="table")then 
-			return Index..Model..";\n"; 
-		end;
-		
-		if(table.find(tbls, Entity)~=nil)then 							-- checking for repeat-nested tables
-			return Index.."\"Repeated Table\",\t-- "..Model..'\n';
-		end;
-		tbls[#tbls + 1] = Entity;
-		
-		local idxs = GetIndices(Entity)
-		if(#idxs==0)then return Index.."{};\n"end;
-		
-		local strtbl = {}
-		for _,idx in ipairs(idxs)do
-			strtbl[#strtbl + 1] = formatTable(Entity[idx], idx, Tab..'\t');
-		end;
-		if(logID)then
-			return Index.."{ \t-- "..Model..'\n'..table.concat(strtbl)..Tab.."};\n";
-		end;
-		return Index.."{\n"..table.concat(strtbl)..Tab.."};\n";
+local function formatTable(entity, index, tab, tables, sort, logID)
+	local name,_type = pcall(typeof, entity);
+	if(_type=="string")then
+		name = '\"' .. entity .. '\"';
+	else
+		name = tostring(entity);
 	end;
 	
-	return(Title and "local ".. Title.." = " or "return ")..formatTable(Table, nil, '')
-end
-print("t2s(Table : table, Title : string?, Sort : boolean?, logID : boolean?) : string")
+	if type(index) == "string" then 
+		index = tab .. "[\"" .. index .. "\"] = ";
+	elseif index ~= nil then
+		index = tab .. '[' .. tostring(index) .. "] = ";
+	else
+		index = '';
+	end;
+	
+	if(type(entity)~="table")then 
+		return index .. name .. ";\n"; 
+	end;
+	
+	if(table.find(tables, entity))then 							-- checking for repeat-nested tables
+		return index .. "\"Repeated Table\",\t-- " .. name .. '\n';
+	end;
+	tables[#tables + 1] = entity;
+	
+	local idxs = GetIndices(entity, sort)
+	if(#idxs == 0)then return(index .. "{};\n")end;
+	
+	local strtbl = {};
+	for x,idx in ipairs(idxs)do
+		strtbl[x] = formatTable(entity[idx], idx, tab .. '\t', tables, sort, logID);
+	end;
+	if(logID)then
+		return index .. "{ \t-- " .. name .. '\n' .. table.concat(strtbl) .. tab .. "};\n";
+	end;
+	return index .. "{\n" .. table.concat(strtbl) .. tab .. "};\n";
+end;
+
+_ENV.t2s = function(list, title, sort, logID)
+	assert(type(list) == "table", "ERROR! Input table is not a valid table.");
+	
+	if(title)then
+		return "local " .. title .. " = " .. formatTable(list, nil, '', {}, sort, logID);
+	end;
+	return "return " .. formatTable(list, nil, '', {}, sort, logID);
+end;
