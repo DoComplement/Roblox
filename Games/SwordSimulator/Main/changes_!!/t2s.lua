@@ -4,6 +4,9 @@ local Tables,Sort,logID = nil,nil,nil;
 
 local newcclosure = coroutine.wrap(function(f)
 	while(true)do
+		while(debug.getinfo(f).what == 'C')do
+			f = coroutine.yield(f);
+		end;
 		local c = f;
 		f = coroutine.yield(coroutine.wrap(function(...)
 			local args = {...};
