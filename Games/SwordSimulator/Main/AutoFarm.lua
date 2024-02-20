@@ -96,7 +96,7 @@ do	-- pre/postload config stuff
 		writefile(fileName, "{\"TARGET\":\"nil\",\"ZONE_TO_FARM\":\"nil\",\"EGG\":\"nil\",\"LOG_DUNGEON_DATA\":false,\"JOIN_DUNGEON\":false,\"LOG_WEAPON_DATA\":false,\"FARM_BOSS\":false,\"DISABLE_EGG_PROMPTS\":false,\"IGNORE_ITEM_MESSAGES\":false,\"INDEX_RANDOMLY\":false,\"LOG_HATCH_DATA\":false,\"FARM_DUNGEON\":false,\"FARM_TARGET\":false,\"ACTIVE\":false,\"ZONE_TO_FARM\":\"22\",\"FARM_MAX\":false,\"FARM_EGGS\":false,\"LOG_REWARDS_DATA\":false,\"TARGET\":\"AutumnPaladin\"}");
 		print("this is your first time using this script, here are the toggles you can modify (modify by setting _G[INDEX] = VALUE, from here forward: \n\n");
 		for idx,val in next,HttpService:JSONDecode(readfile(fileName))do print("_G."..idx,'=',val)end;
-		print("\_G.DISABLE_EGG_PROMPTS is special :). modify by _G.DISABLE_EGG_PROMPTS = BOOL_VALUE");
+		print("\_G.DISABLE_EGG_PROMPTS is special :). modify by _G.DISABLE_EGG_PROMPTS.Value = BOOL_VALUE");
 		print("\ncall SAVE_DATA() at any time to save the toggles for the next time you use this script");
 	end;
 	
