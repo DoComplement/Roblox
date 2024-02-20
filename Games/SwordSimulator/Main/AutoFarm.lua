@@ -267,7 +267,7 @@ local function SortItems(items, vals, pow, id, idx)
 				vals[idx],items[idx] = vals[iter],items[iter];
 			end;
 			vals[iter],items[iter] = pow,id;
-			return(GetMinValueIndex(vals,vals[idx],idx));
+			return GetMinValueIndex(vals,vals[idx],idx);
 		end;
 	end;
 	return idx;
@@ -279,7 +279,7 @@ end;
 	-- nil
 -- }
 local function GetItemPower(ID, Item, Data, Calculator, Event)
-	if(Data.Vanity~=nil)then
+	if(Data.Vanity)then
 		if(IgnoreVanity or Data.Vanity.Boost<1)then return(nil)end;
 		return -1;
 	end;
@@ -301,9 +301,9 @@ local function GatherBest(Storage, Module, Items, Calculator, Event)
     for ID,Item in next,Storage do 
 		Data = Module[Item.Base];
 		-- if Data.Vanity ~= nil then ...; end;
-		local Power = GetItemPower(ID,Item,Module[Item.Base],Calculator,Event);
-		if(Power~=nil)then
-			Index = SortItems(Items,Values,Power,ID,Index);
+		local Power = GetItemPower(ID, Item, Module[Item.Base], Calculator, Event);
+		if(Power)then
+			Index = SortItems(Items, Values, Power, ID, Index);
 		end;
     end;
 	
