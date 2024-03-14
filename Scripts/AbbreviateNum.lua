@@ -42,7 +42,7 @@ end;
 local format,gsub = string.format,string.gsub
 -- gives the option to remove trailing zeros
 local function abbSlow(num,rem)
-	local idx = consts[1 + floor(log10(num)/3)];
+	local idx = consts[1 + log10(num)//3];
 
 	num = format("%.3f",num*idx[1]); -- truncate, will round
 	if(rem)then -- remove trailing zeros
@@ -57,7 +57,7 @@ end;
 local sub,find = string.sub,string.find;
 -- without rouding
 local function abbSlowish(num,rem)
-	local idx = consts[1 + floor(log10(num)/3)];
+	local idx = consts[1 + log10(num)//3];
 
 	num = tostring(num*idx[1]);
 	num = sub(num,1,1 + find(num,"%.")); -- resolution of 1
@@ -72,7 +72,7 @@ end;
 
 -- same as above with resolution option (no error checking)
 local function abbSlowisher(num,rem,res)
-	local idx = consts[1 + floor(log10(num)/3)];
+	local idx = consts[1 + log10(num)//3];
 
 	num = tostring(num*idx[1]);
 	num = sub(num,1,res + find(num,"%.")); -- resolution of res
