@@ -20,14 +20,14 @@ local floor,log10 = math.floor,math.log10;
 local function unsigAbbFast(num,idx)
 	idx = consts[1 + log10(num)//3];
 	if(not idx)then return(num)end;
-	return(floor(num*idx[1]*10)/10)..idx[2];
+	return (num*idx[1]*10)//10 .. idx[2];
 end;
 
 local abs = math.abs;
 local function sigAbbFast(num)
 	idx = consts[1 + log10(abs(num))//3];
 	if(not idx)then return(num)end;
-	return(floor(num*idx[1]*10)/10)..idx[2];
+	return (num*idx[1]*10)//10 .. idx[2];
 end;
 
 -- includes resolution option (factor of 10)
@@ -35,7 +35,7 @@ local function abbFastRes(num,res,idx)
 	if(type(res)~="number" or res<=0)then res = 10 end;
 	idx = consts[1 + log10(num)//3];
 	if(not idx)then return(num)end;
-	return (floor(num*idx[1]*res)/res)..idx[2];
+	return floor(num*idx[1]*res)//res .. idx[2];
 end;
 
 
