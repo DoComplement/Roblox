@@ -2557,7 +2557,7 @@ end
 						local minutesLeft = 0
 						local secondsLeft = (_G.EggsAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 						if secondsLeft >= 60 then
-							minutesLeft = math.floor(secondsLeft / 60)
+							minutesLeft = secondsLeft // 60
 							secondsLeft = secondsLeft - (minutesLeft * 60)
 						end
 						EggsAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2593,7 +2593,7 @@ end
 						local minutesLeft = 0
 						local secondsLeft = (_G.BubbleAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 						if secondsLeft >= 60 then
-							minutesLeft = math.floor(secondsLeft / 60)
+							minutesLeft = secondsLeft // 60
 							secondsLeft = secondsLeft - (minutesLeft * 60)
 						end
 						BubbleAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2632,7 +2632,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.CoinAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								CoinAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2669,7 +2669,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.GemAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								GemAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2706,7 +2706,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.CrystalsAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								CrystalAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2743,7 +2743,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.CandyAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								CandyAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2780,7 +2780,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.BlocksAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								BlocksAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2817,7 +2817,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.ShellsAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								ShellsAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2854,7 +2854,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.PearlsAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								PearlsAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2891,7 +2891,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.StarsAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								StarsAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2928,7 +2928,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.MagmaAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								MagmaAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
@@ -2966,7 +2966,7 @@ end
 								local minutesLeft = 0
 								local secondsLeft = (_G.EventCurrAlertLast + (smaPeriodMin * _G.currAlertWait * _G.currAlertMsgWaitMins)) - os.time()
 								if secondsLeft >= 60 then
-									minutesLeft = math.floor(secondsLeft / 60)
+									minutesLeft = secondsLeft // 60
 									secondsLeft = secondsLeft - (minutesLeft * 60)
 								end
 								EventAlertButton.Text = string.format("%02d:%02d", minutesLeft, secondsLeft)
