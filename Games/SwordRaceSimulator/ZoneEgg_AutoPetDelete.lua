@@ -16,16 +16,16 @@ do
 		[5] = {1e-12,"Qa"};
 	}; -- and so on
 
-	local floor,log10 = math.floor,math.log10;
+	local log10 = math.log10;
 	Abbreviate = function(num,idx)
-		idx = consts[1 + floor(log10(num)/3)];
+		idx = consts[1 + log10(num)//3];
 		if(not idx)then return(num)end;
-		return(floor(num*idx[1]*10)/10)..idx[2];
+		return (num*idx[1]*10)//10 .. idx[2];
 	end;
 end;
 
 local DeleteToggles = {};
-local function ToggleAutoPetDelete(Deleting1,Deleting2,Power)
+local function ToggleAutoPetDelete(Deleting1, Deleting2, Power)
     Deleting2.Parent.MouseButton1Click:Connect(function()
 		Deleting1.Visible = not Deleting2.Visible; -- implicitely calls the signal below
     end);
