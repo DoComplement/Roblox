@@ -18,8 +18,8 @@ local function GetIndices(dict, sort)
 end;
 
 local function formatTable(entity, index, tab, tables, sort, logID)
-	local name,_type = pcall(typeof, entity);
-	if(_type=="string")then
+	local name,_type = pcall(type, entity);
+	if(_type == "string")then
 		name = '\"' .. entity .. '\"';
 	else
 		name = tostring(entity);
